@@ -25,6 +25,7 @@ public final class Configs {
           .encoder
           .positionConversionFactor(drivingFactor) // meters
           .velocityConversionFactor(drivingFactor / 60.0); // meters per second
+      
       drivingConfig
           .closedLoop
           .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -79,9 +80,9 @@ public final class Configs {
           .outputRange(-1, 1)
           .maxMotion
           // Set MAXMotion parameters for position control
-          .maxVelocity(4000)
+          .cruiseVelocity(4000)
           .maxAcceleration(4000)
-          .allowedClosedLoopError(0.250);
+          .allowedProfileError(0.250);
 
       armFastConfig
           .closedLoop
@@ -90,9 +91,9 @@ public final class Configs {
           .d(0.001) // same D gain
           .outputRange(-1, 1)
           .maxMotion
-          .maxVelocity(10000) // 🔥 FASTER for tossing
+          .cruiseVelocity(10000) // 🔥 FASTER for tossing
           .maxAcceleration(10000) // 🔥 FASTER for tossing
-          .allowedClosedLoopError(0.250);
+          .allowedProfileError(0.250);
 
         
 
@@ -122,9 +123,9 @@ public final class Configs {
           .outputRange(-1, 1)
           .maxMotion
           // Set MAXMotion parameters for position control
-          .maxVelocity(58000)
+          .cruiseVelocity(58000)
           .maxAcceleration(60000)
-          .allowedClosedLoopError(0.5);
+          .allowedProfileError(0.5);
 
             /*
        * Configure the closed loop controller. We want to make sure we set the
@@ -173,9 +174,9 @@ public final class Configs {
           .outputRange(-1, 1)
           .maxMotion
           // Set MAXMotion parameters for position control
-          .maxVelocity(12000)
+          .cruiseVelocity(12000)
           .maxAcceleration(12000)
-          .allowedClosedLoopError(0.15);
+          .allowedProfileError(0.15);
     }
 }
 }
