@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -17,25 +19,30 @@ import edu.wpi.first.math.util.Units;
  * <p>It is advised to statically import this class (or one of its inner classes) wherever the
  * constants are needed, to reduce verbosity.
  */
+
 public final class Constants {
 
+  public static final class IntakeConstants {
+    public static final int kIntakeMotorCanId = //Id;
+    public static final IdleMode kIntakeIdleMode = IdleMode.kBrake;
+  }
 
-public static final class LimelightPID {
-  // 🎯 PID Gains for LL Targeting
+  public static final class LimelightPID {
+    // 🎯 PID Gains for LL Targeting
 
-  public static final double kP_turn = 0.15;   // Previously 0.1
-  public static final double kI_turn = 0.000;
-  public static final double kD_turn = 0.0;   // New (small D gain)
+    public static final double kP_turn = 0.15;   // Previously 0.1
+    public static final double kI_turn = 0.000;
+    public static final double kD_turn = 0.0;   // New (small D gain)
 
-  public static final double kP_distance = 0.2; // Previously 0.15
-  public static final double kI_distance = 0.0;
-  public static final double kD_distance = 0.0; // New (small D gain)
+    public static final double kP_distance = 0.2; // Previously 0.15
+    public static final double kI_distance = 0.0;
+    public static final double kD_distance = 0.0; // New (small D gain)
 
-  public static final double kP_strafe = 0.15;  // Previously 0.15
-  public static final double kI_strafe = 0.0;
-  public static final double kD_strafe = 0.0005; // New (small D gain)
+    public static final double kP_strafe = 0.15;  // Previously 0.15
+    public static final double kI_strafe = 0.0;
+    public static final double kD_strafe = 0.0005; // New (small D gain)
 
-}
+  }
 
 
   public static final class DriveConstants {
