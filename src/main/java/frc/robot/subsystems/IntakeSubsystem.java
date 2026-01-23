@@ -21,20 +21,25 @@ public class IntakeSubsystem extends SubsystemBase {
   private static IntakeSubsystem instance;
 
   // Motor Controllers
-  private SparkFlex intakeMotor = new SparkFlex(Constants.IntakeConstants.kIntakeMotorCanId, MotorType.kBrushless);
+  private SparkFlex intakeMotor;
 
   // Motor Configs
-  private SparkFlexConfig config = new SparkFlexConfig();
+  private SparkFlexConfig config;
 
   // Relative Encoders
-  private RelativeEncoder intakeEncoder = intakeMotor.getEncoder();
+  private RelativeEncoder intakeEncoder;
 
   // Stores the speed of the intake motor
-  private float intakeRingSpeed = 0.90f;
+  private float intakeSpeed;
 
   public IntakeSubsystem() {
-    // Reset the motors
 
+    intakeMotor = new SparkFlex(Constants.IntakeConstants.kIntakeMotorCanId, MotorType.kBrushless);
+    config = new SparkFlexConfig();
+    intakeEncoder = intakeMotor.getEncoder();
+    intakeSpeed = Constants.IntakeConstants.kIntakeSpeed;
+
+    // Reset the motors
     //intakeMotor.restoreFactoryDefaults();
 
     config
@@ -58,12 +63,12 @@ public class IntakeSubsystem extends SubsystemBase {
 
   // Spins the intake motors forwards
   public void startIntake() {
-    intakeMotor.set(intakeRingSpeed);
+    intakeMotor.set(intakeSpeed);
   }
 
   // Spins the intake motors reverse
   public void reverseIntake() {
-    intakeMotor.set(-intakeRingSpeed);
+    intakeMotor.set(-intakeSpeed);
   }
 
   // Stops the intake motors

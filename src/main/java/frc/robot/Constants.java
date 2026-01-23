@@ -23,7 +23,8 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
 
   public static final class IntakeConstants {
-    public static final int kIntakeMotorCanId = //Id;
+    public static final int kIntakeMotorCanId = 12;
+    public static final float kIntakeSpeed = 0.90f;
     public static final IdleMode kIntakeIdleMode = IdleMode.kBrake;
   }
 
