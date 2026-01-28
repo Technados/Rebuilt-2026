@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -60,21 +61,21 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Configure default commands
-m_robotDrive.setDefaultCommand(
-    new RunCommand(
-        () -> {
-            boolean manualSlowMode = m_driverController.rightBumper().getAsBoolean();
-            m_robotDrive.updateDriveSlowMode(manualSlowMode); // Auto/Manual slow mode
+    m_robotDrive.setDefaultCommand(
+        new RunCommand(
+            () -> {
+                boolean manualSlowMode = m_driverController.rightBumper().getAsBoolean();
+                m_robotDrive.updateDriveSlowMode(manualSlowMode); // Auto/Manual slow mode
 
-            m_robotDrive.drive(
-                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
-                true
-            );
-        }, m_robotDrive
-    )
-);
+                m_robotDrive.drive(
+                    -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+                    -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+                    -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
+                    true
+                );
+            }, m_robotDrive
+        )
+    );
 
     // Set the ball intake to in/out when not running based on internal state
     // m_algaeSubsystem.setDefaultCommand(m_algaeSubsystem.idleCommand());
@@ -91,6 +92,9 @@ m_robotDrive.setDefaultCommand(
     //Shuffleboard.getTab("PathPlanner Autonomous").add(BlueautoChooser).withWidget(BuiltInWidgets.kComboBoxChooser);
     //Shuffleboard.getTab("PathPlanner Autonomous").add(RedautoChooser).withWidget(BuiltInWidgets.kComboBoxChooser);
     Shuffleboard.getTab("PathPlanner Autonomous").add(autoChooser).withWidget(BuiltInWidgets.kComboBoxChooser);
+
+    CameraServer.startAutomaticCapture();
+
   }
 
   /**
