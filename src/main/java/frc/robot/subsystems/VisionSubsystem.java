@@ -9,7 +9,7 @@ import frc.robot.Constants.DriveConstants;
 
 public class VisionSubsystem extends SubsystemBase {
 
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    NetworkTable table;
     public static PIDController rotationPID = createPIDController();
 
     private final double limelightHeight;
@@ -19,16 +19,22 @@ public class VisionSubsystem extends SubsystemBase {
     private final PIDController limelightStrafePID;
     private final PIDController limelightDistancePID;
 
+    private final String limelightName;
+
     public VisionSubsystem(string limelightName) {
+        this.limelightName = limelightName;
+
+        table = NetworkTableInstance.getDefault().getTable(limelightName);
+
         /* If the limelights have different functions, it might make more sense
         to make a limelight abstract class and have two seperate classes for
-        front and back, but this shoudl work if not */ 
-        if (limelightName.equals("Front")) { //Maybe change naming convention
+        front and back, but this should work if not */ 
+        if (this.limelightName.equals("frontLimelight")) { // Change names to the names set in Network Table
             limelightHeight = kFrontLimelightHeight;
             limelightMountAngle = kFrontLimelightMountAngle;
         }
 
-        if (limelightName.equals("Back")) { //Maybe change naming convention
+        if (this.limelightName.equals("backLimelight")) { // Change names to the names set in Network Table
             limelightHeight = kBackLimelightHeight;
             limelightMountAngle = kBackLimelightMountAngle;
         }
@@ -63,7 +69,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     public double getDistance(double targetHeight) {
         Rotation2d angleToGoal = Rotation2d.fromDegrees(limelightMountAngle)
-        .plus(Rotation2d.fromDegrees(LimelightHelpers.getTX("limelight")));
+        .plus(Rotation2d.fromDegrees(LimelightHelpers.getTX(limelightName)));
         double distance = (targetHeight - limelightMountAngle) / angleToGoal.getTan();
         return distance;
     }
@@ -78,7 +84,7 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public double getRotation() {
-        double cameraLensHorizontalOffset = LimelightHelpers.getTX("limelight") / getDistance();
+        double cameraLensHorizontalOffset = LimelightHelpers.getTX(limelightName) / getDistance();
         double realHorizontalOffset = Math.atan(cameraLensHorizontalOffset / getDistance());
         double rotationError = Math.atan(realHorizontalOffset / getDistance());
         return rotationError;
