@@ -45,6 +45,22 @@ public final class Constants {
 
   }
 
+  public static final class FrontLimelightConstants {
+    public static final double kFrontLimelightHeight = 0; // Change to actual height
+    public static final double kFrontLimelightMountAngle = 0; // Change to actual mount angle
+
+  }
+
+  public static final class BackLimelightConstants {
+    public static final double kBackLimelightHeight = 0; // Change to actual height
+    public static final double kBackLimelightMountAngle = 0; // Change to actual mount angle
+
+  }
+
+  public static final class AprilTagIDs {
+    // Apriltag ids
+
+  }
 
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
