@@ -29,12 +29,12 @@ public class VisionSubsystem extends SubsystemBase {
         /* If the limelights have different functions, it might make more sense
         to make a limelight abstract class and have two seperate classes for
         front and back, but this should work if not */ 
-        if (this.limelightName.equals("frontLimelight")) { // Change names to the names set in Network Table
+        if (this.limelightName.equals("limelight-front")) { // Names must match the names set in the Network Table
             limelightHeight = kFrontLimelightHeight;
             limelightMountAngle = kFrontLimelightMountAngle;
         }
 
-        if (this.limelightName.equals("backLimelight")) { // Change names to the names set in Network Table
+        if (this.limelightName.equals("limelight-back")) { // Names must match the names set in the Network Table
             limelightHeight = kBackLimelightHeight;
             limelightMountAngle = kBackLimelightMountAngle;
         }
