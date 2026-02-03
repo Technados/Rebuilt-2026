@@ -22,15 +22,15 @@ public class VisionSubsystem extends SubsystemBase {
     private String frontLimelightName;
     private String backLimelightName;
 
-    public VisionSubsystem(String limelightName) {
+    public VisionSubsystem() {
         frontLimelightName = Constants.VisionConstants.kFrontLimelightName;
         backLimelightName = Constants.VisionConstants.kBackLimelightName;
 
-        this.visionMeasurementFront = new VisionMeasurement(LimelightHelpers.getBotPose2d(frontLimelightName), 0.0, Constants.VisionConstants.kMultiTagStdDevs);
-        this.visionMeasurementBack = new VisionMeasurement(LimelightHelpers.getBotPose2d(backLimelightName), 0.0, Constants.VisionConstants.kMultiTagStdDevs);
+        visionMeasurementFront = new VisionMeasurement(LimelightHelpers.getBotPose2d(frontLimelightName), 0.0, Constants.VisionConstants.kMultiTagStdDevs);
+        visionMeasurementBack = new VisionMeasurement(LimelightHelpers.getBotPose2d(backLimelightName), 0.0, Constants.VisionConstants.kMultiTagStdDevs);
 
         SmartDashboard.putBoolean("Vision valid?", hasValidPoseFront());
-        SmartDashboard.putNumberArray("Vision Pose x/y/rot", /*List of values?*/);
+        SmartDashboard.putNumberArray("Vision Pose x/y/rot", visionMeasurementFront.getStdDevsList()); //Add actual values from VisionMeasurement
         SmartDashboard.putNumber("Tag count", getTagCountFront());
         SmartDashboard.putNumber("Latency", getLatencyFrontSeconds());
     }

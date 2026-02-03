@@ -18,6 +18,7 @@ import frc.robot.Constants.OIConstants;
 
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
@@ -37,6 +38,7 @@ public class RobotContainer {
     
     private final DriveSubsystem m_robotDrive = new DriveSubsystem(m_ledSubsystem);
     
+    private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

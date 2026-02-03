@@ -33,4 +33,10 @@ public class VisionMeasurement {
         return stdDevs;
     }
 
+    public double[] getStdDevsList() {
+        double[] list = {pose.getX(), pose.getY(), pose.getRotation().getDegrees()};
+
+        return list;
+    }
+
 }
