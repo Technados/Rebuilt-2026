@@ -29,9 +29,8 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
 
   public static final class IntakeConstants {
-    public static final int kIntakeMotorCanId = 12;
-    public static final float kIntakeSpeed = 0.90f;
-    public static final IdleMode kIntakeIdleMode = IdleMode.kBrake;
+    public static final int kIntakeMotorCanId = 10;
+    public static final double kIntakePower = -0.1;
   }
 
   public static final class LimelightPID {

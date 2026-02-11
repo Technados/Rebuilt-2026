@@ -9,22 +9,11 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.vision.VisionMeasurement;
 
 public class VisionSubsystem extends SubsystemBase {
-
-    private String frontLimelightName;
-    private String backLimelightName;
-
-    public VisionSubsystem() {
-        frontLimelightName = Constants.VisionConstants.kFrontLimelightName;
-        backLimelightName = Constants.VisionConstants.kBackLimelightName;
-
-        SmartDashboard.putNumberArray("Vision Pose x/y/rot", getVisionPose());
-    }
 
     public boolean hasValidPose(String name) {
         return LimelightHelpers.validPoseEstimate(LimelightHelpers.getBotPoseEstimate_wpiBlue(name));
@@ -38,8 +27,8 @@ public class VisionSubsystem extends SubsystemBase {
         return LimelightHelpers.getLatency_Capture(name) + LimelightHelpers.getLatency_Pipeline(name);
     }
 
-    public double[] getVisionPose() {
-        Pose2d pose = LimelightHelpers.getBotPose2d(frontLimelightName);
+    public double[] getVisionPose(String name) {
+        Pose2d pose = LimelightHelpers.getBotPose2d(name);
         double[] list = {pose.getX(), pose.getY(), pose.getRotation().getDegrees()};
 
         return list;
@@ -74,7 +63,7 @@ public class VisionSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("Vision/VisionValid?", hasValidPose(name));
 
         SmartDashboard.putBoolean("Vision/TV", LimelightHelpers.getTV(name));
-        
+
         SmartDashboard.putNumber("Vision/TagCount", getTagCount(name));
 
         SmartDashboard.putNumber("Vision/LatencySec", getLatencySeconds(name) / 1000.0);

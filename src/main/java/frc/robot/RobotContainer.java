@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -40,6 +41,8 @@ public class RobotContainer {
     private final DriveSubsystem m_robotDrive = new DriveSubsystem(m_ledSubsystem);
     
     private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
+
+    private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -142,6 +145,9 @@ public class RobotContainer {
     m_driverController.rightBumper()
     .whileTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true)))
     .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false)));
+
+    m_driverController.x().whileTrue(m_intakeSubsystem.runIntakeCommand());
+
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////

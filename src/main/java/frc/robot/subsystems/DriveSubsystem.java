@@ -41,15 +41,15 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 public class DriveSubsystem extends SubsystemBase {
 
 
-// Sensors and objects
-private final NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
+  // Sensors and objects
+  private final NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
 
-private final LEDSubsystem ledSubsystem;
+  private final LEDSubsystem ledSubsystem;
 
-// The gyro sensor: NavX-2 Micro gyro from Kauai Labs
-// additional change: since using NavX-2 gyro, all getAngle calls in the drive sub system had to be changed to negative values
-// The NavX gyro is used to track the robot's orientation on the field.
-private final AHRS m_gyro = new AHRS(SerialPort.Port.kUSB);
+  // The gyro sensor: NavX-2 Micro gyro from Kauai Labs
+  // additional change: since using NavX-2 gyro, all getAngle calls in the drive sub system had to be changed to negative values
+  // The NavX gyro is used to track the robot's orientation on the field.
+  private final AHRS m_gyro = new AHRS(SerialPort.Port.kUSB);
 
 
   // Create MAXSwerveModules
