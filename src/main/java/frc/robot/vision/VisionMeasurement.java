@@ -15,10 +15,6 @@ public class VisionMeasurement {
         this.pose = pose;
         this.timestampSeconds = timestampSeconds;
         this.stdDevs = stdDevs;
-
-        stdDevs.set(0, 0, this.pose.getX());
-        stdDevs.set(1, 0, this.pose.getY());
-        stdDevs.set(2, 0, this.pose.getRotation().getDegrees());
     }
 
     public Pose2d getPose() {
@@ -31,12 +27,6 @@ public class VisionMeasurement {
 
     public Matrix<N3, N1> getStdDevs() {
         return stdDevs;
-    }
-
-    public double[] getStdDevsList() {
-        double[] list = {pose.getX(), pose.getY(), pose.getRotation().getDegrees()};
-
-        return list;
     }
 
 }

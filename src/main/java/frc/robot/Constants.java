@@ -8,6 +8,8 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
@@ -52,8 +54,16 @@ public final class Constants {
   public static final class VisionConstants {
     public static final String kFrontLimelightName = "front-limelight";
     public static final String kBackLimelightName = "back-limelight";
-    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.3, 0.3, Math.toRadians(5));
+
+    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.8, 0.8, Math.toRadians(10));
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.3, 0.3, Math.toRadians(5));
+
+    public static final double kMaxAcceptedPoseJumpMewters = 2.0;
+  }
+
+  public static class TestPoses {
+    
+    public static final Pose2d kTestStartPose = new Pose2d(16.0, 0.5, Rotation2d.fromDegrees(180));
   }
 
   public static final class DriveConstants {

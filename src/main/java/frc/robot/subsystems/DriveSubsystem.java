@@ -11,6 +11,9 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 //import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,7 +22,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort;
@@ -29,7 +34,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 //import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
-
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
@@ -73,17 +77,9 @@ private final AHRS m_gyro = new AHRS(SerialPort.Port.kUSB);
           DriveConstants.kRearRightTurningCanId,
           DriveConstants.kBackRightChassisAngularOffset);
 
-  // Odometry class for tracking robot pose
-  SwerveDriveOdometry m_odometry =
-      new SwerveDriveOdometry(
-          DriveConstants.kDriveKinematics,
-          Rotation2d.fromDegrees(-m_gyro.getAngle()),
-          new SwerveModulePosition[] {
-            m_frontLeft.getPosition(),
-            m_frontRight.getPosition(),
-            m_rearLeft.getPosition(),
-            m_rearRight.getPosition()
-          });
+  private final Field2d field = new Field2d();
+
+  private final SwerveDrivePoseEstimator m_poseEstimator;
 
       // PathPlanner RobotConfig
       private RobotConfig config;
@@ -93,6 +89,22 @@ private final AHRS m_gyro = new AHRS(SerialPort.Port.kUSB);
 
 
       public DriveSubsystem(LEDSubsystem ledSubsystem) {
+
+        SmartDashboard.putData("Field", field);
+
+        m_poseEstimator = // Currently has default StdDevs
+          new SwerveDrivePoseEstimator(
+            DriveConstants.kDriveKinematics,
+            Rotation2d.fromDegrees(-m_gyro.getAngle()),
+            new SwerveModulePosition[] {
+              m_frontLeft.getPosition(),
+              m_frontRight.getPosition(),
+              m_rearLeft.getPosition(),
+              m_rearRight.getPosition()}, 
+            AutoBuilder.getCurrentPose(),
+            VecBuilder.fill(0.05, 0.05, 0.01),
+            VecBuilder.fill(0.8, 0.8, 0.5)
+          );
   
         this.ledSubsystem = ledSubsystem;
    
@@ -137,13 +149,9 @@ private final AHRS m_gyro = new AHRS(SerialPort.Port.kUSB);
     SmartDashboard.putNumber("Gyro", getHeading()); // returns the heading of the robot and sends to dashboard
     if (!m_gyro.isConnected()) {
       ledSubsystem.flashOnceForGyroAlert(0.61, 2.0); // 🔴 Red if gyro offline
-  }
-  
-
-
+    }
     
-    // Update the odometry in the periodic block
-    m_odometry.update(
+    m_poseEstimator.update(
         Rotation2d.fromDegrees(-m_gyro.getAngle()),
         new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
@@ -151,6 +159,8 @@ private final AHRS m_gyro = new AHRS(SerialPort.Port.kUSB);
           m_rearLeft.getPosition(),
           m_rearRight.getPosition()
         });
+
+        field.setRobotPose(getPose());
 
         if (edu.wpi.first.wpilibj.DriverStation.isTeleopEnabled() &&
     edu.wpi.first.wpilibj.DriverStation.getMatchTime() <= 30.0 &&
@@ -168,7 +178,11 @@ private final AHRS m_gyro = new AHRS(SerialPort.Port.kUSB);
    * @return The pose.
    */
   public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+    return m_poseEstimator.getEstimatedPosition();
+  }
+
+  public void addVisionMeasurement(Pose2d visonPose, double timestampSeconds, Matrix<N3, N1> stdDevs) {
+    m_poseEstimator.addVisionMeasurement(visonPose, timestampSeconds, stdDevs);
   }
 
   /**
@@ -177,7 +191,7 @@ private final AHRS m_gyro = new AHRS(SerialPort.Port.kUSB);
    * @param pose The pose to which to set the odometry.
    */
   public void resetOdometry(Pose2d pose) {
-    m_odometry.resetPosition(
+    m_poseEstimator.resetPosition(
         Rotation2d.fromDegrees(-m_gyro.getAngle()),
         new SwerveModulePosition[] {
           m_frontLeft.getPosition(),

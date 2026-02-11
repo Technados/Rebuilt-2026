@@ -16,9 +16,6 @@ import frc.robot.vision.VisionMeasurement;
 
 public class VisionSubsystem extends SubsystemBase {
 
-    private VisionMeasurement visionMeasurementFront;
-    private VisionMeasurement visionMeasurementBack;
-
     private String frontLimelightName;
     private String backLimelightName;
 
@@ -26,37 +23,38 @@ public class VisionSubsystem extends SubsystemBase {
         frontLimelightName = Constants.VisionConstants.kFrontLimelightName;
         backLimelightName = Constants.VisionConstants.kBackLimelightName;
 
-        visionMeasurementFront = new VisionMeasurement(LimelightHelpers.getBotPose2d(frontLimelightName), 0.0, Constants.VisionConstants.kMultiTagStdDevs);
-        visionMeasurementBack = new VisionMeasurement(LimelightHelpers.getBotPose2d(backLimelightName), 0.0, Constants.VisionConstants.kMultiTagStdDevs);
-
-        SmartDashboard.putBoolean("Vision valid?", hasValidPoseFront());
-        SmartDashboard.putNumberArray("Vision Pose x/y/rot", visionMeasurementFront.getStdDevsList()); //Add actual values from VisionMeasurement
-        SmartDashboard.putNumber("Tag count", getTagCountFront());
-        SmartDashboard.putNumber("Latency", getLatencyFrontSeconds());
+        SmartDashboard.putNumberArray("Vision Pose x/y/rot", getVisionPose());
     }
 
-    public boolean hasValidPoseFront() {
-        return LimelightHelpers.validPoseEstimate(LimelightHelpers.getBotPoseEstimate_wpiBlue(frontLimelightName));
+    public boolean hasValidPose(String name) {
+        return LimelightHelpers.validPoseEstimate(LimelightHelpers.getBotPoseEstimate_wpiBlue(name));
     }
 
-    public int getTagCountFront() {
-        return LimelightHelpers.getTargetCount(frontLimelightName);
+    public int getTagCount(String name) {
+        return LimelightHelpers.getTargetCount(name);
     }
 
-    public double getLatencyFrontSeconds() {
-        return LimelightHelpers.getLatency_Pipeline(frontLimelightName);
+    public double getLatencySeconds(String name) {
+        return LimelightHelpers.getLatency_Capture(name) + LimelightHelpers.getLatency_Pipeline(name);
     }
 
-    public Optional<VisionMeasurement> getVisionMeasurementFront() {
+    public double[] getVisionPose() {
+        Pose2d pose = LimelightHelpers.getBotPose2d(frontLimelightName);
+        double[] list = {pose.getX(), pose.getY(), pose.getRotation().getDegrees()};
 
-        if (!LimelightHelpers.getTV(frontLimelightName)) {
+        return list;
+    }
+
+    public Optional<VisionMeasurement> getVisionMeasurement(String name) {
+
+        if (!LimelightHelpers.getTV(name)) {
             return Optional.empty();
         }
 
-        Pose2d visionPose = LimelightHelpers.getBotPose2d_wpiBlue(frontLimelightName);
-        double latencyMs = LimelightHelpers.getLatency_Capture(frontLimelightName) + LimelightHelpers.getLatency_Pipeline(frontLimelightName);
+        Pose2d visionPose = LimelightHelpers.getBotPose2d_wpiBlue(name);
+        double latencyMs = LimelightHelpers.getLatency_Capture(name) + LimelightHelpers.getLatency_Pipeline(name);
         double timestampSeconds = Timer.getFPGATimestamp() - (latencyMs / 1000.0);
-        int tagCount = LimelightHelpers.getTargetCount(frontLimelightName);
+        int tagCount = LimelightHelpers.getTargetCount(name);
 
         Matrix<N3, N1> stdDevs = 
             tagCount >= 2
@@ -67,5 +65,25 @@ public class VisionSubsystem extends SubsystemBase {
 
         return Optional.of(measurement);
 
+    }
+
+    @Override
+    public void periodic() {
+        String name = VisionConstants.kFrontLimelightName;
+
+        SmartDashboard.putBoolean("Vision/VisionValid?", hasValidPose(name));
+
+        SmartDashboard.putBoolean("Vision/TV", LimelightHelpers.getTV(name));
+        
+        SmartDashboard.putNumber("Vision/TagCount", getTagCount(name));
+
+        SmartDashboard.putNumber("Vision/LatencySec", getLatencySeconds(name) / 1000.0);
+
+        getVisionMeasurement(name).ifPresent(m -> {
+            Pose2d p = m.getPose();
+            SmartDashboard.putNumber("Vision/PoseX", p.getX());
+            SmartDashboard.putNumber("Vision/PoseY", p.getY());
+            SmartDashboard.putNumber("Vision/PoseDeg", p.getRotation().getDegrees());
+        });
     }
 }

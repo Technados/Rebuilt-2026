@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -77,6 +78,28 @@ public class RobotContainer {
                 );
             }, m_robotDrive
         )
+    );
+    
+    m_visionSubsystem.setDefaultCommand(
+      new RunCommand( 
+        () -> {
+          m_visionSubsystem.getVisionMeasurement(Constants.VisionConstants.kFrontLimelightName).ifPresent(m -> {
+            m_robotDrive.addVisionMeasurement(
+              m.getPose(),
+              m.getTimestampSeconds(),
+              m.getStdDevs()
+            );
+          });
+        }, m_visionSubsystem
+      )
+    );
+
+    SmartDashboard.putData(
+      "Reset Pose: Test Start",
+      new InstantCommand(
+        () -> m_robotDrive.resetOdometry(Constants.TestPoses.kTestStartPose),
+        m_robotDrive
+      )
     );
 
     // Set the ball intake to in/out when not running based on internal state
