@@ -92,6 +92,16 @@ public class DriveSubsystem extends SubsystemBase {
 
         SmartDashboard.putData("Field", field);
 
+        // Load RobotConfig
+        try {
+            config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Configure AutoBuilder at the end
+        configureAutoBuilder();
+
         m_poseEstimator = // Currently has default StdDevs
           new SwerveDrivePoseEstimator(
             DriveConstants.kDriveKinematics,
@@ -101,23 +111,13 @@ public class DriveSubsystem extends SubsystemBase {
               m_frontRight.getPosition(),
               m_rearLeft.getPosition(),
               m_rearRight.getPosition()}, 
-            AutoBuilder.getCurrentPose(),
+            new Pose2d(),
             VecBuilder.fill(0.05, 0.05, 0.01),
             VecBuilder.fill(0.8, 0.8, 0.5)
           );
   
         this.ledSubsystem = ledSubsystem;
-   
-
-          // Load RobotConfig
-          try {
-              config = RobotConfig.fromGUISettings();
-          } catch (Exception e) {
-              e.printStackTrace();
-          }
   
-          // Configure AutoBuilder at the end
-          configureAutoBuilder();
       }
   
       private void configureAutoBuilder() {

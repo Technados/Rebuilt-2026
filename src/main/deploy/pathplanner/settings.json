@@ -2,7 +2,9 @@
   "robotWidth": 0.863,
   "robotLength": 0.863,
   "holonomicMode": true,
-  "pathFolders": [],
+  "pathFolders": [
+    "Test Autos"
+  ],
   "autoFolders": [],
   "defaultMaxVel": 4.0,
   "defaultMaxAccel": 3.0,
@@ -14,8 +16,8 @@
   "robotTrackwidth": 0.546,
   "driveWheelRadius": 0.0381,
   "driveGearing": 5.08,
-  "maxDriveSpeed": 4.46,
-  "driveMotorType": "NEO",
+  "maxDriveSpeed": 5.2,
+  "driveMotorType": "vortex",
   "driveCurrentLimit": 40.0,
   "wheelCOF": 1.2,
   "flModuleX": 0.273,
