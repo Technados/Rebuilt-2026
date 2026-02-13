@@ -42,7 +42,7 @@ public class DriveSubsystem extends SubsystemBase {
 
 
   // Sensors and objects
-  private final NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
+  private final NetworkTable frontLimelight = NetworkTableInstance.getDefault().getTable("limelight-front");
 
   private final LEDSubsystem ledSubsystem;
 
@@ -78,7 +78,6 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kBackRightChassisAngularOffset);
 
   private final Field2d field = new Field2d();
-
   private final SwerveDrivePoseEstimator m_poseEstimator;
 
       // PathPlanner RobotConfig

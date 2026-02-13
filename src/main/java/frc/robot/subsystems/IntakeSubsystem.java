@@ -15,6 +15,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.IntakeConstants;
 
+/*
+ * Mechnical/Electrical Configuration:
+ * 
+ * Pivot Motor: 52.89
+ * Intake: 1.5
+ */
+
 public class IntakeSubsystem extends SubsystemBase {
 
   private final SparkFlex intakeMotor;

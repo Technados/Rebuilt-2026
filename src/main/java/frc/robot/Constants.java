@@ -26,6 +26,28 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 
+/*
+ * Port Numbers:
+ * 
+ * PDH: CAN ID 9
+ * 
+ * Drive Motors (4)
+ *    Left Front: CAN ID 1, PDP 10
+ *    Right Front: CAN ID 2, PDP 9
+ *    Left Rear: CAN ID 3, PDP 12
+ *    Right Rear: CAN ID 4, PDP 6
+ * 
+ * Steering Motors (4)
+ *    Left Front: CAN ID 5, PDP 11
+ *    Right Front: CAN ID 6, PDP 8
+ *    Left Rear: CAND ID 7, PDP 13
+ *    Right Rear: CAN ID 8, PDP 5
+ * 
+ * Feeder Motor: CAN ID 12, PDP 14
+ * Intake Motor: CAN ID 10, PDP [PORT]
+ * Pivot Intake: CAND ID 11, PDP 7
+ */
+
 public final class Constants {
 
   public static final class IntakeConstants {
@@ -58,11 +80,12 @@ public final class Constants {
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.3, 0.3, Math.toRadians(5));
 
     public static final double kMaxAcceptedPoseJumpMewters = 2.0;
+
   }
 
   public static class TestPoses {
+    public static final Pose2d kTestStartPose = new Pose2d(14, 4, Rotation2d.fromDegrees(180));
     
-    public static final Pose2d kTestStartPose = new Pose2d(16.0, 0.5, Rotation2d.fromDegrees(180));
   }
 
   public static final class DriveConstants {
@@ -73,7 +96,8 @@ public final class Constants {
     public static final double kSlowSpeedFactor = 0.20; // Slow mode speed factor (40% of normal speed)
 
     // Chassis configuration
-    public static final double kTrackWidth = Units.inchesToMeters(21.5);
+    public static final double kTrackWidth 
+    = Units.inchesToMeters(21.5);
     // Distance between centers of right and left wheels on robot
     public static final double kWheelBase = Units.inchesToMeters(21.5);
     // Distance between front and back wheels on robot
