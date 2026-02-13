@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -25,33 +26,61 @@ import frc.robot.Constants.IntakeConstants;
 public class IntakeSubsystem extends SubsystemBase {
 
   private final SparkFlex intakeMotor;
+  private final SparkFlex pivotMotor;
+
+  private RelativeEncoder pivotEncoder;
 
   public IntakeSubsystem() {
+    // Initializes motors using constants and configs
     intakeMotor = new SparkFlex(IntakeConstants.kIntakeMotorCanId, MotorType.kBrushless);
+    pivotMotor = new SparkFlex(IntakeConstants.kPivotMotorCanId, MotorType.kBrushless);
 
     intakeMotor.configure(
       Configs.IntakeSubsystem.intakeConfig,
       ResetMode.kResetSafeParameters,
       PersistMode.kPersistParameters);
+    pivotMotor.configure(
+      Configs.IntakeSubsystem.pivotConfig,
+      ResetMode.kResetSafeParameters,
+      PersistMode.kNoPersistParameters
+    );
+
+    // Tracks the pivot motor's position, sets to 0 when intitialized
+    pivotEncoder = pivotMotor.getEncoder();
+    pivotEncoder.setPosition(0);
+  }
+  
+  public void setPower(SparkFlex motor, double power) { // Sets the power of the given motor
+    motor.set(power);
   }
 
-  public Command runIntakeCommand() {
+  public Command runIntakeCommand() { // Runs the intake
     return this.startEnd(
       () -> {
-        setPower(IntakeConstants.kIntakePower);
+        setPower(intakeMotor, IntakeConstants.kIntakeMotorPower);
       },
       () -> {
-        setPower(0.0);
+        setPower(intakeMotor, 0.0);
       }
     );
   }
 
-  public void setPower(double power) {
-    intakeMotor.set(power);
-  }
+  // public Command runPivotCommand() {
+  //   double pivotAngleDegrees = pivotEncoder.getPosition() * multiplier;
+
+  //   return this.startEnd(
+  //     () -> {
+  //       setPower(pivotMotor, IntakeConstants.kPivotMotorPower);
+  //     },
+  //     () -> {
+  //       setPower(pivotMotor, 0.0);
+  //     }
+  //   );
+  // }
 
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Intake Current", intakeMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Pivot Angle", pivotEncoder.getPosition());
   }
 }

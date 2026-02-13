@@ -59,10 +59,12 @@ public final class Configs {
 
   public static final class IntakeSubsystem {
     public static final SparkFlexConfig intakeConfig = new SparkFlexConfig();
+    public static final SparkFlexConfig pivotConfig = new SparkFlexConfig();
 
     static {
       // Configure basic settings of the intake motor
       intakeConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+      pivotConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
     }
   }
 
