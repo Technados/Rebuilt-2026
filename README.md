@@ -9,22 +9,22 @@ The Technaods' 2026 FRC Rebuilt robot code. This README includes all of the port
 **Drive Motors (4)**
 
   - **Left Front:** CAN ID 1, PDP 10
-  \
+  
   - **Right Front:** CAN ID 2, PDP 9
-  \
+  
   - **Left Rear:** CAN ID 3, PDP 12
-  \
+  
    - **Right Rear:** CAN ID 4, PDP 6
   
   
 **Steering Motors (4)**
 
   - **Left Front:** CAN ID 5, PDP 11
-  \
+  
   - **Right Front:** CAN ID 6, PDP 8
-  \
+  
   - **Left Rear:** CAND ID 7, PDP 13
-  \
+  
   - **Right Rear:** CAN ID 8, PDP 5
 
 **Feeder Motor:** CAN ID 12, PDP 14
