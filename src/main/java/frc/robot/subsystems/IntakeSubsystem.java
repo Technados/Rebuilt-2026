@@ -65,18 +65,27 @@ public class IntakeSubsystem extends SubsystemBase {
     );
   }
 
-  // public Command runPivotCommand() {
-  //   double pivotAngleDegrees = pivotEncoder.getPosition() * multiplier;
+  public Command runPivotCommand() {
+    return this.startEnd(
+      () -> {
+        setPower(pivotMotor, IntakeConstants.kPivotMotorPower);
+      },
+      () -> {
+        setPower(pivotMotor, 0.0);
+      }
+    );
+  }
 
-  //   return this.startEnd(
-  //     () -> {
-  //       setPower(pivotMotor, IntakeConstants.kPivotMotorPower);
-  //     },
-  //     () -> {
-  //       setPower(pivotMotor, 0.0);
-  //     }
-  //   );
-  // }
+  public Command runPivotCommandReverse() {
+    return this.startEnd(
+      () -> {
+        setPower(pivotMotor, -IntakeConstants.kPivotMotorPower);
+      },
+      () -> {
+        setPower(pivotMotor, 0.0);
+      }
+    );
+  }
 
   @Override
   public void periodic() {

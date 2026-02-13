@@ -148,6 +148,10 @@ public class RobotContainer {
 
     m_driverController.x().whileTrue(m_intakeSubsystem.runIntakeCommand());
 
+    m_driverController.a().whileTrue(m_intakeSubsystem.runPivotCommand());
+
+    m_driverController.y().whileTrue(m_intakeSubsystem.runPivotCommandReverse());
+
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////

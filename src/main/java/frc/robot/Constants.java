@@ -52,10 +52,10 @@ public final class Constants {
 
   public static final class IntakeConstants {
     public static final int kIntakeMotorCanId = 10;
-    public static final double kIntakeMotorPower = -0.25;
+    public static final double kIntakeMotorPower = -0.75;
 
     public static final int kPivotMotorCanId = 11;
-    public static final double kPivotMotorPower = -0.1;
+    public static final double kPivotMotorPower = 0.1;
     // public static final double kPivotMotorExtended = //Degrees;
 
   }
