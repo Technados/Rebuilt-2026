@@ -65,7 +65,7 @@ public class IntakeSubsystem extends SubsystemBase {
     );
   }
 
-  public Command runPivotCommand() {
+  public Command runPivotForwardCommand() {
     return this.startEnd(
       () -> {
         setPower(pivotMotor, IntakeConstants.kPivotMotorPower);
@@ -76,7 +76,7 @@ public class IntakeSubsystem extends SubsystemBase {
     );
   }
 
-  public Command runPivotCommandReverse() {
+  public Command runPivotReverseCommand() {
     return this.startEnd(
       () -> {
         setPower(pivotMotor, -IntakeConstants.kPivotMotorPower);

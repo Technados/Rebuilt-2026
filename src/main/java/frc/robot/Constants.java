@@ -43,9 +43,14 @@ import edu.wpi.first.math.util.Units;
  *    Left Rear: CAND ID 7, PDP 13
  *    Right Rear: CAN ID 8, PDP 5
  * 
- * Feeder Motor: CAN ID 12, PDP 14
  * Intake Motor: CAN ID 10, PDP [PORT]
  * Pivot Intake: CAND ID 11, PDP 7
+ * 
+ * Feeder Motor: CAN ID 12, PDP 14
+ * 
+ * Pre Shooter Motor: CAN ID 13, PDP 15
+ * Left Shooter Motor: CAN ID 14, PDP 16
+ * Right Shooter Motor: CAN ID 15, PDP 17
  */
 
 public final class Constants {
@@ -58,6 +63,22 @@ public final class Constants {
     public static final double kPivotMotorPower = 0.1;
     // public static final double kPivotMotorExtended = //Degrees;
 
+  }
+
+  public static final class FeederConstants {
+    public static final int kFeederMotorCanId = 12;
+    public static final double kFeederMotorPower = 0.2;
+  }
+
+  public static final class ShooterConstants {
+    public static final int kPreShooterMotorCanId = 13;
+    public static final double kPreShooterMotorPower = -0.2;
+
+    public static final int kLeftShooterMotorCanId = 14;
+    public static final double kLeftShooterMotorPower = -0.2;
+
+    public static final int kRightShooterMotorCanId = 15;
+    public static final double kRightShooterMotorPower = 0.2;
   }
 
   public static final class LimelightPID {

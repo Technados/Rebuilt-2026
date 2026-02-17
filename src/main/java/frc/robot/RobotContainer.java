@@ -44,6 +44,10 @@ public class RobotContainer {
 
     private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
 
+    private final IntakeSubsystem m_feederSubsystem = new FeederSubsystem();
+
+    private final IntakeSubsystem m_shooterSubsystem = new ShooterSubsystem();
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // create autoChooser
@@ -148,11 +152,11 @@ public class RobotContainer {
 
     m_driverController.x().whileTrue(m_intakeSubsystem.runIntakeCommand());
 
-    m_driverController.a().whileTrue(m_intakeSubsystem.runPivotCommand());
+    m_driverController.a().whileTrue(m_intakeSubsystem.runPivotForwardCommand());
 
-    m_driverController.y().whileTrue(m_intakeSubsystem.runPivotCommandReverse());
+    m_driverController.y().whileTrue(m_intakeSubsystem.runPivotReverseCommand());
 
-
+    m_driverController.b().whileTrue()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
     

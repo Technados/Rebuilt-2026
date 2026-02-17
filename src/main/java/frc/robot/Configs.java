@@ -68,126 +68,26 @@ public final class Configs {
     }
   }
 
-//   public static final class CoralSubsystem {
-//     public static final SparkMaxConfig armConfig = new SparkMaxConfig();
-//     public static final SparkMaxConfig armFastConfig = new SparkMaxConfig();
-//     public static final SparkMaxConfig elevatorConfig = new SparkMaxConfig();
-//     public static final SparkFlexConfig intakeConfig = new SparkFlexConfig();
-//     public static final SparkMaxConfig frontIntakeConfig = new SparkMaxConfig();
-//     static {
-//       // Configure basic settings of the arm motor
-//       armConfig.inverted(false).idleMode(IdleMode.kBrake).smartCurrentLimit(40).voltageCompensation(12);
-//       armFastConfig.inverted(false).idleMode(IdleMode.kBrake).smartCurrentLimit(40).voltageCompensation(12);
-//       /*
-//        * Configure the closed loop controller. We want to make sure we set the
-//        * feedback sensor as the primary encoder.
-//        */
-//       armConfig
-//           .closedLoop
-//           .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-//           // Set PID values for position control
-//           .p(0.35)
-//           .d(0.001)
-//           .outputRange(-1, 1)
-//           .maxMotion
-//           // Set MAXMotion parameters for position control
-//           .cruiseVelocity(4000)
-//           .maxAcceleration(4000)
-//           .allowedProfileError(0.250);
+  public static final class FeederSubsystem {
+    public static final SparkFlexConfig feederConfig = new SparkFlexConfig();
 
-//       armFastConfig
-//           .closedLoop
-//           .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-//           .p(0.35) // same P gain
-//           .d(0.001) // same D gain
-//           .outputRange(-1, 1)
-//           .maxMotion
-//           .cruiseVelocity(10000) // 🔥 FASTER for tossing
-//           .maxAcceleration(10000) // 🔥 FASTER for tossing
-//           .allowedProfileError(0.250);
+    static {
+      // Configure basic settings of the feeder motor
+      feederConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+    }
+  }
 
-        
+  public static final class ShooterSubsystem {
+    public static final SparkFlexConfig preShooterConfig = new SparkFlexConfig();
+    public static final SparkFlexConfig leftShooterConfig = new SparkFlexConfig();
+    public static final SparkFlexConfig rightShooterConfig = new SparkFlexConfig();
 
-//       // Configure basic settings of the elevator motor
-//       elevatorConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(50).voltageCompensation(12);
+    static {
+      // Configure basic settings of the feeder motor
+      preShooterConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+      leftShooterConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+      rightShooterConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+    }
+  }
 
-//       /*
-//        * Configure the reverse limit switch for the elevator. By enabling the limit switch, this
-//        * will prevent any actuation of the elevator in the reverse direction if the limit switch is
-//        * pressed.
-//        */
-//       // elevatorConfig
-//       //     .limitSwitch
-//       //     .reverseLimitSwitchEnabled(true)
-//       //     .reverseLimitSwitchType(Type.kNormallyOpen);
-
-//       /*
-//        * Configure the closed loop controller. We want to make sure we set the
-//        * feedback sensor as the primary encoder.
-//        */
-//       elevatorConfig
-//           .closedLoop
-//           .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-//           // Set PID values for position control
-//           .p(0.2)
-//           .d(0.0015)
-//           .outputRange(-1, 1)
-//           .maxMotion
-//           // Set MAXMotion parameters for position control
-//           .cruiseVelocity(58000)
-//           .maxAcceleration(60000)
-//           .allowedProfileError(0.5);
-
-//             /*
-//        * Configure the closed loop controller. We want to make sure we set the
-//        * feedback sensor as the primary encoder.
-//        */
-//       elevatorConfig
-//           .softLimit
-//           .reverseSoftLimitEnabled(true)
-//           .reverseSoftLimit(1)
-//           .forwardSoftLimitEnabled(true)
-//           .forwardSoftLimit(148); // set limit slightly below hard limit of 150 to ensure safe stop
-
-
-
-//       // Configure basic settings of the intake motor
-//       intakeConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
-//       frontIntakeConfig.inverted(true).idleMode(IdleMode.kCoast).smartCurrentLimit(40);
-//     }
-//   }
-
-//   public static final class AlgaeSubsystem {
-//     public static final SparkMaxConfig intakeConfig = new SparkMaxConfig();
-//     static {
-//       // Configure basic settings of the intake motor
-//       intakeConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
-//     }
-//   }
-
-//   public static final class ClimberSubsystem {
-//     public static final SparkMaxConfig climbArmConfig = new SparkMaxConfig();
-//     public static final SparkMaxConfig climbConfig = new SparkMaxConfig();
-
-//     static {
-//       // Configure basic settings of the arm motor
-//       climbArmConfig.inverted(false).idleMode(IdleMode.kBrake).smartCurrentLimit(40).voltageCompensation(12);
-
-//       /*
-//        * Configure the closed loop controller. We want to make sure we set the
-//        * feedback sensor as the primary encoder.
-//        */
-//       climbArmConfig
-//           .closedLoop
-//           .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-//           // Set PID values for position control
-//           .p(0.1)
-//           .outputRange(-1, 1)
-//           .maxMotion
-//           // Set MAXMotion parameters for position control
-//           .cruiseVelocity(12000)
-//           .maxAcceleration(12000)
-//           .allowedProfileError(0.15);
-//     }
-// }
 }
