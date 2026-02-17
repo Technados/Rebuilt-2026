@@ -22,6 +22,7 @@ public class FeederSubsystem extends SubsystemBase {
     private final SparkFlex feederMotor;
     
     public FeederSubsystem() {
+        // Initializes motor using constants and configs
         feederMotor = new SparkFlex(FeederConstants.kFeederMotorCanId, MotorType.kBrushless);
 
         feederMotor.configure(
@@ -35,10 +36,10 @@ public class FeederSubsystem extends SubsystemBase {
         motor.set(power);
     }
 
-    public Command runFeederCommand() {
+    public Command runFeederCommand() { // Runs the feeder motor
         return this.startEnd(
       () -> {
-        setPower(feederMotor, IntakeConstants.kIntakeMotorPower);
+        setPower(feederMotor, FeederConstants.kFeederMotorPower);
       },
       () -> {
         setPower(feederMotor, 0.0);
