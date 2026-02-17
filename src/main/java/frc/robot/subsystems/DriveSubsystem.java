@@ -39,7 +39,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class DriveSubsystem extends SubsystemBase {
 
-
   // Sensors and objects
   private final NetworkTable frontLimelight = NetworkTableInstance.getDefault().getTable("limelight-front");
 
@@ -49,7 +48,6 @@ public class DriveSubsystem extends SubsystemBase {
   // additional change: since using NavX-2 gyro, all getAngle calls in the drive sub system had to be changed to negative values
   // The NavX gyro is used to track the robot's orientation on the field.
   private final AHRS m_gyro = new AHRS(SerialPort.Port.kUSB);
-
 
   // Create MAXSwerveModules
   private final MAXSwerveModule m_frontLeft =
@@ -79,44 +77,44 @@ public class DriveSubsystem extends SubsystemBase {
   private final Field2d field = new Field2d();
   private final SwerveDrivePoseEstimator m_poseEstimator;
 
-      // PathPlanner RobotConfig
-      private RobotConfig config;
+  // PathPlanner RobotConfig
+  private RobotConfig config;
 
-      
-      private boolean hasFlashedEndgame = false;
-
-
-      public DriveSubsystem(LEDSubsystem ledSubsystem) {
-
-        SmartDashboard.putData("Field", field);
-
-        // Load RobotConfig
-        try {
-            config = RobotConfig.fromGUISettings();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // Configure AutoBuilder at the end
-        configureAutoBuilder();
-
-        m_poseEstimator = // Currently has default StdDevs
-          new SwerveDrivePoseEstimator(
-            DriveConstants.kDriveKinematics,
-            Rotation2d.fromDegrees(-m_gyro.getAngle()),
-            new SwerveModulePosition[] {
-              m_frontLeft.getPosition(),
-              m_frontRight.getPosition(),
-              m_rearLeft.getPosition(),
-              m_rearRight.getPosition()}, 
-            new Pose2d(),
-            VecBuilder.fill(0.05, 0.05, 0.01),
-            VecBuilder.fill(0.8, 0.8, 0.5)
-          );
   
-        this.ledSubsystem = ledSubsystem;
-  
-      }
+  private boolean hasFlashedEndgame = false;
+
+
+  public DriveSubsystem(LEDSubsystem ledSubsystem) {
+
+    SmartDashboard.putData("Field", field);
+
+    // Load RobotConfig
+    try {
+        config = RobotConfig.fromGUISettings();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    // Configure AutoBuilder at the end
+    configureAutoBuilder();
+
+    m_poseEstimator = // Currently has default StdDevs
+      new SwerveDrivePoseEstimator(
+        DriveConstants.kDriveKinematics,
+        Rotation2d.fromDegrees(-m_gyro.getAngle()),
+        new SwerveModulePosition[] {
+          m_frontLeft.getPosition(),
+          m_frontRight.getPosition(),
+          m_rearLeft.getPosition(),
+          m_rearRight.getPosition()}, 
+        new Pose2d(),
+        VecBuilder.fill(0.05, 0.05, 0.01),
+        VecBuilder.fill(0.8, 0.8, 0.5)
+      );
+
+    this.ledSubsystem = ledSubsystem;
+
+  }
   
       private void configureAutoBuilder() {
           AutoBuilder.configure(

@@ -21,6 +21,8 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.FeederSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
@@ -44,9 +46,9 @@ public class RobotContainer {
 
     private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
 
-    private final IntakeSubsystem m_feederSubsystem = new FeederSubsystem();
+    private final FeederSubsystem m_feederSubsystem = new FeederSubsystem();
 
-    private final IntakeSubsystem m_shooterSubsystem = new ShooterSubsystem();
+    private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -101,6 +103,9 @@ public class RobotContainer {
       )
     );
 
+    m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.idleShooterCommand());
+
+    // adds button to dashboard that resets the robot's pose to the test pose
     SmartDashboard.putData(
       "Reset Pose: Test Start",
       new InstantCommand(
@@ -108,9 +113,6 @@ public class RobotContainer {
         m_robotDrive
       )
     );
-
-    // Set the ball intake to in/out when not running based on internal state
-    // m_algaeSubsystem.setDefaultCommand(m_algaeSubsystem.idleCommand());
 
     // register auto options to the shuffleboard           
     autoChooser.addOption("LE", "LE");
@@ -121,8 +123,6 @@ public class RobotContainer {
     autoChooser.addOption("MDC", "MDC");
 
     // Creating a new shuffleboard tab and adding the autoChooser
-    //Shuffleboard.getTab("PathPlanner Autonomous").add(BlueautoChooser).withWidget(BuiltInWidgets.kComboBoxChooser);
-    //Shuffleboard.getTab("PathPlanner Autonomous").add(RedautoChooser).withWidget(BuiltInWidgets.kComboBoxChooser);
     Shuffleboard.getTab("PathPlanner Autonomous").add(autoChooser).withWidget(BuiltInWidgets.kComboBoxChooser);
 
     CameraServer.startAutomaticCapture();
@@ -156,14 +156,18 @@ public class RobotContainer {
 
     m_driverController.y().whileTrue(m_intakeSubsystem.runPivotReverseCommand());
 
-    m_driverController.b().whileTrue()
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     // Operator Controller
 
     // Start Button -> Zero swerve heading
     m_operatorController.start().onTrue(m_robotDrive.zeroHeadingCommand());
+
+    m_driverController.x().whileTrue(m_feederSubsystem.runFeederCommand());
+
+    m_driverController.a().whileTrue(m_shooterSubsystem.runPreShooterCommand());
+
+    m_driverController.y().whileTrue(m_shooterSubsystem.runPreShooterCommand());
 
   }
 
