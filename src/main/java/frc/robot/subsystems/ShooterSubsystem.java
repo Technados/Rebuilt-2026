@@ -41,7 +41,7 @@ public class ShooterSubsystem extends SubsystemBase {
       PersistMode.kPersistParameters);
   }
 
-  public void setPower(SparkFlex motor, double power) { // Sets the power of the given motor
+  public void setPower(SparkFlex motor, double power) { // Sets the power of the given SparkFlex motor
     motor.set(power);
   }
 

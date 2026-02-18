@@ -8,7 +8,9 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.LimelightHelpers;
 import frc.robot.vision.VisionMeasurement;
@@ -29,13 +31,14 @@ public class VisionSubsystem extends SubsystemBase {
         return LimelightHelpers.getLatency_Capture(name) + LimelightHelpers.getLatency_Pipeline(name);
     }
 
-    public double[] getVisionPose(String name) {
+    public double[] getVisionPose(String name) { 
         Pose2d pose = LimelightHelpers.getBotPose2d(name);
         double[] list = {pose.getX(), pose.getY(), pose.getRotation().getDegrees()};
 
         return list;
     }
 
+    // Gets vision measurements from the limelight 
     public Optional<VisionMeasurement> getVisionMeasurement(String name) {
 
         if (!LimelightHelpers.getTV(name)) {
@@ -58,6 +61,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     }
 
+    // Gets vision measurements using MegaTag2
     public Optional<VisionMeasurement> getVisionMeasurementMT2(String name, double robotYawDeg, double robotYawRateDegPerSec) {
 
         LimelightHelpers.SetRobotOrientation(name, robotYawRateDegPerSec, robotYawRateDegPerSec, 0, 0, 0, 0);

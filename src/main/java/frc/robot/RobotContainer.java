@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
-
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
@@ -91,23 +90,25 @@ public class RobotContainer {
     m_visionSubsystem.setDefaultCommand(
       new RunCommand( 
         () -> {
-          String llname = Constants.VisionConstants.kFrontLimelightName;
-
           double yawDeg = m_robotDrive.getPose().getRotation().getDegrees();
           double yawRateDegPerSec = m_robotDrive.getTurnRate();
+          
+          String[] llnames = {Constants.VisionConstants.kFrontLimelightName, Constants.VisionConstants.kBackLimelightName};
 
-          m_visionSubsystem.getVisionMeasurementMT2(llname, yawDeg, yawRateDegPerSec).ifPresent(m -> {
-            if (Math.abs(yawRateDegPerSec) > 360.0) return;
+          for (String llname: llnames) {
+            m_visionSubsystem.getVisionMeasurementMT2(llname, yawDeg, yawRateDegPerSec).ifPresent(m -> {
+              if (Math.abs(yawRateDegPerSec) > 360.0) return;
 
-            if (m.getPose().getTranslation().getDistance(m_robotDrive.getPose().getTranslation()) 
-              > Constants.VisionConstants.kMaxAcceptedPoseJumpMeters) return;
+              if (m.getPose().getTranslation().getDistance(m_robotDrive.getPose().getTranslation()) 
+                > Constants.VisionConstants.kMaxAcceptedPoseJumpMeters) return;
 
-            m_robotDrive.addVisionMeasurement(
-              m.getPose(),
-              m.getTimestampSeconds(),
-              m.getStdDevs()
-            );
-          });
+              m_robotDrive.addVisionMeasurement(
+                m.getPose(),
+                m.getTimestampSeconds(),
+                m.getStdDevs()
+              );
+            });
+          }
         }, 
         m_visionSubsystem
       )
@@ -115,13 +116,19 @@ public class RobotContainer {
 
     m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.idleShooterCommand());
 
-    // adds button to dashboard that resets the robot's pose to the test pose
+    // Adds button to dashboard that resets the robot's pose to the test pose
     SmartDashboard.putData(
-      "Reset Pose: Test Start",
+      "Reset Buttons/Reset Pose: Test Start",
       new InstantCommand(
         () -> m_robotDrive.resetOdometry(Constants.TestPoses.kTestStartPose),
         m_robotDrive
       )
+    );
+
+    // Adds button to dashboard that resets the intake pivot encoder to zero
+    SmartDashboard.putData(
+      "Reset Buttons/Reset Pivot to Zero",
+      m_intakeSubsystem.resetEncoder()
     );
 
     // register auto options to the shuffleboard           
@@ -164,8 +171,6 @@ public class RobotContainer {
 
     m_driverController.y().whileTrue(m_intakeSubsystem.runPivotReverseCommand());
 
-    m_driverController.b().whileTrue(m_shooterSubsystem.runPreShooterCommand());
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     // Operator Controller
@@ -175,11 +180,15 @@ public class RobotContainer {
 
     m_operatorController.x().whileTrue(m_feederSubsystem.runFeederCommand());
 
-    m_operatorController.y().whileTrue(m_shooterSubsystem.runPreShooterCommand());
+    m_operatorController.a().whileTrue(m_shooterSubsystem.runPreShooterCommand());
 
-    m_operatorController.rightBumper().whileTrue(m_intakeSubsystem.resetExtendedPivotCommand());
+    m_operatorController.y().whileTrue(m_shooterSubsystem.runShooterCommand());
+
+    m_operatorController.b().toggleOnTrue(m_intakeSubsystem.resetEncoder());
+
+    m_operatorController.rightBumper().toggleOnTrue(m_intakeSubsystem.resetExtendedPivotCommand());
     
-    m_operatorController.leftBumper().whileTrue(m_intakeSubsystem.resetRetractedPivotCommand());
+    m_operatorController.leftBumper().toggleOnTrue(m_intakeSubsystem.resetRetractedPivotCommand());
 
   }
 

@@ -107,9 +107,17 @@ public class IntakeSubsystem extends SubsystemBase {
     );
   }
 
+  public Command resetEncoder() {
+    return runOnce(
+      () -> {
+        pivotEncoder.setPosition(0);
+      }
+    );
+  }
+
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Intake Current", intakeMotor.getOutputCurrent());
-    SmartDashboard.putNumber("Pivot Angle", pivotEncoder.getPosition());
+    SmartDashboard.putNumber("Pivot Angle", pivotEncoder.getPosition() * IntakeConstants.kPivotEncoderTicksToDegrees);
   }
 }

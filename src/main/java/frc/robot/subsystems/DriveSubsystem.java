@@ -41,6 +41,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   // Sensors and objects
   private final NetworkTable frontLimelight = NetworkTableInstance.getDefault().getTable("limelight-front");
+  private final NetworkTable backLimelight = NetworkTableInstance.getDefault().getTable("limelight-back");
 
   private final LEDSubsystem ledSubsystem;
 
