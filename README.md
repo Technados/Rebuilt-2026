@@ -1,6 +1,6 @@
 # FRC Rebuilt 2026
 
-The Technaods' 2026 FRC Rebuilt robot code. This README includes all of the port numbers and mechnical/electrical configuration notes.
+The Technaods' 2026 FRC Rebuilt robot code. This README includes all of the port numbers, mechnical/electrical configuration notes, and limelight names.
 
 ## Port Numbers:
 
@@ -45,9 +45,15 @@ The Technaods' 2026 FRC Rebuilt robot code. This README includes all of the port
 ### Intake Subsystem
 
 **Pivot Motor:** 52.89
-\
+
 **Intake:** 1.5
 
 ### Feeder Subsystem
 
 **Feeder** 6
+
+## Limelight Names:
+
+**Front:** limelight-front
+
+**Back:** limelight-back
