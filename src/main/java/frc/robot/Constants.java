@@ -100,8 +100,8 @@ public final class Constants {
   }
 
   public static final class VisionConstants {
-    public static final String kFrontLimelightName = "front-limelight";
-    public static final String kBackLimelightName = "back-limelight";
+    public static final String kFrontLimelightName = "limelight-front";
+    public static final String kBackLimelightName = "limelight-back";
 
     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.8, 0.8, Math.toRadians(10));
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.3, 0.3, Math.toRadians(5));

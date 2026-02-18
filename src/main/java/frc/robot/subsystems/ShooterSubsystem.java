@@ -13,7 +13,6 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -38,7 +37,7 @@ public class ShooterSubsystem extends SubsystemBase {
       PersistMode.kPersistParameters);
     rightShooterMotor.configure(
       Configs.ShooterSubsystem.rightShooterConfig,
-      ResetMode.kResetSafeParameters,
+      ResetMode.kResetSafeParameters,                                                   
       PersistMode.kPersistParameters);
   }
 

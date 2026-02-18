@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -92,14 +91,25 @@ public class RobotContainer {
     m_visionSubsystem.setDefaultCommand(
       new RunCommand( 
         () -> {
-          m_visionSubsystem.getVisionMeasurement(Constants.VisionConstants.kFrontLimelightName).ifPresent(m -> {
+          String llname = Constants.VisionConstants.kFrontLimelightName;
+
+          double yawDeg = m_robotDrive.getPose().getRotation().getDegrees();
+          double yawRateDegPerSec = m_robotDrive.getTurnRate();
+
+          m_visionSubsystem.getVisionMeasurementMT2(llname, yawDeg, yawRateDegPerSec).ifPresent(m -> {
+            if (Math.abs(yawRateDegPerSec) > 360.0) return;
+
+            if (m.getPose().getTranslation().getDistance(m_robotDrive.getPose().getTranslation()) 
+              > Constants.VisionConstants.kMaxAcceptedPoseJumpMeters) return;
+
             m_robotDrive.addVisionMeasurement(
               m.getPose(),
               m.getTimestampSeconds(),
               m.getStdDevs()
             );
           });
-        }, m_visionSubsystem
+        }, 
+        m_visionSubsystem
       )
     );
 
@@ -124,8 +134,6 @@ public class RobotContainer {
 
     // Creating a new shuffleboard tab and adding the autoChooser
     Shuffleboard.getTab("PathPlanner Autonomous").add(autoChooser).withWidget(BuiltInWidgets.kComboBoxChooser);
-
-    CameraServer.startAutomaticCapture();
 
   }
 

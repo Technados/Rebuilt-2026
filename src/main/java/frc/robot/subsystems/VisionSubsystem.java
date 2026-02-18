@@ -58,23 +58,47 @@ public class VisionSubsystem extends SubsystemBase {
 
     }
 
+    public Optional<VisionMeasurement> getVisionMeasurementMT2(String name, double robotYawDeg, double robotYawRateDegPerSec) {
+
+        LimelightHelpers.SetRobotOrientation(name, robotYawRateDegPerSec, robotYawRateDegPerSec, 0, 0, 0, 0);
+
+        LimelightHelpers.PoseEstimate mt2 = 
+            LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
+
+        if (mt2 == null || mt2.tagCount <= 0) {
+            return Optional.empty();
+        }
+
+        Matrix<N3, N1> stdDevs = 
+            mt2.tagCount >= 2
+                ?VisionConstants.kMultiTagStdDevs
+                :VisionConstants.kSingleTagStdDevs;
+
+        VisionMeasurement measurement = new VisionMeasurement(mt2.pose, mt2.timestampSeconds, stdDevs);
+
+        return Optional.of(measurement);
+
+    }
+
     @Override
     public void periodic() {
         String name = VisionConstants.kFrontLimelightName;
 
-        SmartDashboard.putBoolean("Vision/VisionValid?", hasValidPose(name));
-
         SmartDashboard.putBoolean("Vision/TV", LimelightHelpers.getTV(name));
-
         SmartDashboard.putNumber("Vision/TagCount", getTagCount(name));
 
-        SmartDashboard.putNumber("Vision/LatencySec", getLatencySeconds(name) / 1000.0);
+        LimelightHelpers.PoseEstimate mt2 = 
+            LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name); 
+    
+        boolean hasTags = (mt2 != null && mt2.tagCount > 0); 
+        SmartDashboard.putBoolean("Vision/MT2 HasTags", hasTags); 
 
-        getVisionMeasurement(name).ifPresent(m -> {
-            Pose2d p = m.getPose();
-            SmartDashboard.putNumber("Vision/PoseX", p.getX());
-            SmartDashboard.putNumber("Vision/PoseY", p.getY());
-            SmartDashboard.putNumber("Vision/PoseDeg", p.getRotation().getDegrees());
-        });
+        if (hasTags) { 
+            Pose2d p = mt2.pose; 
+            SmartDashboard.putNumber("Vision/MT2 PoseX", p.getX()); 
+            SmartDashboard.putNumber("Vision/MT2 PoseY", p.getY()); 
+            SmartDashboard.putNumber("Vision/MT2 PoseDeg", p.getRotation().getDegrees()); 
+            SmartDashboard.putNumber("Vision/MT2 Timestamp", mt2.timestampSeconds);
+        }
     }
 }

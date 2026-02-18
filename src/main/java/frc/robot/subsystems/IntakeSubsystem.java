@@ -87,7 +87,7 @@ public class IntakeSubsystem extends SubsystemBase {
     );
   }
 
-  public Command resetRetractedPivotCommand() {
+  public Command resetRetractedPivotCommand() { // Resets the pivot motor to a retracted position
     return this.run(
       () -> {
         if (pivotEncoder.getPosition() > IntakeConstants.kPivotMotorRetracted) {
@@ -97,7 +97,7 @@ public class IntakeSubsystem extends SubsystemBase {
     );
   }
 
-  public Command resetExtendedPivotCommand() {
+  public Command resetExtendedPivotCommand() { // Resets the pivot motor to an extended position
     return this.run(
       () -> {
         if (pivotEncoder.getPosition() < IntakeConstants.kPivotMotorExtended) {
