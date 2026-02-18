@@ -55,7 +55,7 @@ public class RobotContainer {
   // create autoChooser
   private final SendableChooser<String> autoChooser = new SendableChooser<>();
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // The driver's controller
   CommandXboxController m_driverController =
@@ -156,6 +156,8 @@ public class RobotContainer {
 
     m_driverController.y().whileTrue(m_intakeSubsystem.runPivotReverseCommand());
 
+    m_driverController.b().whileTrue(m_shooterSubsystem.runPreShooterCommand());
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     // Operator Controller
@@ -163,11 +165,13 @@ public class RobotContainer {
     // Start Button -> Zero swerve heading
     m_operatorController.start().onTrue(m_robotDrive.zeroHeadingCommand());
 
-    m_driverController.x().whileTrue(m_feederSubsystem.runFeederCommand());
+    m_operatorController.x().whileTrue(m_feederSubsystem.runFeederCommand());
 
-    m_driverController.a().whileTrue(m_shooterSubsystem.runPreShooterCommand());
+    m_operatorController.y().whileTrue(m_shooterSubsystem.runPreShooterCommand());
 
-    m_driverController.y().whileTrue(m_shooterSubsystem.runPreShooterCommand());
+    m_operatorController.rightBumper().whileTrue(m_intakeSubsystem.resetExtendedPivotCommand());
+    
+    m_operatorController.leftBumper().whileTrue(m_intakeSubsystem.resetRetractedPivotCommand());
 
   }
 
@@ -178,16 +182,16 @@ public class RobotContainer {
    */
 
    public Command getAutonomousCommand() {
-    // Check if a path is selected
-    
-    if (autoChooser.getSelected() == null) {
-        return null;
-    }
+      // Check if a path is selected
+      
+      if (autoChooser.getSelected() == null) {
+          return null;
+      }
 
-    String selectedPath = autoChooser.getSelected();
+      String selectedPath = autoChooser.getSelected();
 
-    // Build and return the selected autonomous command
-    return AutoBuilder.buildAuto(selectedPath);
-}
+      // Build and return the selected autonomous command
+      return AutoBuilder.buildAuto(selectedPath);
+  }
 
 }

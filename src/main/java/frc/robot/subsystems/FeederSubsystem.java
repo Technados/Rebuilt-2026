@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.FeederConstants;
-import frc.robot.Constants.IntakeConstants;
 
 /*
  * Mechnical/Electrical Configuration:

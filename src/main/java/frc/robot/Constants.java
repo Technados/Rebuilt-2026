@@ -61,7 +61,8 @@ public final class Constants {
 
     public static final int kPivotMotorCanId = 11;
     public static final double kPivotMotorPower = 0.1;
-    // public static final double kPivotMotorExtended = //Degrees;
+    public static final double kPivotMotorExtended = 15;
+    public static final double kPivotMotorRetracted = 0;
 
   }
 
