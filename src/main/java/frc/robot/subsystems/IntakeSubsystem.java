@@ -26,7 +26,7 @@ import frc.robot.Constants.IntakeConstants;
  */
 
 public class IntakeSubsystem extends SubsystemBase {
-  
+
   private final SparkFlex intakeMotor;
 
   private final SparkFlex pivotMotor;
@@ -55,8 +55,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     pivotController = pivotMotor.getClosedLoopController();
 
-    // pivotEncoder.setPosition(0);
-    // pivotZeroed = true;
+    pivotEncoder.setPosition(0);
+    pivotZeroed = true;
 
   }
 
