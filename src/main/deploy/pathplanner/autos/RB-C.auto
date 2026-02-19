@@ -1,0 +1,37 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RB-C"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "C-Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Intake-H"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "H-T"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
