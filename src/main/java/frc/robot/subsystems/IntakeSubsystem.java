@@ -7,6 +7,8 @@ package frc.robot.subsystems;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
@@ -25,10 +27,18 @@ import frc.robot.Constants.IntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-  private final SparkFlex intakeMotor;
-  private final SparkFlex pivotMotor;
+  public enum Setpoint {
+    kRetracted,
+    kExtended
+  }
 
+  private final SparkFlex intakeMotor;
+
+  private final SparkFlex pivotMotor;
   private RelativeEncoder pivotEncoder;
+  private SparkClosedLoopController pivotController;
+  private boolean pivotZeroed = false;
+  private double pivotTargetDeg = 0.0;
 
   public IntakeSubsystem() {
     // Initializes motors using constants and configs
@@ -45,9 +55,14 @@ public class IntakeSubsystem extends SubsystemBase {
       PersistMode.kNoPersistParameters
     );
 
-    // Tracks the pivot motor's position, sets to 0 when intitialized
+    // Tracks the pivot motor's position
     pivotEncoder = pivotMotor.getEncoder();
-    pivotEncoder.setPosition(0);
+
+    pivotController = pivotMotor.getClosedLoopController();
+
+    // pivotEncoder.setPosition(0);
+    // pivotZeroed = true;
+
   }
   
   public void setPower(SparkFlex motor, double power) { // Sets the power of the given motor
@@ -65,67 +80,52 @@ public class IntakeSubsystem extends SubsystemBase {
     );
   }
 
-  public Command runPivotForwardCommand() { // Runs the pivot motor forward
+  public void tempZeroPivotAtIn() {
+    pivotEncoder.setPosition(0.0);
+    pivotTargetDeg = 0.0;
+    pivotZeroed = true;
+  }
+
+  public void setPivotTargetDeg(double targetDeg) {
+    // Clamp to your known safe range
+    targetDeg = Math.max(0.0, Math.min(130.0, targetDeg));
+
+    // Require zeroing first (until limit switch exists)
+    if (!pivotZeroed) return;
+
+    pivotTargetDeg = targetDeg;
+    pivotController.setSetpoint(pivotTargetDeg,
+      ControlType.kMAXMotionPositionControl);
+  }
+
+  public Command tempZeroPivotAtInCommand() {
+    return this.runOnce(this::tempZeroPivotAtIn);
+  }
+
+  public Command pivotToDegCommand(double targetDeg) {
+    return this.runOnce(() -> setPivotTargetDeg(targetDeg));
+  }
+
+  public Command pivotInCommand() {
+    return pivotToDegCommand(0.0);
+  }
+
+  public Command pivotOutCommand() {
+    return pivotToDegCommand(130.0);
+  }
+
+  // Only for testing
+  public Command pivotJogCommand(double percent) {
     return this.startEnd(
-      () -> {
-        setPower(pivotMotor, IntakeConstants.kPivotMotorPower);
-      },
-      () -> {
-        setPower(pivotMotor, 0.0);
-      }
-    );
-  }
-
-  public Command runPivotReverseCommand() { // Runs the pivot motor in reverse
-    return this.startEnd(
-      () -> {
-        setPower(pivotMotor, -IntakeConstants.kPivotMotorPower);
-      },
-      () -> {
-        setPower(pivotMotor, 0.0);
-      }
-    );
-  }
-
-  public Command resetRetractedPivotCommand() { // Resets the pivot motor to a retracted position
-    return this.run(
-      () -> {
-        while (true) {
-          if (pivotEncoder.getPosition() > IntakeConstants.kPivotMotorRetracted) {
-            runPivotReverseCommand();
-          }
-
-          break;
-        }
-      }
-    );
-  }
-
-  public Command resetExtendedPivotCommand() { // Resets the pivot motor to an extended position
-    return this.run(
-      () -> {
-        while (true) {
-          if (pivotEncoder.getPosition() < IntakeConstants.kPivotMotorExtended) {
-            runPivotForwardCommand();
-          }
-
-          break;
-        }
-      }
-    );
-  }
-
-  public Command resetEncoder() {
-    return runOnce(
-      () -> {
-        pivotEncoder.setPosition(0);
-      }
+      () -> pivotMotor.set(percent),
+      () -> pivotMotor.set(0.0)
     );
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Intake Current", intakeMotor.getOutputCurrent());
-    SmartDashboard.putNumber("Pivot Angle", pivotEncoder.getPosition() * IntakeConstants.kPivotEncoderTicksToDegrees);
+    SmartDashboard.putNumber("Pivot Angle Deg", pivotEncoder.getPosition()); // Change erncoder units in Configs?
+    SmartDashboard.putNumber("Pivot Target Deg", pivotTargetDeg);
+    SmartDashboard.putBoolean("Pivot Zeroed", pivotZeroed);
   }
 }

@@ -128,10 +128,10 @@ public class RobotContainer {
     );
 
     // Adds button to dashboard that resets the intake pivot encoder to zero
-    SmartDashboard.putData(
-      "Reset Buttons/Reset Pivot to Zero",
-      m_intakeSubsystem.resetEncoder()
-    );
+    // SmartDashboard.putData(
+    //   "Reset Buttons/Reset Pivot to Zero",
+    //   m_intakeSubsystem.resetEncoder()
+    // );
 
     // register auto options to the shuffleboard           
     autoChooser.addOption("LE", "LE");
@@ -156,6 +156,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
     // Driver Controller
+
     // Left Stick Button -> Set swerve to X
     m_driverController.leftStick().whileTrue(m_robotDrive.setXCommand());
   
@@ -169,9 +170,15 @@ public class RobotContainer {
 
     m_driverController.x().whileTrue(m_intakeSubsystem.runIntakeCommand());
 
-    m_driverController.a().whileTrue(m_intakeSubsystem.runPivotForwardCommand());
+    m_driverController.y().onTrue(m_intakeSubsystem.tempZeroPivotAtInCommand());
+    
+    m_driverController.b().onTrue(m_intakeSubsystem.pivotInCommand());
+    
+    m_driverController.a().onTrue(m_intakeSubsystem.pivotOutCommand());
 
-    m_driverController.y().whileTrue(m_intakeSubsystem.runPivotReverseCommand());
+    m_driverController.leftBumper().whileTrue(m_intakeSubsystem.pivotJogCommand(0.1));
+
+    m_driverController.rightBumper().whileTrue(m_intakeSubsystem.pivotJogCommand(-0.1));
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
     
@@ -183,12 +190,6 @@ public class RobotContainer {
     m_operatorController.x().whileTrue(m_feederSubsystem.runFeederCommand());
 
     m_operatorController.y().whileTrue(m_shooterSubsystem.runShooterCommand());
-
-    m_operatorController.b().toggleOnTrue(m_intakeSubsystem.resetEncoder());
-
-    m_operatorController.rightBumper().toggleOnTrue(m_intakeSubsystem.resetExtendedPivotCommand());
-    
-    m_operatorController.leftBumper().toggleOnTrue(m_intakeSubsystem.resetRetractedPivotCommand());
 
   }
 

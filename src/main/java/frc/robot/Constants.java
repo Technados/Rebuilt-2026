@@ -62,9 +62,6 @@ public final class Constants {
     public static final int kPivotMotorCanId = 11;
     public static final double kPivotMotorPower = 0.1;
 
-    public static final double kPivotMotorExtended = 15;
-    public static final double kPivotMotorRetracted = 0;
-
     public static final double kPivotEncoderTicksToDegrees = 360 / 52.89;
 
   }
@@ -76,7 +73,7 @@ public final class Constants {
 
   public static final class ShooterConstants {
     public static final int kPreShooterMotorCanId = 13;
-    public static final double kPreShooterMotorPower = -0.3;
+    public static final double kPreShooterMotorPower = -0.6;
     
     public static final int kLeftShooterMotorCanId = 14;
     public static final double kLeftShooterMotorPower = -0.3;
