@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
@@ -25,6 +26,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -179,8 +181,6 @@ public class RobotContainer {
     m_operatorController.start().onTrue(m_robotDrive.zeroHeadingCommand());
 
     m_operatorController.x().whileTrue(m_feederSubsystem.runFeederCommand());
-
-    m_operatorController.a().whileTrue(m_shooterSubsystem.runPreShooterCommand());
 
     m_operatorController.y().whileTrue(m_shooterSubsystem.runShooterCommand());
 

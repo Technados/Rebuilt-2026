@@ -45,24 +45,15 @@ public class ShooterSubsystem extends SubsystemBase {
     motor.set(power);
   }
 
-  public Command runPreShooterCommand() { // Runs the pre shooter
-    return this.startEnd(
-      () -> {
-        preShooterMotor.set(ShooterConstants.kPreShooterMotorPower);
-      },
-      () -> {
-        preShooterMotor.set(0.0);
-      }
-    );
-  }
-
   public Command runShooterCommand() { // Runs the main shooter
     return this.startEnd(
       () -> {
+        preShooterMotor.set(ShooterConstants.kPreShooterMotorPower);
         setPower(leftShooterMotor, ShooterConstants.kLeftShooterMotorPower);
         setPower(rightShooterMotor, ShooterConstants.kRightShooterMotorPower);
       },
       () -> {
+        preShooterMotor.set(0.0);
         setPower(leftShooterMotor, 0.0);
         setPower(rightShooterMotor, 0.0);
       }
@@ -72,8 +63,8 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command idleShooterCommand() { // Runs the main shooter at 20% power
     return this.run(
       () -> {
-        setPower(leftShooterMotor, ShooterConstants.kLeftShooterMotorPower * .2);
-        setPower(rightShooterMotor, ShooterConstants.kRightShooterMotorPower * .2);
+        setPower(leftShooterMotor, ShooterConstants.kLeftShooterIdlePower);
+        setPower(rightShooterMotor, ShooterConstants.kRightShooterIdlePower);
       }
     );
   }
