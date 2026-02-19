@@ -26,12 +26,7 @@ import frc.robot.Constants.IntakeConstants;
  */
 
 public class IntakeSubsystem extends SubsystemBase {
-
-  public enum Setpoint {
-    kRetracted,
-    kExtended
-  }
-
+  
   private final SparkFlex intakeMotor;
 
   private final SparkFlex pivotMotor;
@@ -64,29 +59,29 @@ public class IntakeSubsystem extends SubsystemBase {
     // pivotZeroed = true;
 
   }
-  
-  public void setPower(SparkFlex motor, double power) { // Sets the power of the given motor
-    motor.set(power);
-  }
+
+  /* Intake */
 
   public Command runIntakeCommand() { // Runs the intake
     return this.startEnd(
     () -> {
-        setPower(intakeMotor, IntakeConstants.kIntakeMotorPower);
+        intakeMotor.set(IntakeConstants.kIntakeMotorPower);
       },
       () -> {
-        setPower(intakeMotor, 0.0);
+        intakeMotor.set(0.0);
       }
     );
   }
 
-  public void tempZeroPivotAtIn() {
+  /* Pivot */
+
+  public void tempZeroPivotAtIn() { // Sets zero to the current pivot position
     pivotEncoder.setPosition(0.0);
     pivotTargetDeg = 0.0;
     pivotZeroed = true;
   }
 
-  public void setPivotTargetDeg(double targetDeg) {
+  public void setPivotTargetDeg(double targetDeg) { // Sets the pivot target
     // Clamp to your known safe range
     targetDeg = Math.max(0.0, Math.min(130.0, targetDeg));
 
@@ -98,24 +93,24 @@ public class IntakeSubsystem extends SubsystemBase {
       ControlType.kMAXMotionPositionControl);
   }
 
-  public Command tempZeroPivotAtInCommand() {
+  public Command tempZeroPivotAtInCommand() { // Returns tempZeroPivotAtIn as a command
     return this.runOnce(this::tempZeroPivotAtIn);
   }
 
-  public Command pivotToDegCommand(double targetDeg) {
+  public Command pivotToDegCommand(double targetDeg) { // Moves the pivot to the given setpoint
     return this.runOnce(() -> setPivotTargetDeg(targetDeg));
   }
 
-  public Command pivotInCommand() {
+  public Command pivotInCommand() { // Moves the pivot to 0
     return pivotToDegCommand(0.0);
   }
 
-  public Command pivotOutCommand() {
+  public Command pivotOutCommand() { // Moves the pivot to 130
     return pivotToDegCommand(130.0);
   }
 
   // Only for testing
-  public Command pivotJogCommand(double percent) {
+  public Command pivotJogCommand(double percent) { // Moves the pivot manually
     return this.startEnd(
       () -> pivotMotor.set(percent),
       () -> pivotMotor.set(0.0)
@@ -124,7 +119,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Pivot Angle Deg", pivotEncoder.getPosition()); // Change erncoder units in Configs?
+    SmartDashboard.putNumber("Pivot Angle Deg", pivotEncoder.getPosition());
     SmartDashboard.putNumber("Pivot Target Deg", pivotTargetDeg);
     SmartDashboard.putBoolean("Pivot Zeroed", pivotZeroed);
   }

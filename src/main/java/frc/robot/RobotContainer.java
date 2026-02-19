@@ -164,9 +164,9 @@ public class RobotContainer {
     m_driverController.start().onTrue(m_robotDrive.zeroHeadingCommand());
 
     // Right Bumper -> Enable Slow Mode While Held
-    m_driverController.rightBumper()
-    .whileTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true)))
-    .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false)));
+    // m_driverController.rightBumper()
+    // .whileTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true)))
+    // .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false)));
 
     m_driverController.x().whileTrue(m_intakeSubsystem.runIntakeCommand());
 
