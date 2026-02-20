@@ -3,32 +3,53 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.73,
-        "y": 5.958277108433736
+        "x": 7.75,
+        "y": 4.5
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3349568761114705,
-        "y": 4.515498577360111
+        "x": 7.513707072492783,
+        "y": 4.888332351630092
       },
       "isLocked": false,
-      "linkedName": "Depot"
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.43271041369472,
+        "y": 5.425905848787448
+      },
+      "prevControl": {
+        "x": 7.451009209640443,
+        "y": 5.2373066669533905
+      },
+      "nextControl": {
+        "x": 5.688660431363601,
+        "y": 5.563711391197982
+      },
+      "isLocked": false,
+      "linkedName": null
     },
     {
       "anchor": {
         "x": 3.0,
-        "y": 4.6495863052781745
+        "y": 4.65
       },
       "prevControl": {
-        "x": 1.850872518632062,
-        "y": 5.454214030095942
+        "x": 3.6767760342368048,
+        "y": 5.723495007132667
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Hub Left"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 150.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -48,7 +69,7 @@
   "folder": "Left",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

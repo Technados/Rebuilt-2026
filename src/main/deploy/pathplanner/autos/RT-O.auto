@@ -19,19 +19,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "O-H"
+            "pathName": "O-HR"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "H-T"
+            "pathName": "HR-T"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Right",
   "choreoAuto": false
 }

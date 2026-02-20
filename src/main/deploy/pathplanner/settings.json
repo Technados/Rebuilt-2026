@@ -7,7 +7,11 @@
     "Center",
     "Left"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "Right",
+    "Center",
+    "Left"
+  ],
   "defaultMaxVel": 4.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
