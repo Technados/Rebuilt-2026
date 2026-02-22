@@ -9,7 +9,6 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,8 +18,6 @@ import frc.robot.Constants.ShooterConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-  private final SparkMax preShooterMotor;
-
   private final SparkFlex leftShooterMotor;
   private final RelativeEncoder leftShooterEncoder;
 
@@ -29,43 +26,38 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public ShooterSubsystem() {
     // Initializes motors using constants and configs
-    preShooterMotor = new SparkMax(ShooterConstants.kPreShooterMotorCanId, MotorType.kBrushless);
     leftShooterMotor = new SparkFlex(ShooterConstants.kLeftShooterMotorCanId, MotorType.kBrushless);
     rightShooterMotor = new SparkFlex(ShooterConstants.kRightShooterMotorCanId, MotorType.kBrushless);
 
-    preShooterMotor.configure(
-      Configs.ShooterSubsystem.preShooterConfig,
-      ResetMode.kResetSafeParameters,
-      PersistMode.kPersistParameters);
+
     leftShooterMotor.configure(
       Configs.ShooterSubsystem.leftShooterConfig,
       ResetMode.kResetSafeParameters,
-      PersistMode.kPersistParameters);
+      PersistMode.kPersistParameters
+    );
     rightShooterMotor.configure(
       Configs.ShooterSubsystem.rightShooterConfig,
       ResetMode.kResetSafeParameters,                                                   
-      PersistMode.kPersistParameters);
+      PersistMode.kPersistParameters
+    );
 
     leftShooterEncoder = leftShooterMotor.getEncoder();
     rightShooterEncoder = rightShooterMotor.getEncoder();
   }
 
-  public boolean shooterAtSpeed() { // Returns true if the motors are at full speed, doesn't have the right constants yet
+  public boolean shooterAtVelocity() { // Returns true if the motors have reached the target velocity
     return 
-      (leftShooterEncoder.getVelocity() == ShooterConstants.kLeftShooterMotorPower) &&
-      (rightShooterEncoder.getVelocity() == ShooterConstants.kRightShooterMotorPower);
-      
+      (leftShooterEncoder.getVelocity() == ShooterConstants.kLeftShooterMotorVelocity) &&
+      (rightShooterEncoder.getVelocity() == ShooterConstants.kRightShooterMotorVelocity);
   }
 
   public Command runShooterCommand() { // Runs the main shooter
     return this.startEnd(
       () -> {
-        preShooterMotor.set(ShooterConstants.kPreShooterMotorPower);
         leftShooterMotor.set(ShooterConstants.kLeftShooterMotorPower);
         rightShooterMotor.set(ShooterConstants.kRightShooterMotorPower);
       },
       () -> {
-        preShooterMotor.set(0.0);
         leftShooterMotor.set(0.0);
         rightShooterMotor.set(0.0);
       }
@@ -85,6 +77,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber("Left Velocity", leftShooterEncoder.getVelocity());
     SmartDashboard.putNumber("Right Velocity", rightShooterEncoder.getVelocity());
+    SmartDashboard.putBoolean("shooterAtVelocity", shooterAtVelocity());
   }
 
 }

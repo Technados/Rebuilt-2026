@@ -187,7 +187,7 @@ public class RobotContainer {
     // Start Button -> Zero swerve heading
     m_operatorController.start().onTrue(m_robotDrive.zeroHeadingCommand());
 
-    m_operatorController.x().whileTrue(m_feederSubsystem.runFeederCommand());
+    m_operatorController.x().whileTrue(m_feederSubsystem.runFeederCommand(m_shooterSubsystem));
 
     m_operatorController.y().whileTrue(m_shooterSubsystem.runShooterCommand());
 
