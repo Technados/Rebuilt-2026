@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -63,6 +61,15 @@ public final class Constants {
     public static final double kPivotMotorPower = 0.1;
 
     public static final double kPivotEncoderTicksToDegrees = 360 / 52.89;
+
+    // Pivot closed-loop gains (start conservative)
+    public static final double kPivotP = 0.08;
+    public static final double kPivotI = 0.0;
+    public static final double kPivotD = 0.0;
+
+    // MAXMotion limits (units follow velocityConversionFactor)
+    public static final double kPivotCruiseVelocityDegPerSec = 180.0;
+    public static final double kPivotMaxAccelDegPerSec2 = 360.0;
 
   }
 

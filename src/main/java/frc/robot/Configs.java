@@ -71,6 +71,15 @@ public final class Configs {
       pivotConfig.encoder.positionConversionFactor(IntakeConstants.kPivotEncoderTicksToDegrees);
       pivotConfig.encoder.velocityConversionFactor(IntakeConstants.kPivotEncoderTicksToDegrees / 60.0);
 
+      pivotConfig.closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .pid(IntakeConstants.kPivotP, IntakeConstants.kPivotI, IntakeConstants.kPivotD)
+        .outputRange(-1.0, 1.0);
+
+      pivotConfig.closedLoop.maxMotion
+        .cruiseVelocity(IntakeConstants.kPivotCruiseVelocityDegPerSec)
+        .maxAcceleration(IntakeConstants.kPivotMaxAccelDegPerSec2);
+
     }
   }
 

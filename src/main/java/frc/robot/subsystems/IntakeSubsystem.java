@@ -89,7 +89,7 @@ public class IntakeSubsystem extends SubsystemBase {
     if (!pivotZeroed) return;
 
     pivotTargetDeg = targetDeg;
-    pivotController.setSetpoint(pivotTargetDeg,
+    pivotController.setReference(pivotTargetDeg,
       ControlType.kMAXMotionPositionControl);
   }
 
