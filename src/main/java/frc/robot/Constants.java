@@ -84,16 +84,35 @@ public final class Constants {
   }
 
   public static final class ShooterConstants {
+
+    public static final double kShooterEncoderTicksToDegrees = 360; // Placeholder, must be changed!
+
+    public static final double kShooterMotorVelocity = 3100; // Placeholder, might need adjustment
+    public static final double kShooterMotorIdleVelocity = 150; // Placeholder, might need adjustment
     
     public static final int kLeftShooterMotorCanId = 14;
+    
     public static final double kLeftShooterMotorPower = -0.5;
-    public static final double kLeftShooterMotorVelocity = 3100; // Placeholder, might need adjustment
     public static final double kLeftShooterIdlePower = -.15;
+
+    // Must be adjusted before testing!
+    public static final double kLeftShooterP = 0.08;
+    public static final double kLeftShooterI = 0.0;
+    public static final double kLeftShooterD = 0.0;
     
     public static final int kRightShooterMotorCanId = 15;
+    
     public static final double kRightShooterMotorPower = 0.5;
-    public static final double kRightShooterMotorVelocity = 3100; // Placeholder, might need adjustment
     public static final double kRightShooterIdlePower = .15;
+    
+    // Must be adjusted before testing!
+    public static final double kRightShooterP = 0.08;
+    public static final double kRightShooterI = 0.0;
+    public static final double kRightShooterD = 0.0;
+    
+    public static final double kShooterCruiseVelocityDegPerSec = 180.0;
+    public static final double kShooterMaxAccelDegPerSec2 = 360.0;
+
   }
 
   public static final class LimelightPID {
