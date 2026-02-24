@@ -8,6 +8,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.ShooterConstants;
 
 public final class Configs {
   public static final class MAXSwerveModule {
@@ -100,8 +101,32 @@ public final class Configs {
 
     static {
       // Configure basic settings of the shooter motors
-      leftShooterConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+      leftShooterConfig.inverted(false).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+
+      leftShooterConfig.encoder.velocityConversionFactor(ShooterConstants.kShooterEncoderTicksToDegrees / 60.0);
+
+      leftShooterConfig.closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .pid(ShooterConstants.kLeftShooterP, ShooterConstants.kLeftShooterI, ShooterConstants.kLeftShooterD)
+        .outputRange(-1.0, 1.0);
+
+      leftShooterConfig.closedLoop.maxMotion
+        .cruiseVelocity(ShooterConstants.kShooterCruiseVelocityDegPerSec)
+        .maxAcceleration(ShooterConstants.kShooterMaxAccelDegPerSec2);
+        
       rightShooterConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+      
+      rightShooterConfig.encoder.velocityConversionFactor(ShooterConstants.kShooterEncoderTicksToDegrees / 60.0);
+
+      rightShooterConfig.closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .pid(ShooterConstants.kRightShooterP, ShooterConstants.kRightShooterI, ShooterConstants.kRightShooterD)
+        .outputRange(-1.0, 1.0);
+
+      rightShooterConfig.closedLoop.maxMotion
+        .cruiseVelocity(ShooterConstants.kShooterCruiseVelocityDegPerSec)
+        .maxAcceleration(ShooterConstants.kShooterMaxAccelDegPerSec2);
+
     }
   }
 

@@ -7,6 +7,8 @@ package frc.robot.subsystems;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
@@ -20,15 +22,18 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private final SparkFlex leftShooterMotor;
   private final RelativeEncoder leftShooterEncoder;
-
+  private SparkClosedLoopController leftShooterController;
+  
   private final SparkFlex rightShooterMotor;
   private final RelativeEncoder rightShooterEncoder;
+  private SparkClosedLoopController rightShooterController;
+
+  private double targetVelocity;
 
   public ShooterSubsystem() {
     // Initializes motors using constants and configs
     leftShooterMotor = new SparkFlex(ShooterConstants.kLeftShooterMotorCanId, MotorType.kBrushless);
     rightShooterMotor = new SparkFlex(ShooterConstants.kRightShooterMotorCanId, MotorType.kBrushless);
-
 
     leftShooterMotor.configure(
       Configs.ShooterSubsystem.leftShooterConfig,
@@ -43,23 +48,51 @@ public class ShooterSubsystem extends SubsystemBase {
 
     leftShooterEncoder = leftShooterMotor.getEncoder();
     rightShooterEncoder = rightShooterMotor.getEncoder();
+
+    leftShooterController = leftShooterMotor.getClosedLoopController();
+    rightShooterController = rightShooterMotor.getClosedLoopController();
+
+    targetVelocity = -1;
   }
 
-  public boolean shooterAtVelocity() { // Returns true if the motors have reached the target velocity
+  public boolean shooterInVelocityRange(RelativeEncoder shooterEncoder) { // Returns true if motor velocity is in range, needs adjustment
     return 
-      (leftShooterEncoder.getVelocity() == ShooterConstants.kLeftShooterMotorVelocity) &&
-      (rightShooterEncoder.getVelocity() == ShooterConstants.kRightShooterMotorVelocity);
+      (ShooterConstants.kShooterMotorVelocity - 100) < 
+      shooterEncoder.getVelocity() 
+      && 
+      shooterEncoder.getVelocity() < 
+      (ShooterConstants.kShooterMotorVelocity + 100);
+  }
+
+  public boolean shooterAtVelocity() { // Returns true if the motors reach the target velocity
+    return shooterInVelocityRange(leftShooterEncoder) && shooterInVelocityRange(rightShooterEncoder);
+  }
+
+  public void setShooterVelocity(double velocity) {
+    // Clamp to your known safe range
+    velocity = Math.max(0.0, Math.min(3500.0, velocity));
+
+    // Returns if the velocity is already set to the target velocity
+    if (targetVelocity == velocity) {
+      return;
+    }
+
+    targetVelocity = velocity;
+
+    leftShooterController.setReference(targetVelocity,
+      ControlType.kMAXMotionVelocityControl);
+
+    rightShooterController.setReference(targetVelocity,
+      ControlType.kMAXMotionVelocityControl);
   }
 
   public Command runShooterCommand() { // Runs the main shooter
     return this.startEnd(
       () -> {
-        leftShooterMotor.set(ShooterConstants.kLeftShooterMotorPower);
-        rightShooterMotor.set(ShooterConstants.kRightShooterMotorPower);
+        setShooterVelocity(ShooterConstants.kShooterMotorVelocity);
       },
       () -> {
-        leftShooterMotor.set(0.0);
-        rightShooterMotor.set(0.0);
+        setShooterVelocity(0.0);
       }
     );
   }
@@ -67,8 +100,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command idleShooterCommand() { // Runs the main shooter at idle power
     return this.run(
       () -> {
-        leftShooterMotor.set(ShooterConstants.kLeftShooterIdlePower);
-        rightShooterMotor.set(ShooterConstants.kRightShooterIdlePower);
+        setShooterVelocity(ShooterConstants.kShooterMotorIdleVelocity);
       }
     );
   }
