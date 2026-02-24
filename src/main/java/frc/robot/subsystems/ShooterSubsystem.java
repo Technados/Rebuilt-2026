@@ -57,11 +57,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public boolean shooterInVelocityRange(RelativeEncoder shooterEncoder) { // Returns true if motor velocity is in range, needs adjustment
     return 
-      (ShooterConstants.kShooterMotorVelocity - 100) < 
+      (targetVelocity - 100) < 
       shooterEncoder.getVelocity() 
       && 
       shooterEncoder.getVelocity() < 
-      (ShooterConstants.kShooterMotorVelocity + 100);
+      (targetVelocity + 100);
   }
 
   public boolean shooterAtVelocity() { // Returns true if the motors reach the target velocity
