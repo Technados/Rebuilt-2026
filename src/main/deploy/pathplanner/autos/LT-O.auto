@@ -7,19 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LB-D"
+            "pathName": "LL-O"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "D-T"
+            "pathName": "Spin"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "HL-T"
+            "pathName": "O-HR"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "HR-T"
           }
         }
       ]

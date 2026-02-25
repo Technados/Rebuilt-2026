@@ -7,13 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LB-D"
+            "pathName": "C-CL"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "D-T"
+            "pathName": "C L-Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Intake-HL"
           }
         },
         {
@@ -26,6 +32,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Left",
+  "folder": "Center",
   "choreoAuto": false
 }

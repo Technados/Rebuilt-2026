@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.211110478859908,
-        "y": 7.302383152799685
+        "x": 4.4239552108248095,
+        "y": 7.688858573628354
       },
       "isLocked": false,
       "linkedName": "Left Trench"
     },
     {
       "anchor": {
-        "x": 0.73,
-        "y": 5.958277108433736
+        "x": 0.7583105094940736,
+        "y": 5.959937127450093
       },
       "prevControl": {
-        "x": 1.534094247199774,
-        "y": 6.490531750018474
+        "x": 0.519062257232272,
+        "y": 5.887409382485333
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Depot"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "Left",

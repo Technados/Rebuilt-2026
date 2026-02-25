@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LB-D"
+            "pathName": "RB-D"
           }
         },
         {
@@ -26,6 +26,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Left",
+  "folder": "Right",
   "choreoAuto": false
 }

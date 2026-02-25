@@ -7,25 +7,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LB-D"
+            "pathName": "CT-O"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "D-T"
+            "pathName": "Spin"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "HL-T"
+            "pathName": "O-HR"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "HR-T"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Left",
+  "folder": "Center",
   "choreoAuto": false
 }
