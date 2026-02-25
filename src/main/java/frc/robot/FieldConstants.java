@@ -1,0 +1,41 @@
+package frc.robot;
+
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+
+/**
+* Field geometry constants used for pose-based calculations.
+*
+* WPILib field coordinates (2024+ convention):
+* - Origin is the BLUE alliance corner
+* - +X points toward RED alliance wall
+* - +Y points left when standing at the BLUE wall facing the field
+*
+* This field is rotationally symmetric (180° rotation), not mirrored, so we
+* compute the RED hub by rotating the BLUE hub around the field center.
+*/
+
+public final class FieldConstants {
+
+    private FieldConstants() {}
+
+    // Welded field size (meters)
+    public static final double FIELD_LENGTH_M = 16.541; // 651.22 in
+    public static final double FIELD_WIDTH_M  = 8.069;  // ~317.69 in
+
+    // Hub centers (meters) derived from welded hub AprilTag ring centroid
+    public static final Translation2d BLUE_HUB = new Translation2d(4.5366305, 4.0345995);
+
+    // Rotated 180° about field center
+    public static final Translation2d RED_HUB = new Translation2d(
+        FIELD_LENGTH_M - BLUE_HUB.getX(),
+        FIELD_WIDTH_M  - BLUE_HUB.getY()
+    );
+
+    /** Returns the hub your alliance should score into, in WPILib field coordinates. */
+    public static Translation2d getAllianceHub() {
+        var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue);
+        return (alliance == DriverStation.Alliance.Blue) ? BLUE_HUB : RED_HUB;
+    }
+
+}

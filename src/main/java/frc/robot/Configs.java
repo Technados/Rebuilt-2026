@@ -86,7 +86,7 @@ public final class Configs {
 
   public static final class FeederSubsystem {
     public static final SparkFlexConfig feederConfig = new SparkFlexConfig();
-    public static final SparkFlexConfig preShooterConfig = new SparkFlexConfig();
+    public static final SparkMaxConfig preShooterConfig = new SparkMaxConfig();
 
     static {
       // Configure basic settings of the feeder and preshooter motors
@@ -101,13 +101,11 @@ public final class Configs {
 
     static {
       // Configure basic settings of the shooter motors
-      leftShooterConfig.inverted(false).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
-
-      leftShooterConfig.encoder.velocityConversionFactor(ShooterConstants.kShooterEncoderTicksToDegrees / 60.0);
+      leftShooterConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
 
       leftShooterConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pid(ShooterConstants.kLeftShooterP, ShooterConstants.kLeftShooterI, ShooterConstants.kLeftShooterD)
+        .pid(ShooterConstants.kShooterP, ShooterConstants.kShooterI, ShooterConstants.kShooterD)
         .outputRange(-1.0, 1.0);
 
       leftShooterConfig.closedLoop.maxMotion
@@ -116,11 +114,9 @@ public final class Configs {
         
       rightShooterConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
       
-      rightShooterConfig.encoder.velocityConversionFactor(ShooterConstants.kShooterEncoderTicksToDegrees / 60.0);
-
       rightShooterConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pid(ShooterConstants.kRightShooterP, ShooterConstants.kRightShooterI, ShooterConstants.kRightShooterD)
+        .pid(ShooterConstants.kShooterP, ShooterConstants.kShooterI, ShooterConstants.kShooterD)
         .outputRange(-1.0, 1.0);
 
       rightShooterConfig.closedLoop.maxMotion

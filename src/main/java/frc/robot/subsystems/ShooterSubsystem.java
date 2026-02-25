@@ -56,12 +56,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public boolean shooterInVelocityRange(RelativeEncoder shooterEncoder) { // Returns true if motor velocity is in range, needs adjustment
-    return 
-      (targetVelocity - 100) < 
-      shooterEncoder.getVelocity() 
-      && 
-      shooterEncoder.getVelocity() < 
-      (targetVelocity + 100);
+    return Math.abs(shooterEncoder.getVelocity() - targetVelocity) <= ShooterConstants.kShooterReadyToleranceRPM;
   }
 
   public boolean shooterAtVelocity() { // Returns true if the motors reach the target velocity
@@ -89,7 +84,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command runShooterCommand() { // Runs the main shooter
     return this.startEnd(
       () -> {
-        setShooterVelocity(ShooterConstants.kShooterMotorVelocity);
+        setShooterVelocity(ShooterConstants.kShooterMaxRPM);
       },
       () -> {
         setShooterVelocity(0.0);
@@ -100,7 +95,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command idleShooterCommand() { // Runs the main shooter at idle power
     return this.run(
       () -> {
-        setShooterVelocity(ShooterConstants.kShooterMotorIdleVelocity);
+        setShooterVelocity(ShooterConstants.kShooterIdleRPM);
       }
     );
   }

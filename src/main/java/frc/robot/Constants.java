@@ -85,33 +85,51 @@ public final class Constants {
 
   public static final class ShooterConstants {
 
-    public static final double kShooterEncoderTicksToDegrees = 360; // Placeholder, must be changed!
-
-    public static final double kShooterMotorVelocity = 3100; // Placeholder, might need adjustment
-    public static final double kShooterMotorIdleVelocity = 150; // Placeholder, might need adjustment
-    
     public static final int kLeftShooterMotorCanId = 14;
-    
-    public static final double kLeftShooterMotorPower = -0.5;
-    public static final double kLeftShooterIdlePower = -.15;
-
-    // Must be adjusted before testing!
-    public static final double kLeftShooterP = 0.08;
-    public static final double kLeftShooterI = 0.0;
-    public static final double kLeftShooterD = 0.0;
-    
     public static final int kRightShooterMotorCanId = 15;
     
-    public static final double kRightShooterMotorPower = 0.5;
-    public static final double kRightShooterIdlePower = .15;
+    public static final double kShooterMaxRPM = 6000.0; // Placeholder, might need adjustment
+    public static final double kShooterIdleRPM = 1500.0; // Placeholder, might need adjustment
     
     // Must be adjusted before testing!
-    public static final double kRightShooterP = 0.08;
-    public static final double kRightShooterI = 0.0;
-    public static final double kRightShooterD = 0.0;
+    public static final double kShooterP = 0.00025;
+    public static final double kShooterI = 0.0;
+    public static final double kShooterD = 0.0;
     
-    public static final double kShooterCruiseVelocityDegPerSec = 180.0;
-    public static final double kShooterMaxAccelDegPerSec2 = 360.0;
+    // “At speed” tolerance used to decide when we are allowed to feed.
+    public static final double kShooterReadyToleranceRPM = 100.0;
+
+    // Optional feedforward: volts = kS + kV * RPM
+    // Start at 0 to prove closed-loop works, then add feedforward later for better recovery.
+    public static final double kShooterKSVolts = 0.0;
+    public static final double kShooterKVVoltsPerRPM = 0.0;
+
+    // For shooting tests before LaserCAN gating:
+    public static final double kPreShooterFeedPower = -0.6; // can be same as kPreShooterMotorPower
+
+  }
+
+  public static final class AimConstants {
+    public static final double kAimP = 4.0; // radians -> rad/s-ish output scaling (tune)
+    public static final double kAimMaxOmegaRadPerSec = 3.0;
+    public static final double kAimToleranceDeg = 2.0;
+  }
+
+
+  public static final class HoodConstants {
+
+    public static final int kLeftHoodServoPwm = 1;
+    public static final int kRightHoodServoPwm = 2;
+
+    // Clamp to protect mechanics (tune after first test)
+    public static final double kMinPos = 0.05;
+    public static final double kMaxPos = 0.95;
+
+    public static final double kPosTolerance = 0.01;
+
+    // Modeled servo speed (pos units per second). This is not physics-accurate;
+    // it's a practical way to have a stable "hood is ready" signal.
+    public static final double kMaxPosUnitsPerSec = 0.80;
 
   }
 
