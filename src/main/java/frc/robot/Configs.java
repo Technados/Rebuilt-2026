@@ -101,14 +101,18 @@ public final class Configs {
 
     static {
       // Configure basic settings of the shooter motors
-      leftShooterConfig.inverted(false).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+      leftShooterConfig.inverted(false).idleMode(IdleMode.kCoast).smartCurrentLimit(40);
 
       leftShooterConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .pid(ShooterConstants.kShooterP, ShooterConstants.kShooterI, ShooterConstants.kShooterD)
         .outputRange(-1.0, 1.0);
+
+      leftShooterConfig.apply(rightShooterConfig)
+        .follow(ShooterConstants.kRightShooterMotorCanId, true);
+
         
-      rightShooterConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+      rightShooterConfig.inverted(true).idleMode(IdleMode.kCoast).smartCurrentLimit(40);
       
       rightShooterConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)

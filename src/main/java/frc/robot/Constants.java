@@ -60,26 +60,35 @@ public final class Constants {
     public static final int kPivotMotorCanId = 11;
     public static final double kPivotMotorPower = 0.1;
 
-    public static final double kPivotEncoderTicksToDegrees = 360 / 52.89;
+    public static final double kPivotMechAdv = 52.89; // motor rev per arm rev
+
+    public static final double kPivotEncoderTicksToDegrees = 360 / kPivotMechAdv;
 
     // Pivot closed-loop gains (start conservative)
-    public static final double kPivotP = 0.08;
+    public static final double kPivotP = 0.015;
     public static final double kPivotI = 0.0;
     public static final double kPivotD = 0.0;
 
+    public static final double kPivotDegPerMotorRev = 360.0 / kPivotMechAdv; // ~6.8066
+
+    public static final double kPivotDegPerSecPerMotorRPM = kPivotDegPerMotorRev / 60.0; // ~0.11344
+
+
     // MAXMotion limits (units follow velocityConversionFactor)
-    public static final double kPivotCruiseVelocityDegPerSec = 180.0;
-    public static final double kPivotMaxAccelDegPerSec2 = 360.0;
+    public static final double kPivotCruiseVelocityDegPerSec = 180.0 * 52.89;
+    public static final double kPivotMaxAccelDegPerSec2 = 360.0 * 52.89;
+
+    public static final double kPivotDegTolerance = 1.0;
 
   }
 
   public static final class FeederConstants {
 
     public static final int kFeederMotorCanId = 12;
-    public static final double kFeederMotorPower = 0.2;
+    public static final double kFeederMotorPower = 0.75;
     
     public static final int kPreShooterMotorCanId = 13;
-    public static final double kPreShooterMotorPower = -0.6;
+    public static final double kPreShooterMotorPower = -0.8;
 
   }
 
@@ -92,7 +101,7 @@ public final class Constants {
     public static final double kShooterIdleRPM = 1500.0; // Placeholder, might need adjustment
     
     // Must be adjusted before testing!
-    public static final double kShooterP = 0.00025;
+    public static final double kShooterP = 0.006;
     public static final double kShooterI = 0.0;
     public static final double kShooterD = 0.0;
     
@@ -162,14 +171,14 @@ public final class Constants {
   }
 
   public static class TestPoses {
-    public static final Pose2d kTestStartPose = new Pose2d(14, 4, Rotation2d.fromDegrees(180));
+    public static final Pose2d kTestStartPose = new Pose2d(12.928, 4, Rotation2d.fromDegrees(180));
     
   }
 
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
-    public static final double kMaxSpeedMetersPerSecond = 7;
+    public static final double kMaxSpeedMetersPerSecond = 2;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
     public static final double kSlowSpeedFactor = 0.20; // Slow mode speed factor (40% of normal speed)
 

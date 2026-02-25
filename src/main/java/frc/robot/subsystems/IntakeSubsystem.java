@@ -106,7 +106,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public Command pivotOutCommand() { // Moves the pivot to 130
-    return pivotToDegCommand(130.0);
+    return pivotToDegCommand(120.0);
   }
 
   // Only for testing

@@ -1,4 +1,4 @@
-package frc.shooting;
+package frc.robot.shooting;
 
 import java.util.ArrayList;
 import java.util.Comparator;

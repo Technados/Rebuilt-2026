@@ -106,7 +106,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_poseEstimator = // Currently has default StdDevs
       new SwerveDrivePoseEstimator(
         DriveConstants.kDriveKinematics,
-        Rotation2d.fromDegrees(-m_gyro.getAngle()),
+        getGyroRotation2d(),
         new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
           m_frontRight.getPosition(),
@@ -155,7 +155,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
     
     m_poseEstimator.update(
-        Rotation2d.fromDegrees(-m_gyro.getAngle()),
+        getGyroRotation2d(),
         new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
           m_frontRight.getPosition(),
@@ -230,7 +230,7 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public void resetOdometry(Pose2d pose) {
     m_poseEstimator.resetPosition(
-        Rotation2d.fromDegrees(-m_gyro.getAngle()),
+        getGyroRotation2d(),
         new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
           m_frontRight.getPosition(),
@@ -280,10 +280,10 @@ public void updateDriveSlowMode(boolean manualSlowMode) {
         DriveConstants.kDriveKinematics.toSwerveModuleStates(
             fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                    -xSpeedDelivered,
-                    -ySpeedDelivered,
+                    xSpeedDelivered,
+                    ySpeedDelivered,
                     rotDelivered,
-                    Rotation2d.fromDegrees(-m_gyro.getAngle()))
+                    getGyroRotation2d())
                 : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
@@ -356,11 +356,6 @@ public ChassisSpeeds getChassisSpeeds() {
     m_rearLeft.setDesiredState(desiredStates[2]);
     m_rearRight.setDesiredState(desiredStates[3]);
   }
-// The method below will set the gyro 180 deg adjusted angle to compensate for starting pose being bakward 
-  public void resetGyroToFieldBackwards() {
-    m_gyro.reset();
-    m_gyro.setAngleAdjustment(180);
-  }
 
   /** Resets the drive encoders to currently read a position of 0. */
   public void resetEncoders() {
@@ -381,9 +376,31 @@ public ChassisSpeeds getChassisSpeeds() {
    * @return the robot's heading in degrees, from -180 to 180
    */
   public double getHeading() {
-    return Math.IEEEremainder(-m_gyro.getAngle()*(DriveConstants.kGyroReversed ? -1.0 : 1.0), 360);
+    return Math.IEEEremainder(getGyroRotation2d().getDegrees(), 360);
     //return Rotation2d.fromDegrees(m_gyro.getAngle()).getDegrees();
   }
+
+  /**
+  * Returns the gyro rotation in WPILib field convention:
+  * - 0° = facing +X (toward red wall)
+  * - CCW positive
+  *
+  * This should be the ONLY place we convert navX readings into a Rotation2d.
+  * Everything else (pose estimator, driving, MT2 orientation) should use this.
+  */
+  private Rotation2d getGyroRotation2d() {
+    // NavX angle commonly increases clockwise; WPILib expects CCW+.
+    // Inverting is standard for navX in FRC.
+    double angleDeg = -m_gyro.getAngle();
+
+    // If you ever need to flip (wiring/mounting), do it ONE time here.
+    if (DriveConstants.kGyroReversed) {
+      angleDeg = -angleDeg;
+    }
+
+    return Rotation2d.fromDegrees(angleDeg);
+  }
+
 
   /**
    * Returns the turn rate of the robot.
@@ -391,7 +408,11 @@ public ChassisSpeeds getChassisSpeeds() {
    * @return The turn rate of the robot, in degrees per second
    */
   public double getTurnRate() {
-    return -m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
+    // Keep turn rate consistent with getGyroRotation2d() (CCW+)
+    double rate = -m_gyro.getRate();
+    if (DriveConstants.kGyroReversed) rate = -rate;
+      return rate;
+
   }
 
 

@@ -73,23 +73,25 @@ public class ShooterSubsystem extends SubsystemBase {
       ffVolts
       );
       
-      rightShooterController.setReference(
-        targetVelocity,
-        ControlType.kVelocity,
-        ClosedLoopSlot.kSlot0,
-        ffVolts
-        );
-      }
+    rightShooterController.setReference(
+      targetVelocity,
+      ControlType.kVelocity,
+      ClosedLoopSlot.kSlot0,
+      ffVolts
+      );
+  }
       
-      public void idleShooter() { // Runs the main shooter at idle power
-        setShooterVelocity(ShooterConstants.kShooterIdleRPM);
-      }
-      
-      public void stopShooter() {
-        setShooterVelocity(0.0);
-      }
-      
-      public double getTargetVelocity() {
+  public void idleShooter() { // Runs the main shooter at idle power
+    //setShooterVelocity(ShooterConstants.kShooterIdleRPM);
+    return;
+  }
+  
+  public void stopShooter() {
+    leftShooterMotor.set(0.0);
+    rightShooterMotor.set(0.0);
+  }
+  
+  public double getTargetVelocity() {
     return targetVelocity;
   }
   
@@ -118,6 +120,13 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command holdVelocityCommand(DoubleSupplier rpmSupplier) {
     return run(
       () -> setShooterVelocity(rpmSupplier.getAsDouble())
+    );
+  }
+
+  public Command holdVelocityCommand(double velocity) {
+    return runEnd(
+      () -> setShooterVelocity(velocity),
+      () -> stopShooter()
     );
   }
 

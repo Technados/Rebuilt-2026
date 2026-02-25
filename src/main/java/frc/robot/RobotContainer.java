@@ -22,6 +22,7 @@ import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.TestingSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.shooting.ShotMap;
 import frc.robot.shooting.ShotMapData;
@@ -61,6 +62,8 @@ public class RobotContainer {
     // ShotMap is pure math/data; safe to live in RobotContainer.
     private final ShotMap m_shotMap = ShotMapData.createAllianceZoneShotMap();
 
+    private final TestingSubsystem m_testing = new TestingSubsystem(); 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // create autoChooser
@@ -79,7 +82,6 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
-    m_robotDrive.resetGyroToFieldBackwards();
     // Configure the button bindings
     configureButtonBindings();
 
@@ -223,10 +225,16 @@ public class RobotContainer {
               .alongWith(m_hoodSubsystem.holdPositionCommand(hoodSupplier))
       );
 
-    // Operator RT = Fire (feed only when ready, and run pre-shooter)
+    // Operator RT = Fire (feed only when ready)
     m_operatorController.rightTrigger()
       .whileTrue(
           m_feederSubsystem.feedWhen(readySupplier)
+      );
+
+    m_operatorController.x()
+      .whileTrue(
+        m_shooterSubsystem.holdVelocityCommand(m_testing.shootingVelocity)
+          .alongWith(m_feederSubsystem.runFeederCommand(m_shooterSubsystem))
       );
 
   }
