@@ -101,16 +101,12 @@ public final class Configs {
 
     static {
       // Configure basic settings of the shooter motors
-      leftShooterConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+      leftShooterConfig.inverted(false).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
 
       leftShooterConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .pid(ShooterConstants.kShooterP, ShooterConstants.kShooterI, ShooterConstants.kShooterD)
         .outputRange(-1.0, 1.0);
-
-      leftShooterConfig.closedLoop.maxMotion
-        .cruiseVelocity(ShooterConstants.kShooterCruiseVelocityDegPerSec)
-        .maxAcceleration(ShooterConstants.kShooterMaxAccelDegPerSec2);
         
       rightShooterConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
       
@@ -118,10 +114,6 @@ public final class Configs {
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .pid(ShooterConstants.kShooterP, ShooterConstants.kShooterI, ShooterConstants.kShooterD)
         .outputRange(-1.0, 1.0);
-
-      rightShooterConfig.closedLoop.maxMotion
-        .cruiseVelocity(ShooterConstants.kShooterCruiseVelocityDegPerSec)
-        .maxAcceleration(ShooterConstants.kShooterMaxAccelDegPerSec2);
 
     }
   }

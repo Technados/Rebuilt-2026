@@ -11,10 +11,11 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-//import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -35,6 +36,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+
+import frc.robot.Constants.AimConstants;
 
 
 public class DriveSubsystem extends SubsystemBase {
@@ -78,10 +81,11 @@ public class DriveSubsystem extends SubsystemBase {
   private final Field2d field = new Field2d();
   private final SwerveDrivePoseEstimator m_poseEstimator;
 
+  private final PIDController aimPid = new PIDController(AimConstants.kAimP, 0.0, 0.0);
+
   // PathPlanner RobotConfig
   private RobotConfig config;
 
-  
   private boolean hasFlashedEndgame = false;
 
 
@@ -112,6 +116,8 @@ public class DriveSubsystem extends SubsystemBase {
         VecBuilder.fill(0.05, 0.05, 0.01),
         VecBuilder.fill(0.8, 0.8, 0.5)
       );
+    
+    aimPid.enableContinuousInput(-Math.PI, Math.PI);
 
     this.ledSubsystem = ledSubsystem;
 
@@ -178,8 +184,43 @@ public class DriveSubsystem extends SubsystemBase {
     return m_poseEstimator.getEstimatedPosition();
   }
 
+  public double getHeadingRadians() {
+    return getPose().getRotation().getRadians();
+  }
+
+  public boolean isAimedAt(edu.wpi.first.math.geometry.Translation2d target) {
+    var pose = getPose();
+    double dx = target.getX() - pose.getX();
+    double dy = target.getY() - pose.getY();
+    double desired = Math.atan2(dy, dx);
+
+    double errorRad = MathUtil.angleModulus(desired - pose.getRotation().getRadians());
+    return Math.abs(Math.toDegrees(errorRad)) <= AimConstants.kAimToleranceDeg;
+  }
+
+  /**
+  * Command the drivetrain to rotate toward a field point.
+  * Translation is held at 0 here (stationary aiming).
+  */
+  public void aimAt(edu.wpi.first.math.geometry.Translation2d target) {
+    var pose = getPose();
+    double dx = target.getX() - pose.getX();
+    double dy = target.getY() - pose.getY();
+    double desired = Math.atan2(dy, dx);
+
+    double omega = aimPid.calculate(pose.getRotation().getRadians(), desired);
+    omega = MathUtil.clamp(omega, -AimConstants.kAimMaxOmegaRadPerSec, AimConstants.kAimMaxOmegaRadPerSec);
+
+    // rotate in place, field-relative
+    drive(0.0, 0.0, omega, true);
+  }
+
   public void addVisionMeasurement(Pose2d visonPose, double timestampSeconds, Matrix<N3, N1> stdDevs) {
     m_poseEstimator.addVisionMeasurement(visonPose, timestampSeconds, stdDevs);
+  }
+
+  public Command aimAtCommand(java.util.function.Supplier<edu.wpi.first.math.geometry.Translation2d> targetSupplier) {
+    return run(() -> aimAt(targetSupplier.get()));
   }
 
   /**

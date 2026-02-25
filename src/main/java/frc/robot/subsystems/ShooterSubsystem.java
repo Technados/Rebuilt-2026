@@ -4,14 +4,18 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -52,59 +56,77 @@ public class ShooterSubsystem extends SubsystemBase {
     leftShooterController = leftShooterMotor.getClosedLoopController();
     rightShooterController = rightShooterMotor.getClosedLoopController();
 
-    targetVelocity = -1;
+    targetVelocity = 0.0;
   }
-
-  public boolean shooterInVelocityRange(RelativeEncoder shooterEncoder) { // Returns true if motor velocity is in range, needs adjustment
-    return Math.abs(shooterEncoder.getVelocity() - targetVelocity) <= ShooterConstants.kShooterReadyToleranceRPM;
-  }
-
-  public boolean shooterAtVelocity() { // Returns true if the motors reach the target velocity
-    return shooterInVelocityRange(leftShooterEncoder) && shooterInVelocityRange(rightShooterEncoder);
-  }
-
+  
   public void setShooterVelocity(double velocity) {
     // Clamp to your known safe range
-    velocity = Math.max(0.0, Math.min(3500.0, velocity));
-
-    // Returns if the velocity is already set to the target velocity
-    if (targetVelocity == velocity) {
-      return;
-    }
-
-    targetVelocity = velocity;
-
-    leftShooterController.setReference(targetVelocity,
-      ControlType.kMAXMotionVelocityControl);
-
-    rightShooterController.setReference(targetVelocity,
-      ControlType.kMAXMotionVelocityControl);
-  }
-
-  public Command runShooterCommand() { // Runs the main shooter
-    return this.startEnd(
-      () -> {
-        setShooterVelocity(ShooterConstants.kShooterMaxRPM);
-      },
-      () -> {
-        setShooterVelocity(0.0);
+    targetVelocity = MathUtil.clamp(velocity, 0.0, ShooterConstants.kShooterMaxRPM);
+    
+    // Optional feedforward (start at 0, tune later)
+    double ffVolts = ShooterConstants.kShooterKSVolts + (ShooterConstants.kShooterKVVoltsPerRPM * targetVelocity);
+    
+    leftShooterController.setReference(
+      targetVelocity,
+      ControlType.kVelocity,
+      ClosedLoopSlot.kSlot0,
+      ffVolts
+      );
+      
+      rightShooterController.setReference(
+        targetVelocity,
+        ControlType.kVelocity,
+        ClosedLoopSlot.kSlot0,
+        ffVolts
+        );
       }
-    );
-  }
-
-  public Command idleShooterCommand() { // Runs the main shooter at idle power
-    return this.run(
-      () -> {
+      
+      public void idleShooter() { // Runs the main shooter at idle power
         setShooterVelocity(ShooterConstants.kShooterIdleRPM);
       }
+      
+      public void stopShooter() {
+        setShooterVelocity(0.0);
+      }
+      
+      public double getTargetVelocity() {
+    return targetVelocity;
+  }
+  
+  public double getLeftVelocity() {
+    return Math.abs(leftShooterEncoder.getVelocity());
+  }
+  
+  public double getRightVelocity() {
+    return Math.abs(rightShooterEncoder.getVelocity());
+  }
+  
+     /** True when both wheels are within tolerance of target RPM. */
+    public boolean shooterAtVelocity() {
+      if (targetVelocity <= 1.0) return false;
+      double tol = ShooterConstants.kShooterReadyToleranceRPM;
+      return Math.abs(getLeftVelocity() - targetVelocity) <= tol
+          && Math.abs(getRightVelocity() - targetVelocity) <= tol;
+    }
+  
+  // ---------------- Commands kept inside subsystem ----------------
+  
+  public Command idleShooterCommand() {
+    return run(this::idleShooter);
+  }
+
+  public Command holdVelocityCommand(DoubleSupplier rpmSupplier) {
+    return run(
+      () -> setShooterVelocity(rpmSupplier.getAsDouble())
     );
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Left Velocity", leftShooterEncoder.getVelocity());
-    SmartDashboard.putNumber("Right Velocity", rightShooterEncoder.getVelocity());
-    SmartDashboard.putBoolean("shooterAtVelocity", shooterAtVelocity());
+    SmartDashboard.putNumber("Shooter/Target Velocity", getTargetVelocity());
+    SmartDashboard.putNumber("Shooter/Left Velocity", getLeftVelocity());
+    SmartDashboard.putNumber("Shooter/Right Velocity", getRightVelocity());
+    SmartDashboard.putBoolean("Shooter/Shooter At Velocity", shooterAtVelocity());
   }
 
 }
