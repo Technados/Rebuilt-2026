@@ -1,10 +1,14 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
@@ -18,32 +22,76 @@ import frc.robot.Constants.FeederConstants;
 
 public class FeederSubsystem extends SubsystemBase {
 
-    private final SparkFlex feederMotor;
-    
-    public FeederSubsystem() {
-        // Initializes motor using constants and configs
-        feederMotor = new SparkFlex(FeederConstants.kFeederMotorCanId, MotorType.kBrushless);
+  private final SparkFlex feederMotor;
+  private final SparkMax preShooterMotor;
+  
+  public FeederSubsystem() {
+    // Initializes motor using constants and configs
+    feederMotor = new SparkFlex(FeederConstants.kFeederMotorCanId, MotorType.kBrushless);
+    preShooterMotor = new SparkMax(FeederConstants.kPreShooterMotorCanId, MotorType.kBrushless);
 
-        feederMotor.configure(
-            Configs.FeederSubsystem.feederConfig,
-            ResetMode.kResetSafeParameters,
-            PersistMode.kPersistParameters
-        );
-    }
-
-    public void setPower(SparkFlex motor, double power) { // Sets the power of the given motor
-        motor.set(power);
-    }
-
-    public Command runFeederCommand() { // Runs the feeder motor
-        return this.startEnd(
-      () -> {
-        setPower(feederMotor, FeederConstants.kFeederMotorPower);
-      },
-      () -> {
-        setPower(feederMotor, 0.0);
-      }
+    feederMotor.configure(
+      Configs.FeederSubsystem.feederConfig,
+      ResetMode.kResetSafeParameters,
+      PersistMode.kPersistParameters
     );
-    }
+    preShooterMotor.configure(
+      Configs.FeederSubsystem.preShooterConfig,
+      ResetMode.kResetSafeParameters,
+      PersistMode.kPersistParameters
+    );
+  }
+
+  public void setPower(double feederPower, double preShooterPower) {
+    feederMotor.set(feederPower);
+    preShooterMotor.set(preShooterPower);
+  }
+
+  public void stop() {
+    feederMotor.set(0.0);
+    preShooterMotor.set(0.0);
+  }
+
+
+  public Command runFeederCommand(ShooterSubsystem shooter) { // Runs the feeder while command is active
+    return this.startEnd(
+      () -> setPower(FeederConstants.kFeederMotorPower, FeederConstants.kPreShooterMotorPower),
+      this::stop
+    );
+  }
+
+  /**
+   * Feeds ONLY when enabledSupplier is true. This is perfect for:
+   * - "only feed when aimed + at RPM + hood ready"
+  */
+  public Command feedWhen(BooleanSupplier enabledSupplier) {
+    return this.run(() -> {
+      if (enabledSupplier.getAsBoolean()) {
+        setPower(FeederConstants.kFeederMotorPower, FeederConstants.kPreShooterMotorPower);
+      } else {
+        stop();
+      }
+    });
+  }
+
+  
+  /**
+  * Pulses the feeder for a short duration (useful for single-shot testing).
+  */
+  public Command pulseFeed(double seconds) {
+    return this.runOnce(() -> setPower(FeederConstants.kFeederMotorPower, FeederConstants.kPreShooterMotorPower))
+      .andThen(this.waitSeconds(seconds))
+      .andThen(this.runOnce(this::stop));
+  }
+
+  // Small helper (keeps timing logic out of RobotContainer)
+  private Command waitSeconds(double seconds) {
+    return this.run(() -> {}).until(new BooleanSupplier() {
+      final double start = Timer.getFPGATimestamp();
+      @Override public boolean getAsBoolean() {
+        return Timer.getFPGATimestamp() - start >= seconds;
+      }
+    });
+  }
 
 }

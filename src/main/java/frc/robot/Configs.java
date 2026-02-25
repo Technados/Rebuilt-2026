@@ -8,6 +8,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.ShooterConstants;
 
 public final class Configs {
   public static final class MAXSwerveModule {
@@ -85,23 +86,35 @@ public final class Configs {
 
   public static final class FeederSubsystem {
     public static final SparkFlexConfig feederConfig = new SparkFlexConfig();
+    public static final SparkMaxConfig preShooterConfig = new SparkMaxConfig();
 
     static {
-      // Configure basic settings of the feeder motor
+      // Configure basic settings of the feeder and preshooter motors
       feederConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+      preShooterConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
     }
   }
 
   public static final class ShooterSubsystem {
-    public static final SparkFlexConfig preShooterConfig = new SparkFlexConfig();
     public static final SparkFlexConfig leftShooterConfig = new SparkFlexConfig();
     public static final SparkFlexConfig rightShooterConfig = new SparkFlexConfig();
 
     static {
-      // Configure basic settings of the feeder motor
-      preShooterConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
-      leftShooterConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+      // Configure basic settings of the shooter motors
+      leftShooterConfig.inverted(false).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+
+      leftShooterConfig.closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .pid(ShooterConstants.kShooterP, ShooterConstants.kShooterI, ShooterConstants.kShooterD)
+        .outputRange(-1.0, 1.0);
+        
       rightShooterConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+      
+      rightShooterConfig.closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .pid(ShooterConstants.kShooterP, ShooterConstants.kShooterI, ShooterConstants.kShooterD)
+        .outputRange(-1.0, 1.0);
+
     }
   }
 

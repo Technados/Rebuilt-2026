@@ -22,6 +22,12 @@ import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.HoodSubsystem;
+import frc.robot.shooting.ShotMap;
+import frc.robot.shooting.ShotMapData;
+import frc.robot.shooting.ShotParameters;
+import frc.robot.FieldConstants;
+
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
@@ -49,6 +55,11 @@ public class RobotContainer {
     private final FeederSubsystem m_feederSubsystem = new FeederSubsystem();
 
     private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
+
+    private final HoodSubsystem m_hoodSubsystem = new HoodSubsystem();
+
+    // ShotMap is pure math/data; safe to live in RobotContainer.
+    private final ShotMap m_shotMap = ShotMapData.createAllianceZoneShotMap();
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -187,9 +198,36 @@ public class RobotContainer {
     // Start Button -> Zero swerve heading
     m_operatorController.start().onTrue(m_robotDrive.zeroHeadingCommand());
 
-    m_operatorController.x().whileTrue(m_feederSubsystem.runFeederCommand());
+    // Operator LT = "Ready to Shoot" (aim + set shooter rpm + set hood)
+    var hubSupplier = (java.util.function.Supplier<edu.wpi.first.math.geometry.Translation2d>) FieldConstants::getAllianceHub;
 
-    m_operatorController.y().whileTrue(m_shooterSubsystem.runShooterCommand());
+    var distanceSupplier = (java.util.function.DoubleSupplier) () ->
+      m_robotDrive.getPose().getTranslation().getDistance(hubSupplier.get());
+
+    var shotSupplier = (java.util.function.Supplier<ShotParameters>) () ->
+      m_shotMap.get(distanceSupplier.getAsDouble());
+
+    var rpmSupplier = (java.util.function.DoubleSupplier) () -> shotSupplier.get().rpm();
+    var hoodSupplier = (java.util.function.DoubleSupplier) () -> shotSupplier.get().hoodPos();
+
+    var readySupplier = (java.util.function.BooleanSupplier) () ->
+      m_robotDrive.isAimedAt(hubSupplier.get())
+      && m_shooterSubsystem.shooterAtVelocity()
+      && m_hoodSubsystem.atTarget();
+
+    m_operatorController.leftTrigger()
+      .whileTrue(
+          // Keep updating continuously while held
+          m_robotDrive.aimAtCommand(hubSupplier)
+              .alongWith(m_shooterSubsystem.holdVelocityCommand(rpmSupplier))
+              .alongWith(m_hoodSubsystem.holdPositionCommand(hoodSupplier))
+      );
+
+    // Operator RT = Fire (feed only when ready, and run pre-shooter)
+    m_operatorController.rightTrigger()
+      .whileTrue(
+          m_feederSubsystem.feedWhen(readySupplier)
+      );
 
   }
 
