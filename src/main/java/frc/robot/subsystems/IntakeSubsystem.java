@@ -75,6 +75,13 @@ public class IntakeSubsystem extends SubsystemBase {
 
   /* Pivot */
 
+  public boolean pivotAtTarget() {
+    double posErr = Math.abs(pivotTargetDeg - pivotEncoder.getPosition());
+    double vel = Math.abs(pivotEncoder.getVelocity());
+    return posErr <= IntakeConstants.kPivotPosToleranceDeg
+      && vel <= IntakeConstants.kPivotVelToleranceDegPerSec;
+  }
+
   public void tempZeroPivotAtIn() { // Sets zero to the current pivot position
     pivotEncoder.setPosition(0.0);
     pivotTargetDeg = 0.0;
@@ -102,11 +109,13 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public Command pivotInCommand() { // Moves the pivot to 0
-    return pivotToDegCommand(0.0);
+    return pivotToDegCommand(0.0)
+      .until(this::pivotAtTarget);
   }
 
   public Command pivotOutCommand() { // Moves the pivot to 130
-    return pivotToDegCommand(120.0);
+    return pivotToDegCommand(120.0)
+      .until(this::pivotAtTarget);
   }
 
   // Only for testing
@@ -122,5 +131,7 @@ public class IntakeSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Pivot Angle Deg", pivotEncoder.getPosition());
     SmartDashboard.putNumber("Pivot Target Deg", pivotTargetDeg);
     SmartDashboard.putBoolean("Pivot Zeroed", pivotZeroed);
+    SmartDashboard.putNumber("Pivot Encoder Pos (deg)", pivotEncoder.getPosition());
+    SmartDashboard.putNumber("Pivot Encoder Vel (degPerSec?)", pivotEncoder.getVelocity());
   }
 }

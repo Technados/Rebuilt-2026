@@ -69,13 +69,13 @@ public final class Configs {
       intakeConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
       pivotConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
 
-      pivotConfig.encoder.positionConversionFactor(IntakeConstants.kPivotEncoderTicksToDegrees);
-      pivotConfig.encoder.velocityConversionFactor(IntakeConstants.kPivotEncoderTicksToDegrees / 60.0);
+      pivotConfig.encoder.positionConversionFactor(IntakeConstants.kPivotDegPerMotorRev);   // deg per motor rev;
+      pivotConfig.encoder.velocityConversionFactor(IntakeConstants.kPivotDegPerSecPerMotorRPM); // deg/sec per motor RPM
 
       pivotConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .pid(IntakeConstants.kPivotP, IntakeConstants.kPivotI, IntakeConstants.kPivotD)
-        .outputRange(-1.0, 1.0);
+        .outputRange(-0.35, 0.35);
 
       pivotConfig.closedLoop.maxMotion
         .cruiseVelocity(IntakeConstants.kPivotCruiseVelocityDegPerSec)

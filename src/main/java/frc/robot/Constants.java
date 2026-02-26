@@ -65,20 +65,20 @@ public final class Constants {
     public static final double kPivotEncoderTicksToDegrees = 360 / kPivotMechAdv;
 
     // Pivot closed-loop gains (start conservative)
-    public static final double kPivotP = 0.015;
+    public static final double kPivotP = 0.01;
     public static final double kPivotI = 0.0;
-    public static final double kPivotD = 0.0;
+    public static final double kPivotD = 0.002;
 
     public static final double kPivotDegPerMotorRev = 360.0 / kPivotMechAdv; // ~6.8066
 
     public static final double kPivotDegPerSecPerMotorRPM = kPivotDegPerMotorRev / 60.0; // ~0.11344
 
+    public static final double kPivotPosToleranceDeg = 1.5;
+    public static final double kPivotVelToleranceDegPerSec = 8.0;
 
     // MAXMotion limits (units follow velocityConversionFactor)
-    public static final double kPivotCruiseVelocityDegPerSec = 180.0 * 52.89;
-    public static final double kPivotMaxAccelDegPerSec2 = 360.0 * 52.89;
-
-    public static final double kPivotDegTolerance = 1.0;
+    public static final double kPivotCruiseVelocityDegPerSec = 350;
+    public static final double kPivotMaxAccelDegPerSec2 = 900;
 
   }
 
