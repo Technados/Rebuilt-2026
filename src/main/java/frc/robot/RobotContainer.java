@@ -152,12 +152,9 @@ public class RobotContainer {
     NamedCommands.registerCommand("pivot-out", m_intakeSubsystem.pivotOutCommand());
 
     // register auto options to the shuffleboard           
-    autoChooser.addOption("LE", "LE");
-    autoChooser.addOption("LF", "LF");
-    autoChooser.addOption("RC", "RC");
-    autoChooser.addOption("RB", "RB");
-    autoChooser.addOption("MDA", "MDA");
-    autoChooser.addOption("MDC", "MDC");
+    autoChooser.addOption("RT-O", "RT-O");
+    autoChooser.addOption("RB-C", "RB-C");
+
 
     // Creating a new shuffleboard tab and adding the autoChooser
     Shuffleboard.getTab("PathPlanner Autonomous").add(autoChooser).withWidget(BuiltInWidgets.kComboBoxChooser);
