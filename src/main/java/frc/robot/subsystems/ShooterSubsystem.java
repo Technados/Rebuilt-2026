@@ -9,8 +9,8 @@ import java.util.function.DoubleSupplier;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -81,49 +81,49 @@ public class ShooterSubsystem extends SubsystemBase {
       );
   }
       
-  public void idleShooter() { // Runs the main shooter at idle power
+  public void idleShooter() { // Runs the main shooter at idle power - temporarily disabled
     //setShooterVelocity(ShooterConstants.kShooterIdleRPM);
     return;
   }
   
-  public void stopShooter() {
+  public void stopShooter() { // Stops both motors
     leftShooterMotor.set(0.0);
     rightShooterMotor.set(0.0);
   }
   
-  public double getTargetVelocity() {
+  public double getTargetVelocity() { // Returns the target velocity
     return targetVelocity;
   }
   
-  public double getLeftVelocity() {
+  public double getLeftVelocity() { // Returns the velocity of the left motor
     return Math.abs(leftShooterEncoder.getVelocity());
   }
   
-  public double getRightVelocity() {
+  public double getRightVelocity() { // Returns the velocity of the right motor
     return Math.abs(rightShooterEncoder.getVelocity());
   }
   
-     /** True when both wheels are within tolerance of target RPM. */
-    public boolean shooterAtVelocity() {
-      if (targetVelocity <= 1.0) return false;
-      double tol = ShooterConstants.kShooterReadyToleranceRPM;
-      return Math.abs(getLeftVelocity() - targetVelocity) <= tol
-          && Math.abs(getRightVelocity() - targetVelocity) <= tol;
-    }
+  /** True when both wheels are within tolerance of target RPM. */
+  public boolean shooterAtVelocity() {
+    if (targetVelocity <= 1.0) return false;
+    double tol = ShooterConstants.kShooterReadyToleranceRPM;
+    return Math.abs(getLeftVelocity() - targetVelocity) <= tol
+        && Math.abs(getRightVelocity() - targetVelocity) <= tol;
+  }
   
-  // ---------------- Commands kept inside subsystem ----------------
+  // ---------------- Commands ----------------
   
-  public Command idleShooterCommand() {
+  public Command idleShooterCommand() { // Command for the idle shooter
     return run(this::idleShooter);
   }
 
-  public Command holdVelocityCommand(DoubleSupplier rpmSupplier) {
+  public Command holdVelocityCommand(DoubleSupplier rpmSupplier) { // Command to set shooter velocity using ShotMap
     return run(
       () -> setShooterVelocity(rpmSupplier.getAsDouble())
     );
   }
 
-  public Command holdVelocityCommand(double velocity) {
+  public Command holdVelocityCommand(double velocity) { // Command to set shooter velocity
     return runEnd(
       () -> setShooterVelocity(velocity),
       () -> stopShooter()

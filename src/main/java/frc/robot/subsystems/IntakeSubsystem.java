@@ -58,8 +58,6 @@ public class IntakeSubsystem extends SubsystemBase {
     pivotEncoder.setPosition(0);
     pivotZeroed = true;
 
-    System.out.println("Intake initialized");
-
   }
 
   /* Intake */
@@ -77,7 +75,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   /* Pivot */
 
-  public boolean pivotAtTarget() {
+  public boolean pivotAtTarget() { // Returns true if the pivot position is within the tolerance for the target
     double posErr = Math.abs(pivotTargetDeg - pivotEncoder.getPosition());
     double vel = Math.abs(pivotEncoder.getVelocity());
     return posErr <= IntakeConstants.kPivotPosToleranceDeg

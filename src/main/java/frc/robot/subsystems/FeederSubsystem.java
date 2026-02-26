@@ -42,14 +42,13 @@ public class FeederSubsystem extends SubsystemBase {
     );
   }
 
-  public void setPower(double feederPower, double preShooterPower) {
+  public void setPower(double feederPower, double preShooterPower) { // Sets the power of both motors
     feederMotor.set(feederPower);
     preShooterMotor.set(preShooterPower);
   }
 
-  public void stop() {
-    feederMotor.set(0.0);
-    preShooterMotor.set(0.0);
+  public void stop() { // Stops both motors
+    setPower(0, 0);
   }
 
 
