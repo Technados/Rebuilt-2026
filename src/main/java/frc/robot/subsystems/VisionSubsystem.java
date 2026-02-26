@@ -64,7 +64,7 @@ public class VisionSubsystem extends SubsystemBase {
     // Gets vision measurements using MegaTag2
     public Optional<VisionMeasurement> getVisionMeasurementMT2(String name, double robotYawDeg, double robotYawRateDegPerSec) {
 
-        LimelightHelpers.SetRobotOrientation(name, robotYawRateDegPerSec, robotYawRateDegPerSec, 0, 0, 0, 0);
+        LimelightHelpers.SetRobotOrientation(name, robotYawDeg, robotYawRateDegPerSec, 0, 0, 0, 0);
 
         LimelightHelpers.PoseEstimate mt2 = 
             LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);

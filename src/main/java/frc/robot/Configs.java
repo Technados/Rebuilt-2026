@@ -67,7 +67,7 @@ public final class Configs {
     static {
       // Configure basic settings of the intake motor
       intakeConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
-      pivotConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+      pivotConfig.inverted(false).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
 
       pivotConfig.encoder.positionConversionFactor(IntakeConstants.kPivotDegPerMotorRev);   // deg per motor rev;
       pivotConfig.encoder.velocityConversionFactor(IntakeConstants.kPivotDegPerSecPerMotorRPM); // deg/sec per motor RPM

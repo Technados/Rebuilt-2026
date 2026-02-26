@@ -189,7 +189,7 @@ public class RobotContainer {
     
     m_driverController.a().onTrue(m_intakeSubsystem.pivotOutCommand());
 
-    m_driverController.leftBumper().whileTrue(m_intakeSubsystem.pivotJogCommand(0.1));
+     m_driverController.leftBumper().whileTrue(m_intakeSubsystem.pivotJogCommand(0.1));
 
     m_driverController.rightBumper().whileTrue(m_intakeSubsystem.pivotJogCommand(-0.1));
 

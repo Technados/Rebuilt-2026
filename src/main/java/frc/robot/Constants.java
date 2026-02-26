@@ -71,7 +71,7 @@ public final class Constants {
 
     public static final double kPivotDegPerMotorRev = 360.0 / kPivotMechAdv; // ~6.8066
 
-    public static final double kPivotDegPerSecPerMotorRPM = kPivotDegPerMotorRev / 60.0; // ~0.11344
+    public static final double kPivotDegPerSecPerMotorRPM = kPivotDegPerMotorRev / 60;
 
     public static final double kPivotPosToleranceDeg = 1.5;
     public static final double kPivotVelToleranceDegPerSec = 8.0;

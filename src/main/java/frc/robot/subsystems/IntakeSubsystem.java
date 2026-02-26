@@ -58,6 +58,8 @@ public class IntakeSubsystem extends SubsystemBase {
     pivotEncoder.setPosition(0);
     pivotZeroed = true;
 
+    System.out.println("Intake initialized");
+
   }
 
   /* Intake */
@@ -90,7 +92,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void setPivotTargetDeg(double targetDeg) { // Sets the pivot target
     // Clamp to your known safe range
-    targetDeg = Math.max(0.0, Math.min(130.0, targetDeg));
+    targetDeg = Math.max(0.0, Math.min(120.0, targetDeg));
 
     // Require zeroing first (until limit switch exists)
     if (!pivotZeroed) return;
@@ -108,13 +110,13 @@ public class IntakeSubsystem extends SubsystemBase {
     return this.runOnce(() -> setPivotTargetDeg(targetDeg));
   }
 
-  public Command pivotInCommand() { // Moves the pivot to 0
-    return pivotToDegCommand(0.0)
+  public Command pivotInCommand() { // Moves the pivot to 80
+    return pivotToDegCommand(80.0)
       .until(this::pivotAtTarget);
   }
 
-  public Command pivotOutCommand() { // Moves the pivot to 130
-    return pivotToDegCommand(120.0)
+  public Command pivotOutCommand() { // Moves the pivot to 0
+    return pivotToDegCommand(0.0)
       .until(this::pivotAtTarget);
   }
 
@@ -128,10 +130,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Pivot Angle Deg", pivotEncoder.getPosition());
-    SmartDashboard.putNumber("Pivot Target Deg", pivotTargetDeg);
-    SmartDashboard.putBoolean("Pivot Zeroed", pivotZeroed);
-    SmartDashboard.putNumber("Pivot Encoder Pos (deg)", pivotEncoder.getPosition());
-    SmartDashboard.putNumber("Pivot Encoder Vel (degPerSec?)", pivotEncoder.getVelocity());
+    SmartDashboard.putNumber("Intake/Pivot Angle Deg", pivotEncoder.getPosition());
+    SmartDashboard.putNumber("Intake/Pivot Target Deg", pivotTargetDeg);
+    SmartDashboard.putBoolean("Intake/Pivot Zeroed", pivotZeroed);
+    SmartDashboard.putNumber("Intake/Pivot Encoder Pos (deg)", pivotEncoder.getPosition());
+    SmartDashboard.putNumber("Intake/Pivot Encoder Vel (degPerSec?)", pivotEncoder.getVelocity());
   }
 }
