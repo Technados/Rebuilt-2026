@@ -151,6 +151,12 @@ public class RobotContainer {
     NamedCommands.registerCommand("pivot-in", m_intakeSubsystem.pivotInCommand());
     NamedCommands.registerCommand("pivot-out", m_intakeSubsystem.pivotOutCommand());
 
+    // NamedCommands.registerCommand("shooter", 
+    //     new SequentialCommandGroup(
+          
+    //     )
+    // );
+
     // register auto options to the shuffleboard           
     autoChooser.addOption("RT-O", "RT-O");
     autoChooser.addOption("RB-C", "RB-C");
