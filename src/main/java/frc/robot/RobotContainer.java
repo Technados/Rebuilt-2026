@@ -31,6 +31,7 @@ import frc.robot.FieldConstants;
 
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -145,6 +146,10 @@ public class RobotContainer {
     //   "Reset Buttons/Reset Pivot to Zero",
     //   m_intakeSubsystem.resetEncoder()
     // );
+
+    NamedCommands.registerCommand("intake", m_intakeSubsystem.runIntakeCommand());
+    NamedCommands.registerCommand("pivot-in", m_intakeSubsystem.pivotInCommand());
+    NamedCommands.registerCommand("pivot-out", m_intakeSubsystem.pivotOutCommand());
 
     // register auto options to the shuffleboard           
     autoChooser.addOption("LE", "LE");

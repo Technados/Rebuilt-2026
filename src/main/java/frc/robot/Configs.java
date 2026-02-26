@@ -65,8 +65,10 @@ public final class Configs {
     public static final SparkFlexConfig pivotConfig = new SparkFlexConfig();
 
     static {
-      // Configure basic settings of the intake motor
+      // Intake Configs
       intakeConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+
+      // Pivot Configs
       pivotConfig.inverted(false).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
 
       pivotConfig.encoder.positionConversionFactor(IntakeConstants.kPivotDegPerMotorRev);   // deg per motor rev;
@@ -78,8 +80,8 @@ public final class Configs {
         .outputRange(-0.35, 0.35);
 
       pivotConfig.closedLoop.maxMotion
-        .cruiseVelocity(IntakeConstants.kPivotCruiseVelocityDegPerSec)
-        .maxAcceleration(IntakeConstants.kPivotMaxAccelDegPerSec2);
+        .cruiseVelocity(IntakeConstants.kPivotCruiseVelocity)
+        .maxAcceleration(IntakeConstants.kPivotMaxAccel);
 
     }
   }
@@ -100,8 +102,12 @@ public final class Configs {
     public static final SparkFlexConfig rightShooterConfig = new SparkFlexConfig();
 
     static {
-      // Configure basic settings of the shooter motors
-      leftShooterConfig.inverted(false).idleMode(IdleMode.kCoast).smartCurrentLimit(40);
+      // Left Shooter Configs
+      leftShooterConfig
+        .inverted(false)
+        .idleMode(IdleMode.kCoast)
+        .smartCurrentLimit(40)
+        .voltageCompensation(12.0);
 
       leftShooterConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -111,8 +117,12 @@ public final class Configs {
       leftShooterConfig.apply(rightShooterConfig)
         .follow(ShooterConstants.kRightShooterMotorCanId, true);
 
-        
-      rightShooterConfig.inverted(true).idleMode(IdleMode.kCoast).smartCurrentLimit(40);
+      // Right Shooter Configs
+      rightShooterConfig
+        .inverted(true)
+        .idleMode(IdleMode.kCoast)
+        .smartCurrentLimit(40)
+        .voltageCompensation(12.0);
       
       rightShooterConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)

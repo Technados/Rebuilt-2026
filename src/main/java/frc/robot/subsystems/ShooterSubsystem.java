@@ -66,14 +66,14 @@ public class ShooterSubsystem extends SubsystemBase {
     // Optional feedforward (start at 0, tune later)
     double ffVolts = ShooterConstants.kShooterKSVolts + (ShooterConstants.kShooterKVVoltsPerRPM * targetVelocity);
     
-    leftShooterController.setReference(
+    leftShooterController.setSetpoint(
       targetVelocity,
       ControlType.kVelocity,
       ClosedLoopSlot.kSlot0,
       ffVolts
       );
       
-    rightShooterController.setReference(
+    rightShooterController.setSetpoint(
       targetVelocity,
       ControlType.kVelocity,
       ClosedLoopSlot.kSlot0,

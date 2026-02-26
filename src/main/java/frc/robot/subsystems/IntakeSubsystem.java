@@ -96,7 +96,7 @@ public class IntakeSubsystem extends SubsystemBase {
     if (!pivotZeroed) return;
 
     pivotTargetDeg = targetDeg;
-    pivotController.setReference(pivotTargetDeg,
+    pivotController.setSetpoint(pivotTargetDeg,
       ControlType.kMAXMotionPositionControl);
   }
 
@@ -105,17 +105,17 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public Command pivotToDegCommand(double targetDeg) { // Moves the pivot to the given setpoint
-    return this.runOnce(() -> setPivotTargetDeg(targetDeg));
+    return this.runOnce(() -> setPivotTargetDeg(targetDeg))
+      .andThen(run(() -> {}))
+      .until(this::pivotAtTarget);
   }
 
   public Command pivotInCommand() { // Moves the pivot to 80
-    return pivotToDegCommand(80.0)
-      .until(this::pivotAtTarget);
+    return pivotToDegCommand(120.0);
   }
 
   public Command pivotOutCommand() { // Moves the pivot to 0
-    return pivotToDegCommand(0.0)
-      .until(this::pivotAtTarget);
+    return pivotToDegCommand(0.0);
   }
 
   // Only for testing
@@ -131,7 +131,7 @@ public class IntakeSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Intake/Pivot Angle Deg", pivotEncoder.getPosition());
     SmartDashboard.putNumber("Intake/Pivot Target Deg", pivotTargetDeg);
     SmartDashboard.putBoolean("Intake/Pivot Zeroed", pivotZeroed);
-    SmartDashboard.putNumber("Intake/Pivot Encoder Pos (deg)", pivotEncoder.getPosition());
     SmartDashboard.putNumber("Intake/Pivot Encoder Vel (degPerSec?)", pivotEncoder.getVelocity());
+    SmartDashboard.putBoolean("Intake/Pivot At Target", pivotAtTarget());
   }
 }
