@@ -104,11 +104,11 @@ public final class Constants {
     public static final int kLeftShooterMotorCanId = 14;
     public static final int kRightShooterMotorCanId = 15;
     
-    public static final double kShooterMaxRPM = 6000.0; // Placeholder, might need adjustment
-    public static final double kShooterIdleRPM = 1500.0; // Placeholder, might need adjustment
+    public static final double kShooterMaxRPM = 6000.0; 
+    public static final double kShooterIdleRPM = 1500.0; 
     
     // Must be adjusted before testing!
-    public static final double kShooterP = 0.006;
+    public static final double kShooterP = 0.0002;
     public static final double kShooterI = 0.0;
     public static final double kShooterD = 0.0;
     
@@ -122,6 +122,9 @@ public final class Constants {
 
     // For shooting tests before LaserCAN gating:
     public static final double kPreShooterFeedPower = -0.6; // can be same as kPreShooterMotorPower
+
+    public static final double kVortexKv = 565;
+    public static final double kNominalVoltage = 12.0; 
 
   }
 

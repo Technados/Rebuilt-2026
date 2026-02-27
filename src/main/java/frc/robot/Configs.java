@@ -102,25 +102,12 @@ public final class Configs {
     public static final SparkFlexConfig rightShooterConfig = new SparkFlexConfig();
 
     static {
-      // Left Shooter Configs
-      leftShooterConfig
-        .inverted(false)
-        .idleMode(IdleMode.kCoast)
-        .smartCurrentLimit(40)
-        .voltageCompensation(12.0);
-
-      leftShooterConfig.closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pid(ShooterConstants.kShooterP, ShooterConstants.kShooterI, ShooterConstants.kShooterD)
-        .outputRange(-1.0, 1.0);
-
-      leftShooterConfig.apply(rightShooterConfig)
-        .follow(ShooterConstants.kRightShooterMotorCanId, true);
-
       // Right Shooter Configs
       rightShooterConfig
         .inverted(true)
         .idleMode(IdleMode.kCoast)
+        .closedLoopRampRate(1.0)
+        .openLoopRampRate(1.0)
         .smartCurrentLimit(40)
         .voltageCompensation(12.0);
       
@@ -128,6 +115,18 @@ public final class Configs {
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .pid(ShooterConstants.kShooterP, ShooterConstants.kShooterI, ShooterConstants.kShooterD)
         .outputRange(-1.0, 1.0);
+
+      // rightShooterConfig.closedLoop.maxMotion
+      //   .cruiseVelocity(5000) // This is needed for maxmotion, but does not set the velocity
+      //   .maxAcceleration(10000)
+      //   .allowedProfileError(50); // 1 was too strict
+
+      rightShooterConfig.closedLoop
+        .feedForward.kV(1.0 / ShooterConstants.kVortexKv); // needs recip of RPM per one volt
+
+      // Left Shooter Configs
+      leftShooterConfig.apply(rightShooterConfig)
+        .follow(ShooterConstants.kRightShooterMotorCanId, true);
 
     }
   }

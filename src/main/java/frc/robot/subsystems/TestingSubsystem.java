@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TestingSubsystem extends SubsystemBase {
 
-    public double shootingVelocity = 3250;
+    public double shootingVelocity = 4000;
 
     public TestingSubsystem() {}
 

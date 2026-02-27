@@ -26,7 +26,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private final SparkFlex leftShooterMotor;
   private final RelativeEncoder leftShooterEncoder;
-  private SparkClosedLoopController leftShooterController;
   
   private final SparkFlex rightShooterMotor;
   private final RelativeEncoder rightShooterEncoder;
@@ -53,7 +52,6 @@ public class ShooterSubsystem extends SubsystemBase {
     leftShooterEncoder = leftShooterMotor.getEncoder();
     rightShooterEncoder = rightShooterMotor.getEncoder();
 
-    leftShooterController = leftShooterMotor.getClosedLoopController();
     rightShooterController = rightShooterMotor.getClosedLoopController();
 
     targetVelocity = 0.0;
@@ -63,22 +61,13 @@ public class ShooterSubsystem extends SubsystemBase {
     // Clamp to your known safe range
     targetVelocity = MathUtil.clamp(velocity, 0.0, ShooterConstants.kShooterMaxRPM);
     
-    // Optional feedforward (start at 0, tune later)
-    double ffVolts = ShooterConstants.kShooterKSVolts + (ShooterConstants.kShooterKVVoltsPerRPM * targetVelocity);
-    
-    leftShooterController.setSetpoint(
-      targetVelocity,
-      ControlType.kVelocity,
-      ClosedLoopSlot.kSlot0,
-      ffVolts
-      );
-      
+    // Only command the right shooter, left will follow (already set in configs)
     rightShooterController.setSetpoint(
       targetVelocity,
       ControlType.kVelocity,
-      ClosedLoopSlot.kSlot0,
-      ffVolts
-      );
+      ClosedLoopSlot.kSlot0
+      // removed 4th arg FF (FF is set in configs)
+    );
   }
       
   public void idleShooter() { // Runs the main shooter at idle power - temporarily disabled
@@ -95,20 +84,20 @@ public class ShooterSubsystem extends SubsystemBase {
     return targetVelocity;
   }
   
-  public double getLeftVelocity() { // Returns the velocity of the left motor
-    return Math.abs(leftShooterEncoder.getVelocity());
-  }
-  
-  public double getRightVelocity() { // Returns the velocity of the right motor
-    return Math.abs(rightShooterEncoder.getVelocity());
-  }
+public double getLeftVelocity() {
+ return leftShooterEncoder.getVelocity();
+}
+
+public double getRightVelocity() {
+ return rightShooterEncoder.getVelocity();
+}
   
   /** True when both wheels are within tolerance of target RPM. */
   public boolean shooterAtVelocity() {
     if (targetVelocity <= 1.0) return false;
     double tol = ShooterConstants.kShooterReadyToleranceRPM;
-    return Math.abs(getLeftVelocity() - targetVelocity) <= tol
-        && Math.abs(getRightVelocity() - targetVelocity) <= tol;
+    return (getLeftVelocity() - targetVelocity) <= tol
+        && (getRightVelocity() - targetVelocity) <= tol;
   }
   
   // ---------------- Commands ----------------
@@ -136,6 +125,12 @@ public class ShooterSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Shooter/Left Velocity", getLeftVelocity());
     SmartDashboard.putNumber("Shooter/Right Velocity", getRightVelocity());
     SmartDashboard.putBoolean("Shooter/Shooter At Velocity", shooterAtVelocity());
+
+    SmartDashboard.putNumber("Shooter/Right AppliedOutput", rightShooterMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Shooter/Right BusVoltage", rightShooterMotor.getBusVoltage());
+    SmartDashboard.putNumber("Shooter/Right AppliedVolts", 
+      rightShooterMotor.getAppliedOutput() * rightShooterMotor.getBusVoltage());
+
   }
 
 }
