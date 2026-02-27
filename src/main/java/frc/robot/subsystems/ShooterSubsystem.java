@@ -12,6 +12,7 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
@@ -62,13 +63,13 @@ public class ShooterSubsystem extends SubsystemBase {
     targetVelocity = MathUtil.clamp(velocity, 0.0, ShooterConstants.kShooterMaxRPM);
     
     // Only command the right shooter, left will follow (already set in configs)
-    rightShooterController.setSetpoint(
+
+  rightShooterController.setSetpoint(
       targetVelocity,
-      ControlType.kVelocity,
+      ControlType.kVelocity,             
       ClosedLoopSlot.kSlot0
-      // removed 4th arg FF (FF is set in configs)
-    );
-  }
+  );
+}
       
   public void idleShooter() { // Runs the main shooter at idle power - temporarily disabled
     //setShooterVelocity(ShooterConstants.kShooterIdleRPM);

@@ -104,7 +104,7 @@ public final class Constants {
     public static final int kLeftShooterMotorCanId = 14;
     public static final int kRightShooterMotorCanId = 15;
     
-    public static final double kShooterMaxRPM = 6000.0; 
+    public static final double kShooterMaxRPM = 3000.0; 
     public static final double kShooterIdleRPM = 1500.0; 
     
     // Must be adjusted before testing!
@@ -117,13 +117,14 @@ public final class Constants {
 
     // Optional feedforward: volts = kS + kV * RPM
     // Start at 0 to prove closed-loop works, then add feedforward later for better recovery.
-    public static final double kShooterKSVolts = 0.0;
-    public static final double kShooterKVVoltsPerRPM = 0.0;
+    public static final double kShooterKSVolts = 0.10; //Calculated from direct shooter data by nitzky
+    public static final double kShooterKVVoltsPerRPM = 1.0 / 6784; // ~0.00177 (recip. of motors Kv)
 
     // For shooting tests before LaserCAN gating:
     public static final double kPreShooterFeedPower = -0.6; // can be same as kPreShooterMotorPower
 
     public static final double kVortexKv = 565;
+    public static final double kVortexFreeSpeedRPM = 6784;
     public static final double kNominalVoltage = 12.0; 
 
   }

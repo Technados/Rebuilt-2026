@@ -121,8 +121,8 @@ public final class Configs {
       //   .maxAcceleration(10000)
       //   .allowedProfileError(50); // 1 was too strict
 
-      rightShooterConfig.closedLoop
-        .feedForward.kV(1.0 / ShooterConstants.kVortexKv); // needs recip of RPM per one volt
+      rightShooterConfig.closedLoop.feedForward
+        .kV(1.0 / ShooterConstants.kVortexFreeSpeedRPM);
 
       // Left Shooter Configs
       leftShooterConfig.apply(rightShooterConfig)
