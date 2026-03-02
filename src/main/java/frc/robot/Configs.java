@@ -6,6 +6,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.ShooterConstants;
@@ -35,8 +36,9 @@ public final class Configs {
           .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
           // These are example gains you may need to them for your own robot!
           .pid(0.04, 0, 0.003)
-          .velocityFF(drivingVelocityFeedForward)
-          .outputRange(-1, 1);
+          .outputRange(-1, 1)
+          .feedForward
+            .kV(drivingVelocityFeedForward);
 
       turningConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20);
       turningConfig
@@ -61,6 +63,22 @@ public final class Configs {
     }
   }
 
+  public static final class ClimberSubsystem {
+    public static final SparkFlexConfig climberConfig = new SparkFlexConfig();
+
+    static {
+      climberConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+
+      climberConfig.encoder.positionConversionFactor(ClimberConstants.kClimberDegPerMotorRev);   // deg per motor rev;
+      climberConfig.encoder.velocityConversionFactor(ClimberConstants.kClimberDegPerSecPerMotorRPM); // deg/sec per motor RPM
+
+      climberConfig.closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .pid(ClimberConstants.kClimberP, ClimberConstants.kClimberI, ClimberConstants.kClimberD)
+        .outputRange(-0.35, 0.35);
+    }
+  }
+
   public static final class IntakeSubsystem {
     public static final SparkFlexConfig intakeConfig = new SparkFlexConfig();
     public static final SparkFlexConfig pivotConfig = new SparkFlexConfig();
@@ -70,7 +88,7 @@ public final class Configs {
       intakeConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
 
       // Pivot Configs
-      pivotConfig.inverted(false).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+      pivotConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
 
       pivotConfig.encoder.positionConversionFactor(IntakeConstants.kPivotDegPerMotorRev);   // deg per motor rev;
       pivotConfig.encoder.velocityConversionFactor(IntakeConstants.kPivotDegPerSecPerMotorRPM); // deg/sec per motor RPM

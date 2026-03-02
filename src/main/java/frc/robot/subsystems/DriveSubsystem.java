@@ -30,12 +30,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-//import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-//import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 
 import frc.robot.Constants.AimConstants;
 
@@ -43,9 +39,6 @@ import frc.robot.Constants.AimConstants;
 public class DriveSubsystem extends SubsystemBase {
 
   // Sensors and objects
-  private final NetworkTable frontLimelight = NetworkTableInstance.getDefault().getTable("limelight-front");
-  private final NetworkTable backLimelight = NetworkTableInstance.getDefault().getTable("limelight-back");
-
   private final LEDSubsystem ledSubsystem;
 
   // The gyro sensor: NavX-2 Micro gyro from Kauai Labs
@@ -150,6 +143,8 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
 
     SmartDashboard.putNumber("Gyro", getHeading()); // returns the heading of the robot and sends to dashboard
+    SmartDashboard.putBoolean("Gyro Online", m_gyro.isConnected());
+
     if (!m_gyro.isConnected()) {
       ledSubsystem.flashOnceForGyroAlert(0.61, 2.0); // 🔴 Red if gyro offline
     }

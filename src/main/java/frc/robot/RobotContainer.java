@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -136,28 +137,22 @@ public class RobotContainer {
       )
     );
 
-    // Adds button to dashboard that resets the intake pivot encoder to zero
-    // SmartDashboard.putData(
-    //   "Reset Buttons/Reset Pivot to Zero",
-    //   m_intakeSubsystem.resetEncoder()
-    // );
-
     NamedCommands.registerCommand("intake", m_intakeSubsystem.runIntakeCommand());
     NamedCommands.registerCommand("pivot-in", m_intakeSubsystem.pivotInCommand());
     NamedCommands.registerCommand("pivot-out", m_intakeSubsystem.pivotOutCommand());
 
-    NamedCommands.registerCommand("shoot", m_shooterSubsystem.holdVelocityCommand(3000)); // Test velocity later
+    NamedCommands.registerCommand("shoot", 
+      new ParallelCommandGroup(
+        m_shooterSubsystem.holdVelocityCommand(3000),
+        m_hoodSubsystem.holdPositionCommand(0),
+        m_feederSubsystem.feedWhen(m_shooterSubsystem.shooterAtVelocity())
+      )
+    ); // Test positions/velocity later
 
-    // NamedCommands.registerCommand("shooter", 
-    //     new SequentialCommandGroup(
-          
-    //     )
-    // );
-
-    // register auto options to the shuffleboard           
+    // register auto options to the shuffleboard 
+    autoChooser.addOption("null", null);         
     autoChooser.addOption("RT-O", "RT-O");
     autoChooser.addOption("RB-C", "RB-C");
-
 
     // Creating a new shuffleboard tab and adding the autoChooser
     Shuffleboard.getTab("PathPlanner Autonomous").add(autoChooser).withWidget(BuiltInWidgets.kComboBoxChooser);
@@ -236,11 +231,15 @@ public class RobotContainer {
           m_feederSubsystem.feedWhen(readySupplier)
       );
 
-    m_operatorController.x()
-      .whileTrue(
-        m_shooterSubsystem.holdVelocityCommand(m_testing.shootingVelocity)
-          .alongWith(m_feederSubsystem.runFeederCommand(m_shooterSubsystem))
-      );
+      m_operatorController.x()
+        .whileTrue(
+          m_shooterSubsystem.holdVelocityCommand(m_testing.shootingVelocity)
+        );
+
+      m_operatorController.y()
+        .whileTrue(
+          m_feederSubsystem.runFeederCommand(m_shooterSubsystem)
+        );
 
   }
 

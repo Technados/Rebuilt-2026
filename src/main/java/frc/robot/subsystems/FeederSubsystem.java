@@ -73,6 +73,16 @@ public class FeederSubsystem extends SubsystemBase {
       }
     });
   }
+
+  public Command feedWhen(boolean shooterAtSpeed) { // Feeds only when shooterAtSpeed is true
+    return this.run(() -> {
+      if (shooterAtSpeed) {
+        setPower(FeederConstants.kFeederMotorPower, FeederConstants.kPreShooterMotorPower);
+      } else {
+        stop();
+      }
+    });
+  }
  
   public Command pulseFeed(double seconds) { // Pulses the feeder for a short duration (useful for single-shot testing)
     return this.runOnce(() -> setPower(FeederConstants.kFeederMotorPower, FeederConstants.kPreShooterMotorPower))

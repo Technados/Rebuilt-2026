@@ -92,10 +92,10 @@ public final class Constants {
   public static final class FeederConstants {
 
     public static final int kFeederMotorCanId = 12;
-    public static final double kFeederMotorPower = 0.75;
+    public static final double kFeederMotorPower = 0.85;
     
     public static final int kPreShooterMotorCanId = 13;
-    public static final double kPreShooterMotorPower = -0.8;
+    public static final double kPreShooterMotorPower = -0.9;
 
   }
 
@@ -146,6 +146,25 @@ public final class Constants {
     // Modeled servo speed (pos units per second). This is not physics-accurate;
     // it's a practical way to have a stable "hood is ready" signal.
     public static final double kMaxPosUnitsPerSec = 0.80;
+
+  }
+
+  public static final class ClimberConstants {
+
+    public static final int kClimberMotorCanId = -1;
+
+    public static final double kClimberMechAdv = 0;
+
+    // Must be adjusted before testing!
+    public static final double kClimberP = 0.0;
+    public static final double kClimberI = 0.0;
+    public static final double kClimberD = 0.0;
+
+    public static final double kClimberPosToleranceDeg = 0.0;
+    public static final double kClimberVelToleranceDegPerSec = 0.0;
+
+    public static final double kClimberDegPerMotorRev = 360.0 / kClimberMechAdv;
+    public static final double kClimberDegPerSecPerMotorRPM = kClimberDegPerMotorRev / 60;
 
   }
 

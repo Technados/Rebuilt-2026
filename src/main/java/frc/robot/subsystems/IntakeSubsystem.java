@@ -45,7 +45,8 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeMotor.configure(
       Configs.IntakeSubsystem.intakeConfig,
       ResetMode.kResetSafeParameters,
-      PersistMode.kPersistParameters);
+      PersistMode.kPersistParameters
+    );
     pivotMotor.configure(
       Configs.IntakeSubsystem.pivotConfig,
       ResetMode.kResetSafeParameters,
@@ -83,7 +84,7 @@ public class IntakeSubsystem extends SubsystemBase {
   
   public void setPivotTargetDeg(double targetDeg) { // Sets the pivot target
     // Clamp to your known safe range
-    targetDeg = Math.max(0.0, Math.min(120.0, targetDeg));
+    targetDeg = Math.max(0.0, Math.min(100.0, targetDeg));
     
     // Require zeroing first (until limit switch exists)
     if (!pivotZeroed) return;
@@ -112,12 +113,12 @@ public class IntakeSubsystem extends SubsystemBase {
   
   public Command pivotToDegCommand(double targetDeg) { // Moves the pivot to the given setpoint
     return this.runOnce(() -> setPivotTargetDeg(targetDeg))
-    .andThen(run(() -> {}))
-    .until(this::pivotAtTarget);
+      .andThen(run(() -> {}))
+      .until(this::pivotAtTarget);
   }
   
-  public Command pivotInCommand() { // Moves the pivot to 80
-    return pivotToDegCommand(120.0);
+  public Command pivotInCommand() { // Moves the pivot to 100
+    return pivotToDegCommand(100.0);
   }
   
   public Command pivotOutCommand() { // Moves the pivot to 0

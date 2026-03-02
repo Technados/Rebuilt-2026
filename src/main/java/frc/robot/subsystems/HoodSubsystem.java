@@ -73,6 +73,11 @@ public class HoodSubsystem extends SubsystemBase {
         return run(() -> setHoodPosition(posSupplier.getAsDouble()));
     }
 
+    // Hold a hood position continuously (useful for ReadyToShoot)
+    public Command holdPositionCommand(double position) {
+        return run(() -> setHoodPosition(position));
+    }
+
     /*----------Periodic----------*/
 
     @Override
