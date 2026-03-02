@@ -7,19 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "C-CL"
+            "pathName": "HC-D"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "C L-Intake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Intake-HL"
+            "pathName": "D-HL"
           }
         },
         {

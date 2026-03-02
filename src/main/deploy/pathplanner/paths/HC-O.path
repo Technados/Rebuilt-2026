@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.73,
-        "y": 0.716
+        "x": 3.560328102710413,
+        "y": 4.028530670470756
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5363622018304781,
-        "y": -0.7014044809207893
+        "x": 3.8498071002553855,
+        "y": 3.7313570791607846
       },
       "isLocked": false,
-      "linkedName": "Depot"
+      "linkedName": "Hub Center"
     },
     {
       "anchor": {
-        "x": 3.0,
-        "y": 4.6495863052781745
+        "x": 0.73,
+        "y": 0.71623395149786
       },
       "prevControl": {
-        "x": 1.7992279583226851,
-        "y": 5.2578385369944
+        "x": 0.5205843523366394,
+        "y": 0.5796869393967694
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Hub Left"
+      "linkedName": "Outpost"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -21.737842428505157
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Left",
+  "folder": "Center",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -179.80246419429525
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

@@ -7,31 +7,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LB-O"
+            "pathName": "HC-CL"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Spin"
+            "pathName": "CL-Intake"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "O-HR"
+            "pathName": "Intake-HL"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "HR-T"
+            "pathName": "HL-T"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Left",
+  "folder": "Center",
   "choreoAuto": false
 }

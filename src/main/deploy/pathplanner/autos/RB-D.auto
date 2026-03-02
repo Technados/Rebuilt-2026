@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "New Path"
+            "pathName": "RB-D"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "D-T"
+            "pathName": "D-HL"
           }
         },
         {
@@ -26,6 +26,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Center",
+  "folder": "Right",
   "choreoAuto": false
 }
