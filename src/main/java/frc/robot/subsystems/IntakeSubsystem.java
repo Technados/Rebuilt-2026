@@ -28,10 +28,12 @@ import frc.robot.Constants.IntakeConstants;
 public class IntakeSubsystem extends SubsystemBase {
 
   private final SparkFlex intakeMotor;
-
   private final SparkFlex pivotMotor;
+
   private RelativeEncoder pivotEncoder;
+
   private SparkClosedLoopController pivotController;
+
   private boolean pivotZeroed = false;
   private double pivotTargetDeg = 0.0;
 
@@ -50,18 +52,49 @@ public class IntakeSubsystem extends SubsystemBase {
       PersistMode.kNoPersistParameters
     );
 
-    // Tracks the pivot motor's position
+    // Creates encoder to track the pivot motor's position
     pivotEncoder = pivotMotor.getEncoder();
 
+    // Creates controller for pivot motor (intake uses power)
     pivotController = pivotMotor.getClosedLoopController();
 
+    // Zeroes the encoder
     pivotEncoder.setPosition(0);
     pivotZeroed = true;
 
   }
 
-  /* Intake */
+  /*----------Getters----------*/
+  
+  public boolean pivotAtTarget() { // Returns true if the pivot position is within the tolerance for the target
+    double posErr = Math.abs(pivotTargetDeg - pivotEncoder.getPosition());
+    double vel = Math.abs(pivotEncoder.getVelocity());
+    return posErr <= IntakeConstants.kPivotPosToleranceDeg
+    && vel <= IntakeConstants.kPivotVelToleranceDegPerSec;
+  }
 
+  /*----------Control Methods----------*/
+  
+  public void tempZeroPivotAtIn() { // Sets zero to the current pivot position
+    pivotEncoder.setPosition(0.0);
+    pivotTargetDeg = 0.0;
+    pivotZeroed = true;
+  }
+  
+  public void setPivotTargetDeg(double targetDeg) { // Sets the pivot target
+    // Clamp to your known safe range
+    targetDeg = Math.max(0.0, Math.min(120.0, targetDeg));
+    
+    // Require zeroing first (until limit switch exists)
+    if (!pivotZeroed) return;
+    
+    pivotTargetDeg = targetDeg;
+    pivotController.setSetpoint(pivotTargetDeg,
+    ControlType.kMAXMotionPositionControl);
+  }
+
+  /*----------Commands----------*/
+  
   public Command runIntakeCommand() { // Runs the intake
     return this.startEnd(
     () -> {
@@ -73,51 +106,24 @@ public class IntakeSubsystem extends SubsystemBase {
     );
   }
 
-  /* Pivot */
-
-  public boolean pivotAtTarget() { // Returns true if the pivot position is within the tolerance for the target
-    double posErr = Math.abs(pivotTargetDeg - pivotEncoder.getPosition());
-    double vel = Math.abs(pivotEncoder.getVelocity());
-    return posErr <= IntakeConstants.kPivotPosToleranceDeg
-      && vel <= IntakeConstants.kPivotVelToleranceDegPerSec;
-  }
-
-  public void tempZeroPivotAtIn() { // Sets zero to the current pivot position
-    pivotEncoder.setPosition(0.0);
-    pivotTargetDeg = 0.0;
-    pivotZeroed = true;
-  }
-
-  public void setPivotTargetDeg(double targetDeg) { // Sets the pivot target
-    // Clamp to your known safe range
-    targetDeg = Math.max(0.0, Math.min(120.0, targetDeg));
-
-    // Require zeroing first (until limit switch exists)
-    if (!pivotZeroed) return;
-
-    pivotTargetDeg = targetDeg;
-    pivotController.setSetpoint(pivotTargetDeg,
-      ControlType.kMAXMotionPositionControl);
-  }
-
   public Command tempZeroPivotAtInCommand() { // Returns tempZeroPivotAtIn as a command
     return this.runOnce(this::tempZeroPivotAtIn);
   }
-
+  
   public Command pivotToDegCommand(double targetDeg) { // Moves the pivot to the given setpoint
     return this.runOnce(() -> setPivotTargetDeg(targetDeg))
-      .andThen(run(() -> {}))
-      .until(this::pivotAtTarget);
+    .andThen(run(() -> {}))
+    .until(this::pivotAtTarget);
   }
-
+  
   public Command pivotInCommand() { // Moves the pivot to 80
     return pivotToDegCommand(120.0);
   }
-
+  
   public Command pivotOutCommand() { // Moves the pivot to 0
     return pivotToDegCommand(0.0);
   }
-
+  
   // Only for testing
   public Command pivotJogCommand(double percent) { // Moves the pivot manually
     return this.startEnd(
@@ -125,6 +131,8 @@ public class IntakeSubsystem extends SubsystemBase {
       () -> pivotMotor.set(0.0)
     );
   }
+
+  /*----------Periodic----------*/
 
   @Override
   public void periodic() {
