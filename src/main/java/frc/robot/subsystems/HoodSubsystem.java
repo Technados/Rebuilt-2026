@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,39 +22,58 @@ import frc.robot.Constants.HoodConstants;
 * - Add a real sensor (pot/encoder) for true closed-loop hood angle control.
 */
 
-
 public class HoodSubsystem extends SubsystemBase {
 
-    private final Servo leftServo = new Servo(HoodConstants.kLeftHoodServoPwm);
-    private final Servo rightServo = new Servo(HoodConstants.kRightHoodServoPwm);
+    private final Servo leftServo;
+    private final Servo rightServo;
 
     private double targetPos = 0.50;
     private double modeledPos = 0.50;
 
-    private double lastTime = Timer.getFPGATimestamp();
+    private double lastTime;
 
     public HoodSubsystem() {
+        // Initializes servos
+        leftServo = new Servo(HoodConstants.kLeftHoodServoPwm);
+        rightServo = new Servo(HoodConstants.kRightHoodServoPwm);
+
+        // Sets target and modeled positions
+        targetPos = 0.50;
+        modeledPos = 0.50;
+
+        // Sets timestamp
+        lastTime = Timer.getFPGATimestamp();
+
+        // Sets hood position to the target position
         setHoodPosition(targetPos);
     }
 
-    public void setHoodPosition(double pos) {
-        targetPos = clamp(pos, HoodConstants.kMinPos, HoodConstants.kMaxPos);
+    /*----------Setters----------*/
+
+    public void setHoodPosition(double pos) { // Sets hood postion
+        targetPos = MathUtil.clamp(pos, HoodConstants.kMinPos, HoodConstants.kMaxPos);
         leftServo.set(targetPos);
         rightServo.set(targetPos);
     }
 
-    public double getTargetPos() {
+    /*----------Getters----------*/
+
+    public double getTargetPos() { // Gets the target position
         return targetPos;
     }
 
-    public boolean atTarget() {
+    public boolean atTarget() { // Returns true if postion is within target tolerance
         return Math.abs(modeledPos - targetPos) <= HoodConstants.kPosTolerance;
     }
 
-    /** Hold a hood position continuously (useful for ReadyToShoot). */
+    /*----------Commands----------*/
+
+    // Hold a hood position continuously (useful for ReadyToShoot)
     public Command holdPositionCommand(java.util.function.DoubleSupplier posSupplier) {
         return run(() -> setHoodPosition(posSupplier.getAsDouble()));
     }
+
+    /*----------Periodic----------*/
 
     @Override
     public void periodic() {
@@ -72,10 +92,5 @@ public class HoodSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Hood/ModeledPos", modeledPos);
         SmartDashboard.putBoolean("Hood/AtTarget", atTarget());
     }
-
-    private static double clamp(double v, double min, double max) {
-        return Math.max(min, Math.min(max, v));
-    }
-
 
 }

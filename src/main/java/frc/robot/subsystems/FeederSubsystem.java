@@ -26,7 +26,7 @@ public class FeederSubsystem extends SubsystemBase {
   private final SparkMax preShooterMotor;
   
   public FeederSubsystem() {
-    // Initializes motor using constants and configs
+    // Initializes motors using constants and configs
     feederMotor = new SparkFlex(FeederConstants.kFeederMotorCanId, MotorType.kBrushless);
     preShooterMotor = new SparkMax(FeederConstants.kPreShooterMotorCanId, MotorType.kBrushless);
 
@@ -42,6 +42,8 @@ public class FeederSubsystem extends SubsystemBase {
     );
   }
 
+  /*----------Control Methods----------*/
+
   public void setPower(double feederPower, double preShooterPower) { // Sets the power of both motors
     feederMotor.set(feederPower);
     preShooterMotor.set(preShooterPower);
@@ -51,6 +53,7 @@ public class FeederSubsystem extends SubsystemBase {
     setPower(0, 0);
   }
 
+  /*----------Commands----------*/
 
   public Command runFeederCommand(ShooterSubsystem shooter) { // Runs the feeder while command is active
     return this.startEnd(
@@ -59,10 +62,8 @@ public class FeederSubsystem extends SubsystemBase {
     );
   }
 
-  /**
-   * Feeds ONLY when enabledSupplier is true. This is perfect for:
-   * - "only feed when aimed + at RPM + hood ready"
-  */
+  /* Feeds ONLY when enabledSupplier is true
+    when aimed + at RPM + hood ready */
   public Command feedWhen(BooleanSupplier enabledSupplier) {
     return this.run(() -> {
       if (enabledSupplier.getAsBoolean()) {
@@ -72,19 +73,14 @@ public class FeederSubsystem extends SubsystemBase {
       }
     });
   }
-
-  
-  /**
-  * Pulses the feeder for a short duration (useful for single-shot testing).
-  */
-  public Command pulseFeed(double seconds) {
+ 
+  public Command pulseFeed(double seconds) { // Pulses the feeder for a short duration (useful for single-shot testing)
     return this.runOnce(() -> setPower(FeederConstants.kFeederMotorPower, FeederConstants.kPreShooterMotorPower))
       .andThen(this.waitSeconds(seconds))
       .andThen(this.runOnce(this::stop));
   }
 
-  // Small helper (keeps timing logic out of RobotContainer)
-  private Command waitSeconds(double seconds) {
+  private Command waitSeconds(double seconds) { // Small helper (keeps timing logic out of RobotContainer)
     return this.run(() -> {}).until(new BooleanSupplier() {
       final double start = Timer.getFPGATimestamp();
       @Override public boolean getAsBoolean() {

@@ -12,7 +12,6 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
@@ -30,6 +29,7 @@ public class ShooterSubsystem extends SubsystemBase {
   
   private final SparkFlex rightShooterMotor;
   private final RelativeEncoder rightShooterEncoder;
+
   private SparkClosedLoopController rightShooterController;
 
   private double targetVelocity;
@@ -50,58 +50,60 @@ public class ShooterSubsystem extends SubsystemBase {
       PersistMode.kPersistParameters
     );
 
+    // Creates encoders for both motors
     leftShooterEncoder = leftShooterMotor.getEncoder();
     rightShooterEncoder = rightShooterMotor.getEncoder();
 
+    // Creates a controller for right motor (left is a follower and will do what the right does)
     rightShooterController = rightShooterMotor.getClosedLoopController();
 
     targetVelocity = 0.0;
   }
+
+  /*----------Control Methods----------*/
   
-  public void setShooterVelocity(double velocity) {
+  public void setShooterVelocity(double velocity) { // Sets the velocity of both shooters
     // Clamp to your known safe range
     targetVelocity = MathUtil.clamp(velocity, 0.0, ShooterConstants.kShooterMaxRPM);
     
     // Only command the right shooter, left will follow (already set in configs)
-
-  rightShooterController.setSetpoint(
+    rightShooterController.setSetpoint(
       targetVelocity,
       ControlType.kVelocity,             
       ClosedLoopSlot.kSlot0
-  );
-}
+    );
+  }
       
-  public void idleShooter() { // Runs the main shooter at idle power - temporarily disabled
+  public void idleShooter() { // Sets the velocity of both shooters to their idle velocity - temporarily disabled
     //setShooterVelocity(ShooterConstants.kShooterIdleRPM);
-    return;
   }
   
-  public void stopShooter() { // Stops both motors
-    leftShooterMotor.set(0.0);
+  public void stopShooter() { // Stops both motors - Still needs testing!
     rightShooterMotor.set(0.0);
   }
+
+  /*----------Getters----------*/
   
   public double getTargetVelocity() { // Returns the target velocity
     return targetVelocity;
   }
-  
-public double getLeftVelocity() {
- return leftShooterEncoder.getVelocity();
-}
+    
+  public double getLeftVelocity() { // Returns the left motor velocity
+    return leftShooterEncoder.getVelocity();
+  }
 
-public double getRightVelocity() {
- return rightShooterEncoder.getVelocity();
-}
+  public double getRightVelocity() { // Returns the right motor velocity
+    return rightShooterEncoder.getVelocity();
+  }
   
-  /** True when both wheels are within tolerance of target RPM. */
-  public boolean shooterAtVelocity() {
+  public boolean shooterAtVelocity() {  // Returns true when both wheels are within tolerance of target RPM
     if (targetVelocity <= 1.0) return false;
     double tol = ShooterConstants.kShooterReadyToleranceRPM;
     return (getLeftVelocity() - targetVelocity) <= tol
         && (getRightVelocity() - targetVelocity) <= tol;
   }
   
-  // ---------------- Commands ----------------
+  /*----------Commands----------*/
   
   public Command idleShooterCommand() { // Command for the idle shooter
     return run(this::idleShooter);
@@ -120,6 +122,8 @@ public double getRightVelocity() {
     );
   }
 
+  /*----------Periodic----------*/
+
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Shooter/Target Velocity", getTargetVelocity());
@@ -131,7 +135,6 @@ public double getRightVelocity() {
     SmartDashboard.putNumber("Shooter/Right BusVoltage", rightShooterMotor.getBusVoltage());
     SmartDashboard.putNumber("Shooter/Right AppliedVolts", 
       rightShooterMotor.getAppliedOutput() * rightShooterMotor.getBusVoltage());
-
   }
 
 }
