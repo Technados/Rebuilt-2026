@@ -74,7 +74,7 @@ public class FeederSubsystem extends SubsystemBase {
     });
   }
 
-  public Command feedWhen(boolean shooterAtSpeed) { // Feeds only when shooterAtSpeed is true
+  public Command feedWhen(boolean shooterAtSpeed) { // Feeds only when shooterAtSpeed is
     return this.run(() -> {
       if (shooterAtSpeed) {
         setPower(FeederConstants.kFeederMotorPower, FeederConstants.kPreShooterMotorPower);

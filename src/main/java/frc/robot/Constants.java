@@ -92,10 +92,10 @@ public final class Constants {
   public static final class FeederConstants {
 
     public static final int kFeederMotorCanId = 12;
-    public static final double kFeederMotorPower = 0.85;
+    public static final double kFeederMotorPower = 1;
     
     public static final int kPreShooterMotorCanId = 13;
-    public static final double kPreShooterMotorPower = -0.9;
+    public static final double kPreShooterMotorPower = -1;
 
   }
 
