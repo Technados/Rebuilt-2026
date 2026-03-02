@@ -146,6 +146,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("pivot-in", m_intakeSubsystem.pivotInCommand());
     NamedCommands.registerCommand("pivot-out", m_intakeSubsystem.pivotOutCommand());
 
+    NamedCommands.registerCommand("shoot", m_shooterSubsystem.holdVelocityCommand(3000)); // Test velocity later
+
     // NamedCommands.registerCommand("shooter", 
     //     new SequentialCommandGroup(
           

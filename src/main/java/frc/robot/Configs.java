@@ -9,6 +9,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.VortexConstants;
 
 public final class Configs {
   public static final class MAXSwerveModule {
@@ -122,7 +123,7 @@ public final class Configs {
       //   .allowedProfileError(50); // 1 was too strict
 
       rightShooterConfig.closedLoop.feedForward
-        .kV(1.0 / ShooterConstants.kVortexFreeSpeedRPM);
+        .kV(1.0 / VortexConstants.kFreeSpeedRpm);
 
       // Left Shooter Configs
       leftShooterConfig.apply(rightShooterConfig)
