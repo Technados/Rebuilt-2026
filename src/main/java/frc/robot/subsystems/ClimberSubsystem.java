@@ -69,7 +69,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
     /*----------Commands----------*/
 
-    public Command climberToDegCommand(double targetDeg) { // Moves the pivot to the given setpoint
+    public Command climberToDegCommand(double targetDeg) { // Moves the climber to the given setpoint
         return this.runOnce(() -> setClimberTargetDeg(targetDeg))
             .andThen(run(() -> {}))
             .until(this::climberAtTarget);

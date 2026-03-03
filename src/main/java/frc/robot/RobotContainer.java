@@ -32,7 +32,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TestingSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
-/*
+/**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
  * periodic methods (other than the scheduler calls).  Instead, the structure of the robot
@@ -189,7 +189,7 @@ public class RobotContainer {
     
     m_driverController.a().onTrue(m_intakeSubsystem.pivotOutCommand());
 
-     m_driverController.leftBumper().whileTrue(m_intakeSubsystem.pivotJogCommand(0.1));
+    m_driverController.leftBumper().whileTrue(m_intakeSubsystem.pivotJogCommand(0.1));
 
     m_driverController.rightBumper().whileTrue(m_intakeSubsystem.pivotJogCommand(-0.1));
 
@@ -231,15 +231,16 @@ public class RobotContainer {
           m_feederSubsystem.feedWhen(readySupplier)
       );
 
-      m_operatorController.x()
-        .whileTrue(
-          m_shooterSubsystem.holdVelocityCommand(m_testing.shootingVelocity)
-        );
+    m_operatorController.x()
+      .whileTrue(
+        m_shooterSubsystem.holdVelocityCommand(m_testing.shootingVelocity)
+      );
 
-      m_operatorController.y()
-        .whileTrue(
-          m_feederSubsystem.runFeederCommand(m_shooterSubsystem)
-        );
+    m_operatorController.y()
+      .whileTrue(
+        m_feederSubsystem.runFeederCommand(m_shooterSubsystem)
+          .alongWith(m_intakeSubsystem.pivotAgitateCommand())
+      );
 
   }
 

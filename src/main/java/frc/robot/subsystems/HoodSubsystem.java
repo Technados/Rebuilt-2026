@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
@@ -69,7 +71,7 @@ public class HoodSubsystem extends SubsystemBase {
     /*----------Commands----------*/
 
     // Hold a hood position continuously (useful for ReadyToShoot)
-    public Command holdPositionCommand(java.util.function.DoubleSupplier posSupplier) {
+    public Command holdPositionCommand(DoubleSupplier posSupplier) {
         return run(() -> setHoodPosition(posSupplier.getAsDouble()));
     }
 

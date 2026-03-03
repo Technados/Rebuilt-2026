@@ -20,25 +20,50 @@ public class VisionSubsystem extends SubsystemBase {
 
     /*----------Getters----------*/
 
+    /**
+     * Returns if the limelight's has a valid pose.
+     * @param name The name of the limelight.
+     * @return Returns true if the limelight's pose estimate is valid.
+     */
     public boolean hasValidPose(String name) { // Returns true if limelight has a valid pose estimate
         return LimelightHelpers.validPoseEstimate(LimelightHelpers.getBotPoseEstimate_wpiBlue(name));
     }
 
+    /**
+     * Get the limelight's tag count.
+     * @param name The name of the limelight.
+     * @return How many targets the limelight can see.
+     */
     public int getTagCount(String name) { // Gets the limelight's tag count
         return LimelightHelpers.getTargetCount(name);
     }
 
-    public double getLatencySeconds(String name) { // Gets the limelight's latency
+    /**
+     * Gets the limelight's latency.
+     * @param name The name of the limelight.
+     * @return The limelight's latency (capture latency + pipeline latency)
+     */
+    public double getLatencySeconds(String name) {
         return LimelightHelpers.getLatency_Capture(name) + LimelightHelpers.getLatency_Pipeline(name);
     }
 
-    public double[] getVisionPose(String name) {  // Gets the limelight's pose as a list (x, y, rot)
+    /**
+     * Gets the limelight's pose.
+     * @param name The name of the limelight.
+     * @return The limelight's pose as a list (x, y, rot)
+     */
+    public double[] getVisionPose(String name) {
         Pose2d pose = LimelightHelpers.getBotPose2d(name);
         double[] list = {pose.getX(), pose.getY(), pose.getRotation().getDegrees()};
 
         return list;
     }
 
+    /**
+     * Gets vision measurements from a limelight.
+     * @param name The name of the limelight.
+     * @return A {@link VisionMeasurement} with the calculated pose, timestamp, and std devs.
+     */
     public Optional<VisionMeasurement> getVisionMeasurement(String name) { // Gets vision measurements from the limelight 
 
         // Check if there is a valid target
@@ -65,6 +90,13 @@ public class VisionSubsystem extends SubsystemBase {
 
     }
 
+    /**
+     * Gets vision measurements using MegaTag2.
+     * @param name The name of the limelight.
+     * @param robotYawDeg The robot's yaw in degrees.
+     * @param robotYawRateDegPerSec The robot's yaw rate in degrees per second.
+     * @return A {@link VisionMeasurement} with the calculated pose, timestamp, and std devs.
+     */
     public Optional<VisionMeasurement> getVisionMeasurementMT2(String name, double robotYawDeg, double robotYawRateDegPerSec) { // Gets vision measurements using MegaTag2
 
         // Set current robot orientation

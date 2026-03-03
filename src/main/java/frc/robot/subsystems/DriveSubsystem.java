@@ -96,6 +96,7 @@ public class DriveSubsystem extends SubsystemBase {
     // Configure AutoBuilder at the end
     configureAutoBuilder();
 
+    // Create robot poseEstimator that can take input from VisionSubsystem
     m_poseEstimator = // Currently has default StdDevs
       new SwerveDrivePoseEstimator(
         DriveConstants.kDriveKinematics,
@@ -116,39 +117,39 @@ public class DriveSubsystem extends SubsystemBase {
 
   }
   
-      private void configureAutoBuilder() {
-          AutoBuilder.configure(
-              this::getPose, // Robot pose supplier
-              this::resetOdometry, // Method to reset odometry
-              this::getChassisSpeeds, // Robot-relative ChassisSpeeds supplier
-              (speeds, feedforwards) -> driveRobotRelative(speeds), // Drive robot
-              new PPHolonomicDriveController( // Holonomic controller
-                  new PIDConstants(8.5, 0.0, 0.11), // Translation PID
-                  new PIDConstants(13.0, 0.0, 0.4)  // Rotation PID
-              ),
-              config, // RobotConfig loaded from PathPlanner GUI
-              () -> {
-                  // Flip paths for red alliance
-                  var alliance = DriverStation.getAlliance();
-                  return alliance.orElse(DriverStation.Alliance.Blue) != DriverStation.Alliance.Blue;
-              },
-              this // Subsystem requirements
-          );
-      }
-
+  private void configureAutoBuilder() {
+    AutoBuilder.configure(
+      this::getPose, // Robot pose supplier
+      this::resetOdometry, // Method to reset odometry
+      this::getChassisSpeeds, // Robot-relative ChassisSpeeds supplier
+      (speeds, feedforwards) -> driveRobotRelative(speeds), // Drive robot
+      new PPHolonomicDriveController( // Holonomic controller
+        new PIDConstants(8.5, 0.0, 0.11), // Translation PID
+        new PIDConstants(13.0, 0.0, 0.4)  // Rotation PID
+      ),
+      config, // RobotConfig loaded from PathPlanner GUI
+      () -> {
+        // Flip paths for red alliance
+        var alliance = DriverStation.getAlliance();
+        return alliance.orElse(DriverStation.Alliance.Blue) != DriverStation.Alliance.Blue;
+      },
+      this // Subsystem requirements
+    );
+  }
       
-
-
   @Override
   public void periodic() {
 
+    // Add gyro info to dashboard
     SmartDashboard.putNumber("Gyro", getHeading()); // returns the heading of the robot and sends to dashboard
     SmartDashboard.putBoolean("Gyro Online", m_gyro.isConnected());
 
+    // Flash LEDs red if gyro is offline
     if (!m_gyro.isConnected()) {
-      ledSubsystem.flashOnceForGyroAlert(0.61, 2.0); // 🔴 Red if gyro offline
+      ledSubsystem.flashOnceForGyroAlert(0.61, 2.0);
     }
     
+    // Update pose estimator using wheel encoder and gyro information
     m_poseEstimator.update(
         getGyroRotation2d(),
         new SwerveModulePosition[] {
@@ -158,15 +159,18 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearRight.getPosition()
         });
 
-        field.setRobotPose(getPose());
+    // Set robot pose on field
+    field.setRobotPose(getPose());
 
-        if (edu.wpi.first.wpilibj.DriverStation.isTeleopEnabled() &&
-    edu.wpi.first.wpilibj.DriverStation.getMatchTime() <= 30.0 &&
-    !hasFlashedEndgame) {
+    // Flash LEDs blue at endgame(?)
+    if (DriverStation.isTeleopEnabled() &&
+      DriverStation.getMatchTime() <= 30.0 &&
+      !hasFlashedEndgame) {
 
-    ledSubsystem.flashPattern(0.87, 2.0); // 🔵 Blue flash for 2 seconds
-    hasFlashedEndgame = true;
-}
+      ledSubsystem.flashPattern(0.87, 2.0); // 🔵 Blue flash for 2 seconds
+      hasFlashedEndgame = true;
+
+    }
 
   }
 
@@ -179,11 +183,11 @@ public class DriveSubsystem extends SubsystemBase {
     return m_poseEstimator.getEstimatedPosition();
   }
 
-  public double getHeadingRadians() {
+  public double getHeadingRadians() { // Gets the robot's heading
     return getPose().getRotation().getRadians();
   }
 
-  public boolean isAimedAt(edu.wpi.first.math.geometry.Translation2d target) {
+  public boolean isAimedAt(edu.wpi.first.math.geometry.Translation2d target) { // Returns true if robot is aimed at target
     var pose = getPose();
     double dx = target.getX() - pose.getX();
     double dy = target.getY() - pose.getY();
@@ -210,10 +214,12 @@ public class DriveSubsystem extends SubsystemBase {
     drive(0.0, 0.0, omega, true);
   }
 
+  // Adds measurement from the VisionSubsystem to the pose estimator
   public void addVisionMeasurement(Pose2d visonPose, double timestampSeconds, Matrix<N3, N1> stdDevs) {
     m_poseEstimator.addVisionMeasurement(visonPose, timestampSeconds, stdDevs);
   }
 
+  // Runs aimAt as a command
   public Command aimAtCommand(java.util.function.Supplier<edu.wpi.first.math.geometry.Translation2d> targetSupplier) {
     return run(() -> aimAt(targetSupplier.get()));
   }
@@ -237,18 +243,17 @@ public class DriveSubsystem extends SubsystemBase {
 
   private boolean slowMode = false; // Boolean flag to track slow mode
 
-public void setSlowMode(boolean enable) {
+  public void setSlowMode(boolean enable) { // Enables/disables slow mode
     slowMode = enable;
-}
+  }
 
-/**
- * Check if we need to enable slow mode based on conditions or driver input.
- * @param manualSlowMode true if driver is holding right bumper
- */
-public void updateDriveSlowMode(boolean manualSlowMode) {
-
+  /**
+   * Check if we need to enable slow mode based on conditions or driver input.
+   * @param manualSlowMode true if driver is holding right bumper
+   */
+  public void updateDriveSlowMode(boolean manualSlowMode) {
     setSlowMode(manualSlowMode);
-}
+  }
 
   /**
    * Method to drive the robot using joystick info.
@@ -294,7 +299,7 @@ public void updateDriveSlowMode(boolean manualSlowMode) {
     
   }
 
-  public void driveRobotRelative(ChassisSpeeds speeds) {
+  public void driveRobotRelative(ChassisSpeeds speeds) { // 
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
 
@@ -302,16 +307,16 @@ public void updateDriveSlowMode(boolean manualSlowMode) {
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
     m_rearRight.setDesiredState(swerveModuleStates[3]);
-}
+  }
 
-public ChassisSpeeds getChassisSpeeds() {
+  public ChassisSpeeds getChassisSpeeds() { // Gets the speed of the chassis
     return DriveConstants.kDriveKinematics.toChassisSpeeds(new SwerveModuleState[] {
-        m_frontLeft.getState(),
-        m_frontRight.getState(),
-        m_rearLeft.getState(),
-        m_rearRight.getState()
+      m_frontLeft.getState(),
+      m_frontRight.getState(),
+      m_rearLeft.getState(),
+      m_rearRight.getState()
     });
-}
+  }
 
   /** Sets the wheels into an X formation to prevent movement. */
   public Command setXCommand() {
@@ -324,7 +329,7 @@ public ChassisSpeeds getChassisSpeeds() {
         });
   }
 
-  public Command moveFixedDistance(double xMeters, double yMeters) {
+  public Command moveFixedDistanceCommand(double xMeters, double yMeters) { // Moves by a fixed x and y parameter
     return new InstantCommand(() -> {
         drive(xMeters, yMeters, 0, false); // Move in robot-relative space
     }, this).andThen(new InstantCommand(() -> drive(0, 0, 0, false), this)); // Stop after movement
@@ -332,11 +337,9 @@ public ChassisSpeeds getChassisSpeeds() {
 
 
 
-  public void stopMovement() {
-    drive(0, 0, 0, true); // Stop all movement
-
-}
-
+  public void stopMovement() { // Stop all movement
+    drive(0, 0, 0, true); 
+  }
 
   /**
    * Sets the swerve ModuleStates.
@@ -409,7 +412,5 @@ public ChassisSpeeds getChassisSpeeds() {
       return rate;
 
   }
-
-
 
 }
