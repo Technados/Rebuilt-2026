@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.shooting.ShotMap;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -58,19 +59,19 @@ public class ShooterSubsystem extends SubsystemBase {
       Configs.ShooterSubsystem.preShooterConfig,
       ResetMode.kResetSafeParameters,                                                   
       PersistMode.kPersistParameters
-      );
+    );
       
-      // Creates encoders for both motors
-      leftShooterEncoder = leftShooterMotor.getEncoder();
-      rightShooterEncoder = rightShooterMotor.getEncoder();
-      preShooterEncoder = preShooterMotor.getEncoder();
-      
-      // Creates a controller for right motor (left is a follower and will do what the right does)
-      rightShooterController = rightShooterMotor.getClosedLoopController();
-      preShooterController = preShooterMotor.getClosedLoopController();
-      
-      targetVelocity = 0.0;
-    }
+    // Creates encoders for both motors
+    leftShooterEncoder = leftShooterMotor.getEncoder();
+    rightShooterEncoder = rightShooterMotor.getEncoder();
+    preShooterEncoder = preShooterMotor.getEncoder();
+    
+    // Creates a controller for right motor (left is a follower and will do what the right does)
+    rightShooterController = rightShooterMotor.getClosedLoopController();
+    preShooterController = preShooterMotor.getClosedLoopController();
+    
+    targetVelocity = 0.0;
+  }
     
   /*----------Getters----------*/
   
@@ -90,17 +91,25 @@ public class ShooterSubsystem extends SubsystemBase {
     return preShooterEncoder.getVelocity();
   }
   
-  public boolean shooterAtVelocity() {  // Returns true when both wheels are within tolerance of target RPM
+  /**
+   * @return Returns true when all motors are within tolerance of target RPM
+   */
+  public boolean shooterAtVelocity() { 
     if (targetVelocity <= 1.0) return false;
     double tol = ShooterConstants.kShooterReadyToleranceRPM;
     return (getLeftVelocity() - targetVelocity) <= tol
         && (getRightVelocity() - targetVelocity) <= tol
-        && (getPreVelocity() - targetVelocity) <= tol;
+        && (getPreVelocity() - ShooterConstants.kPreShooterMotorRPM ) <= tol;
   }
 
   /*----------Control Methods----------*/
   
-  public void setShooterVelocity(double velocity) { // Sets the velocity of both shooters
+  /**
+   * Sets the velocity of the shooter motors. The preshooter is set to its rpm defined in the constants.
+   * The left and right shooters are set the parameterized velocity.
+   * @param velocity The velocity that the left and right shooter will run at.
+   */
+  public void setShooterVelocity(double velocity) { 
     // Clamp to your known safe range
     targetVelocity = MathUtil.clamp(velocity, 0.0, ShooterConstants.kShooterMaxRPM);
     
@@ -118,26 +127,44 @@ public class ShooterSubsystem extends SubsystemBase {
     );
   }
   
-  public void idleShooter() { // Sets the velocity of both shooters to their idle velocity - temporarily disabled
+  /**
+   * Sets the velocity of the left and right shooters to their idle velocity.
+   */
+  public void idleShooter() { // temporarily disabled
     //setShooterVelocity(ShooterConstants.kShooterIdleRPM);
   }
   
-  public void stopShooter() { // Stops both motors - Still needs testing!
+  /**
+   * Stops all of the motors.
+   */
+  public void stopShooter() { 
     rightShooterMotor.set(0.0);
+    preShooterMotor.set(0.0);
   }
   
   /*----------Commands----------*/
   
-  public Command idleShooterCommand() { // Command for the idle shooter
+  /**
+   * @return Command to run the left and right motors idly
+   */
+  public Command idleShooterCommand() {
     return run(this::idleShooter);
   }
 
-  public Command holdVelocityCommand(DoubleSupplier rpmSupplier) { // Command to set shooter velocity using ShotMap
+  /**
+   * @param rpmSupplier Velocity that the left and right motors will run at
+   * @return Command to set shooter velocity using {@link ShotMap}
+   */
+  public Command holdVelocityCommand(DoubleSupplier rpmSupplier) { 
     return run(
       () -> setShooterVelocity(rpmSupplier.getAsDouble())
     );
   }
 
+  /**
+   * @param velocity Velocity that the left and right motors will run at
+   * @return Command to set shooter velocity
+   */
   public Command holdVelocityCommand(double velocity) { // Command to set shooter velocity
     return runEnd(
       () -> setShooterVelocity(velocity),

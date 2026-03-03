@@ -37,7 +37,7 @@ public class FeederSubsystem extends SubsystemBase {
 
   /*----------Control Methods----------*/
 
-  public void stop() { // Stops both motors
+  public void stop() { // Stops the motor
     feederMotor.set(0);
   }
 

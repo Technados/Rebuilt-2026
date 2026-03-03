@@ -25,6 +25,19 @@ import frc.robot.Constants.IntakeConstants;
  * Intake: 1.5
  */
 
+/**
+ * {@link IntakeSubsystem}
+ * 
+ * <p>This subsystem is used to intake game pieces. It contains methods and commands for
+ * the intake motor and pivot motor, as well as a periodic() method that publishes 
+ * information to the dashboard.
+ * 
+ * <p>The intake motor is used to intake the game pieces, while the pivot 
+ * motor is used to move the intake between setpoints. The pivot motor provides
+ * feedback through its encoder that can be used to track its position. The intake
+ * motor is power controller while the pivot motor is position controlled.
+ */
+
 public class IntakeSubsystem extends SubsystemBase {
 
   private final SparkFlex intakeMotor;
@@ -50,7 +63,7 @@ public class IntakeSubsystem extends SubsystemBase {
     pivotMotor.configure(
       Configs.IntakeSubsystem.pivotConfig,
       ResetMode.kResetSafeParameters,
-      PersistMode.kNoPersistParameters
+      PersistMode.kPersistParameters
     );
 
     // Creates encoder to track the pivot motor's position

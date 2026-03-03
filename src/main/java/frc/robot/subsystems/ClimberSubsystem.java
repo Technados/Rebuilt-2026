@@ -31,7 +31,7 @@ public class ClimberSubsystem extends SubsystemBase {
         climberMotor.configure(
             Configs.ClimberSubsystem.climberConfig,
             ResetMode.kResetSafeParameters,
-            PersistMode.kNoPersistParameters
+            PersistMode.kPersistParameters
         );
 
         climberEncoder = climberMotor.getEncoder();

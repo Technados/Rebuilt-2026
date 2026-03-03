@@ -84,19 +84,19 @@ public class RobotContainer {
 
     // Configure default commands
     m_robotDrive.setDefaultCommand(
-        new RunCommand(
-            () -> {
-                boolean manualSlowMode = m_driverController.rightBumper().getAsBoolean();
-                m_robotDrive.updateDriveSlowMode(manualSlowMode); // Auto/Manual slow mode
+      new RunCommand(
+        () -> {
+          boolean manualSlowMode = m_driverController.rightBumper().getAsBoolean();
+          m_robotDrive.updateDriveSlowMode(manualSlowMode); // Auto/Manual slow mode
 
-                m_robotDrive.drive(
-                    -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
-                    true
-                );
-            }, m_robotDrive
-        )
+          m_robotDrive.drive(
+            -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+            -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+            -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
+            true
+          );
+        }, m_robotDrive
+      )
     );
     
     m_visionSubsystem.setDefaultCommand(

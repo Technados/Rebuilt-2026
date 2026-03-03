@@ -145,7 +145,7 @@ public final class Constants {
 
   }
 
-  public static final class ClimberConstants {
+  public static final class ClimberConstants { // All constants must be changed before use
 
     public static final int kClimberMotorCanId = -1;
 
