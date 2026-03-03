@@ -21,13 +21,13 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "pivot-out"
+                        "name": "Pivot-Out"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "intake"
+                        "name": "Intake"
                       }
                     }
                   ]
@@ -43,9 +43,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "HL-T"
+            "name": "Shoot"
           }
         }
       ]

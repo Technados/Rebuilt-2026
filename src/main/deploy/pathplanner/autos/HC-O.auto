@@ -5,9 +5,22 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "HC-O"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "HC-O"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Pivot-Out"
+                }
+              }
+            ]
           }
         },
         {
@@ -23,9 +36,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "HR-T"
+            "name": "Shoot"
           }
         }
       ]

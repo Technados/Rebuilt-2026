@@ -5,9 +5,28 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "HC-D"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "HC-D"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Pivot-Out"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake"
+                }
+              }
+            ]
           }
         },
         {
@@ -17,9 +36,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "HL-T"
+            "name": "Shoot"
           }
         }
       ]
