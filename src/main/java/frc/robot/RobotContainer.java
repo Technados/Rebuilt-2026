@@ -238,7 +238,7 @@ public class RobotContainer {
 
     m_operatorController.y()
       .whileTrue(
-        m_feederSubsystem.runFeederCommand(m_shooterSubsystem)
+        m_feederSubsystem.runFeederCommand()
           .alongWith(m_intakeSubsystem.pivotAgitateCommand())
       );
 

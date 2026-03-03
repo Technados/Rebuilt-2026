@@ -52,7 +52,11 @@ public class HoodSubsystem extends SubsystemBase {
 
     /*----------Setters----------*/
 
-    public void setHoodPosition(double pos) { // Sets hood postion
+    /**
+     * Sets the hood position.
+     * @param pos The target position
+     */
+    public void setHoodPosition(double pos) {
         targetPos = MathUtil.clamp(pos, HoodConstants.kMinPos, HoodConstants.kMaxPos);
         leftServo.set(targetPos);
         rightServo.set(targetPos);
@@ -60,22 +64,39 @@ public class HoodSubsystem extends SubsystemBase {
 
     /*----------Getters----------*/
 
-    public double getTargetPos() { // Gets the target position
+    /**
+     * @return The current target position
+     */
+    public double getTargetPos() {
         return targetPos;
     }
 
-    public boolean atTarget() { // Returns true if postion is within target tolerance
+    /**
+     * Returns true if postion is within target tolerance.
+     * @return Boolean representing if position is at target
+     */
+    public boolean atTarget() {
         return Math.abs(modeledPos - targetPos) <= HoodConstants.kPosTolerance;
     }
 
     /*----------Commands----------*/
 
-    // Hold a hood position continuously (useful for ReadyToShoot)
+    /**
+     * Holds a hood position continuously 
+     * (useful for ReadyToShoot)
+     * @param posSupplier Target position for hood
+     * @return Command to set and hold hood position
+     */
     public Command holdPositionCommand(DoubleSupplier posSupplier) {
         return run(() -> setHoodPosition(posSupplier.getAsDouble()));
     }
 
-    // Hold a hood position continuously (useful for ReadyToShoot)
+    /**
+     * Hold a hood position continuously 
+     * (useful for ReadyToShoot)
+     * @param position Target position for hood
+     * @return Command to set and hold hood position
+     */
     public Command holdPositionCommand(double position) {
         return run(() -> setHoodPosition(position));
     }
