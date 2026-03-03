@@ -90,20 +90,19 @@ public final class Constants {
   }
 
   public static final class FeederConstants {
-
+    
     public static final int kFeederMotorCanId = 12;
     public static final double kFeederMotorPower = 1;
     
-    public static final int kPreShooterMotorCanId = 13;
-    public static final double kPreShooterMotorPower = -1;
-
   }
-
+  
   public static final class ShooterConstants {
-
+    
     public static final int kLeftShooterMotorCanId = 14;
     public static final int kRightShooterMotorCanId = 15;
-    
+    public static final int kPreShooterMotorCanId = 13;
+
+    public static final double kPreShooterMotorRPM = 5000.0;
     public static final double kShooterMaxRPM = 3000.0; 
     public static final double kShooterIdleRPM = 1500.0; 
     
@@ -119,9 +118,6 @@ public final class Constants {
     // Start at 0 to prove closed-loop works, then add feedforward later for better recovery.
     public static final double kShooterKSVolts = 0.10; //Calculated from direct shooter data by nitzky
     public static final double kShooterKVVoltsPerRPM = 1.0 / 6784; // ~0.00177 (recip. of motors Kv)
-
-    // For shooting tests before LaserCAN gating:
-    public static final double kPreShooterFeedPower = -0.6; // can be same as kPreShooterMotorPower
 
   }
 

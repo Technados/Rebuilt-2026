@@ -67,6 +67,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
   /*----------Getters----------*/
   
+  /**
+   * Returns if the pivot is at the target postion.
+   * @return Returns true if the pivot's position error and velocity are within the tolerance defined in the constants.
+   */
   public boolean pivotAtTarget() { // Returns true if the pivot position is within the tolerance for the target
     double posErr = Math.abs(pivotTargetDeg - pivotEncoder.getPosition());
     double vel = Math.abs(pivotEncoder.getVelocity());
@@ -76,12 +80,19 @@ public class IntakeSubsystem extends SubsystemBase {
 
   /*----------Control Methods----------*/
   
-  public void tempZeroPivotAtIn() { // Sets zero to the current pivot position
+  /**
+   * Sets the pivot's current position to zero.
+   */
+  public void tempZeroPivotAtIn() {
     pivotEncoder.setPosition(0.0);
     pivotTargetDeg = 0.0;
     pivotZeroed = true;
   }
   
+  /**
+   * Sets the pivot's postion to the target position.
+   * @param targetDeg The pivot's target position in degrees.
+   */
   public void setPivotTargetDeg(double targetDeg) { // Sets the pivot target
     // Clamp to your known safe range
     targetDeg = Math.max(0.0, Math.min(100.0, targetDeg));
@@ -90,13 +101,27 @@ public class IntakeSubsystem extends SubsystemBase {
     if (!pivotZeroed) return;
     
     pivotTargetDeg = targetDeg;
-    pivotController.setSetpoint(pivotTargetDeg,
-    ControlType.kMAXMotionPositionControl);
+    pivotController.setSetpoint(
+      pivotTargetDeg,
+      ControlType.kMAXMotionPositionControl
+    );
+  }
+
+  /**
+   * Moves the pivot to 0 degrees, then 70. Can be used in a command to 
+   * move the pivot back and forth continuously.
+   */
+  public void pivotAgitate() {
+    setPivotTargetDeg(0);
+    setPivotTargetDeg(70);
   }
 
   /*----------Commands----------*/
   
-  public Command runIntakeCommand() { // Runs the intake
+  /**
+   * @return Command to run the intake mator.
+   */
+  public Command runIntakeCommand() { 
     return this.startEnd(
     () -> {
         intakeMotor.set(IntakeConstants.kIntakeMotorPower);
@@ -107,26 +132,54 @@ public class IntakeSubsystem extends SubsystemBase {
     );
   }
 
-  public Command tempZeroPivotAtInCommand() { // Returns tempZeroPivotAtIn as a command
+  /**
+   * Returns tempZeroPivotAtIn as a command.
+   */
+  public Command tempZeroPivotAtInCommand() {
     return this.runOnce(this::tempZeroPivotAtIn);
   }
   
-  public Command pivotToDegCommand(double targetDeg) { // Moves the pivot to the given setpoint
+  /**
+   * Moves the pivot to the the target position.
+   * @param targetDeg The target postion in degrees.
+   * @return Command to move the pivot motor to the target position.
+   */
+  public Command pivotToDegCommand(double targetDeg) {
     return this.runOnce(() -> setPivotTargetDeg(targetDeg))
       .andThen(run(() -> {}))
       .until(this::pivotAtTarget);
   }
   
-  public Command pivotInCommand() { // Moves the pivot to 100
+  /**
+   * @return Command to move pivot to 100 degrees.
+   */
+  public Command pivotInCommand() {
     return pivotToDegCommand(100.0);
   }
   
-  public Command pivotOutCommand() { // Moves the pivot to 0
+  /**
+   * @return Command to move pivot to 0 degrees.
+   */
+  public Command pivotOutCommand() {
     return pivotToDegCommand(0.0);
   }
+
+  /**
+   * @return Command to run pivotAgitate, moves pivot to 0 degrees when the command ends.
+   */
+  public Command pivotAgitateCommand() {
+    return runEnd(
+      () -> pivotAgitate(),
+      () -> setPivotTargetDeg(0)
+    );
+  }
   
-  // Only for testing
-  public Command pivotJogCommand(double percent) { // Moves the pivot manually
+  /**
+   * Returns pivot jog command. This command is only for testing.
+   * @param percent The speed the pivot will move at.
+   * @return Command to move the pivot manually.
+   */
+  public Command pivotJogCommand(double percent) {
     return this.startEnd(
       () -> pivotMotor.set(percent),
       () -> pivotMotor.set(0.0)

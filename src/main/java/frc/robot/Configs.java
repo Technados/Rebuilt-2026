@@ -107,45 +107,41 @@ public final class Configs {
 
   public static final class FeederSubsystem {
     public static final SparkFlexConfig feederConfig = new SparkFlexConfig();
-    public static final SparkMaxConfig preShooterConfig = new SparkMaxConfig();
-
+    
     static {
       // Configure basic settings of the feeder and preshooter motors
       feederConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
-      preShooterConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
     }
   }
-
+  
   public static final class ShooterSubsystem {
     public static final SparkFlexConfig leftShooterConfig = new SparkFlexConfig();
     public static final SparkFlexConfig rightShooterConfig = new SparkFlexConfig();
-
+    public static final SparkMaxConfig preShooterConfig = new SparkMaxConfig();
+    
     static {
       // Right Shooter Configs
       rightShooterConfig
-        .inverted(true)
-        .idleMode(IdleMode.kCoast)
-        .closedLoopRampRate(1.0)
-        .openLoopRampRate(1.0)
-        .smartCurrentLimit(40)
-        .voltageCompensation(12.0);
+      .inverted(true)
+      .idleMode(IdleMode.kCoast)
+      .closedLoopRampRate(1.0)
+      .openLoopRampRate(1.0)
+      .smartCurrentLimit(40)
+      .voltageCompensation(12.0);
       
       rightShooterConfig.closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pid(ShooterConstants.kShooterP, ShooterConstants.kShooterI, ShooterConstants.kShooterD)
-        .outputRange(-1.0, 1.0);
-
-      // rightShooterConfig.closedLoop.maxMotion
-      //   .cruiseVelocity(5000) // This is needed for maxmotion, but does not set the velocity
-      //   .maxAcceleration(10000)
-      //   .allowedProfileError(50); // 1 was too strict
-
+      .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+      .pid(ShooterConstants.kShooterP, ShooterConstants.kShooterI, ShooterConstants.kShooterD)
+      .outputRange(-1.0, 1.0);
+      
       rightShooterConfig.closedLoop.feedForward
-        .kV(1.0 / VortexConstants.kFreeSpeedRpm);
-
+      .kV(1.0 / VortexConstants.kFreeSpeedRpm);
+      
       // Left Shooter Configs
       leftShooterConfig.apply(rightShooterConfig)
-        .follow(ShooterConstants.kRightShooterMotorCanId, true);
+      .follow(ShooterConstants.kRightShooterMotorCanId, true);
+      
+      preShooterConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
 
     }
   }
