@@ -58,7 +58,7 @@ public final class Constants {
     public static final double kIntakeMotorPower = -0.75;
 
     public static final int kPivotMotorCanId = 11;
-    public static final double kPivotMotorPower = 0.1;
+    public static final double kPivotMotorPower = 0.2;
 
     public static final double kPivotMechAdv = 52.89; // motor rev per arm rev
 
@@ -122,7 +122,7 @@ public final class Constants {
   }
 
   public static final class AimConstants {
-    public static final double kAimP = 4.0; // radians -> rad/s-ish output scaling (tune)
+    public static final double kAimP = 0.4; // radians -> rad/s-ish output scaling (tune)
     public static final double kAimMaxOmegaRadPerSec = 3.0;
     public static final double kAimToleranceDeg = 2.0;
   }

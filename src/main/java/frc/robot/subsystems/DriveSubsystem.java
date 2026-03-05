@@ -71,6 +71,8 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kRearRightTurningCanId,
           DriveConstants.kBackRightChassisAngularOffset);
 
+  private boolean slowMode = false; // Boolean flag to track slow mode
+
   private final Field2d field = new Field2d();
   private final SwerveDrivePoseEstimator m_poseEstimator;
 
@@ -241,10 +243,17 @@ public class DriveSubsystem extends SubsystemBase {
         pose);
   }
 
-  private boolean slowMode = false; // Boolean flag to track slow mode
-
-  public void setSlowMode(boolean enable) { // Enables/disables slow mode
+  /**
+   * Enables/disables slow mode, turns bot to 45 degrees.
+   * @param enable true if slow mode is enabled
+   */
+  public void setSlowMode(boolean enable) {
     slowMode = enable;
+    
+    var pose = getPose();
+    double rot = aimPid.calculate(pose.getRotation().getRadians(), 45);
+
+    drive(0.0, 0.0, rot, true);
   }
 
   /**
@@ -299,7 +308,7 @@ public class DriveSubsystem extends SubsystemBase {
     
   }
 
-  public void driveRobotRelative(ChassisSpeeds speeds) { // 
+  public void driveRobotRelative(ChassisSpeeds speeds) { // Drives without using field relative
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
 
@@ -333,7 +342,7 @@ public class DriveSubsystem extends SubsystemBase {
     return new InstantCommand(() -> {
         drive(xMeters, yMeters, 0, false); // Move in robot-relative space
     }, this).andThen(new InstantCommand(() -> drive(0, 0, 0, false), this)); // Stop after movement
-}
+  }
 
 
 

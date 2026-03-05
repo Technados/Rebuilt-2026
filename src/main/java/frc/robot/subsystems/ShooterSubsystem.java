@@ -97,9 +97,9 @@ public class ShooterSubsystem extends SubsystemBase {
   public boolean shooterAtVelocity() { 
     if (targetVelocity <= 1.0) return false;
     double tol = ShooterConstants.kShooterReadyToleranceRPM;
-    return (getLeftVelocity() - targetVelocity) <= tol
-        && (getRightVelocity() - targetVelocity) <= tol
-        && (getPreVelocity() - ShooterConstants.kPreShooterMotorRPM ) <= tol;
+    return Math.abs(getLeftVelocity() - targetVelocity) <= tol
+        && Math.abs(getRightVelocity() - targetVelocity) <= tol
+        && Math.abs(getPreVelocity() - ShooterConstants.kPreShooterMotorRPM ) <= tol;
   }
 
   /*----------Control Methods----------*/
@@ -156,8 +156,9 @@ public class ShooterSubsystem extends SubsystemBase {
    * @return Command to set shooter velocity using {@link ShotMap}
    */
   public Command holdVelocityCommand(DoubleSupplier rpmSupplier) { 
-    return run(
-      () -> setShooterVelocity(rpmSupplier.getAsDouble())
+    return runEnd(
+      () -> setShooterVelocity(rpmSupplier.getAsDouble()),
+      () -> stopShooter()
     );
   }
 

@@ -137,13 +137,22 @@ public class RobotContainer {
       )
     );
 
-    NamedCommands.registerCommand("intake", m_intakeSubsystem.runIntakeCommand());
-    NamedCommands.registerCommand("pivot-in", m_intakeSubsystem.pivotInCommand());
-    NamedCommands.registerCommand("pivot-out", m_intakeSubsystem.pivotOutCommand());
+    // Pathplanner Commands
+    NamedCommands.registerCommand("Intake", m_intakeSubsystem.runIntakeCommand());
+    NamedCommands.registerCommand("Pivot-In", m_intakeSubsystem.pivotInCommand());
+    NamedCommands.registerCommand("Pivot-Out", m_intakeSubsystem.pivotOutCommand());
 
-    NamedCommands.registerCommand("shoot", 
+    NamedCommands.registerCommand("Shoot", 
       new ParallelCommandGroup(
         m_shooterSubsystem.holdVelocityCommand(3000),
+        m_hoodSubsystem.holdPositionCommand(0),
+        m_feederSubsystem.feedWhen(m_shooterSubsystem.shooterAtVelocity())
+      )
+    ); // Test positions/velocity later
+
+    NamedCommands.registerCommand("Shoot-Far", 
+      new ParallelCommandGroup(
+        m_shooterSubsystem.holdVelocityCommand(3500),
         m_hoodSubsystem.holdPositionCommand(0),
         m_feederSubsystem.feedWhen(m_shooterSubsystem.shooterAtVelocity())
       )
@@ -153,6 +162,7 @@ public class RobotContainer {
     autoChooser.addOption("null", null);         
     autoChooser.addOption("RT-O", "RT-O");
     autoChooser.addOption("RB-C", "RB-C");
+    autoChooser.addOption("1-Meter", "1-Meter");
 
     // Creating a new shuffleboard tab and adding the autoChooser
     Shuffleboard.getTab("PathPlanner Autonomous").add(autoChooser).withWidget(BuiltInWidgets.kComboBoxChooser);
@@ -176,18 +186,22 @@ public class RobotContainer {
     // Start Button -> Zero swerve heading
     m_driverController.start().onTrue(m_robotDrive.zeroHeadingCommand());
 
-    // Right Bumper -> Enable Slow Mode While Held
-    // m_driverController.rightBumper()
-    // .whileTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true)))
-    // .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false)));
-
+    // X Button -> Run intake while true
     m_driverController.x().whileTrue(m_intakeSubsystem.runIntakeCommand());
-
+    
+    // Y Button -> Zero pivot on true
     m_driverController.y().onTrue(m_intakeSubsystem.tempZeroPivotAtInCommand());
     
+    // B Button -> Retract pivot on true
     m_driverController.b().onTrue(m_intakeSubsystem.pivotInCommand());
     
+    // A Button -> Extend pivot on true
     m_driverController.a().onTrue(m_intakeSubsystem.pivotOutCommand());
+
+    // Left Trigger -> Enable Slow Mode While Held
+    m_driverController.leftTrigger()
+      .whileTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true)))
+      .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false)));
 
     m_driverController.leftBumper().whileTrue(m_intakeSubsystem.pivotJogCommand(0.1));
 
@@ -213,22 +227,25 @@ public class RobotContainer {
     var hoodSupplier = (java.util.function.DoubleSupplier) () -> shotSupplier.get().hoodPos();
 
     var readySupplier = (java.util.function.BooleanSupplier) () ->
-      m_robotDrive.isAimedAt(hubSupplier.get())
-      && m_shooterSubsystem.shooterAtVelocity()
-      && m_hoodSubsystem.atTarget();
+      m_robotDrive.isAimedAt
+      (hubSupplier.get())
+      && m_shooterSubsystem.shooterAtVelocity();
+      //&& m_hoodSubsystem.atTarget();
+
+    System.out.println("ready supplier: " + readySupplier);
 
     m_operatorController.leftTrigger()
       .whileTrue(
           // Keep updating continuously while held
           m_robotDrive.aimAtCommand(hubSupplier)
-              .alongWith(m_shooterSubsystem.holdVelocityCommand(rpmSupplier))
-              .alongWith(m_hoodSubsystem.holdPositionCommand(hoodSupplier))
+            .alongWith(m_shooterSubsystem.holdVelocityCommand(rpmSupplier))
+            .alongWith(m_hoodSubsystem.holdPositionCommand(hoodSupplier))
       );
 
     // Operator RT = Fire (feed only when ready)
     m_operatorController.rightTrigger()
       .whileTrue(
-          m_feederSubsystem.feedWhen(readySupplier)
+        m_feederSubsystem.feedWhen(readySupplier)
       );
 
     m_operatorController.x()
