@@ -13,12 +13,6 @@
                 "data": {
                   "pathName": "RT-O"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Pivot-Out"
-                }
               }
             ]
           }
