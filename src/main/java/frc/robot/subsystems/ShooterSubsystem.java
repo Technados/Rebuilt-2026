@@ -14,7 +14,6 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,14 +27,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private final SparkFlex leftShooterMotor;
   private final SparkFlex rightShooterMotor;
-  private final SparkMax preShooterMotor;
   
   private final RelativeEncoder leftShooterEncoder;
   private final RelativeEncoder rightShooterEncoder;
-  private final RelativeEncoder preShooterEncoder;
 
   private SparkClosedLoopController rightShooterController;
-  private SparkClosedLoopController preShooterController;
 
   private double targetVelocity;
 
@@ -43,7 +39,6 @@ public class ShooterSubsystem extends SubsystemBase {
     // Initializes motors using constants and configs
     leftShooterMotor = new SparkFlex(ShooterConstants.kLeftShooterMotorCanId, MotorType.kBrushless);
     rightShooterMotor = new SparkFlex(ShooterConstants.kRightShooterMotorCanId, MotorType.kBrushless);
-    preShooterMotor = new SparkMax(ShooterConstants.kPreShooterMotorCanId, MotorType.kBrushless);
 
     leftShooterMotor.configure(
       Configs.ShooterSubsystem.leftShooterConfig,
@@ -55,20 +50,13 @@ public class ShooterSubsystem extends SubsystemBase {
       ResetMode.kResetSafeParameters,                                                   
       PersistMode.kPersistParameters
     );
-    preShooterMotor.configure(
-      Configs.ShooterSubsystem.preShooterConfig,
-      ResetMode.kResetSafeParameters,                                                   
-      PersistMode.kPersistParameters
-    );
       
     // Creates encoders for both motors
     leftShooterEncoder = leftShooterMotor.getEncoder();
     rightShooterEncoder = rightShooterMotor.getEncoder();
-    preShooterEncoder = preShooterMotor.getEncoder();
     
     // Creates a controller for right motor (left is a follower and will do what the right does)
     rightShooterController = rightShooterMotor.getClosedLoopController();
-    preShooterController = preShooterMotor.getClosedLoopController();
     
     targetVelocity = 0.0;
   }
@@ -86,10 +74,6 @@ public class ShooterSubsystem extends SubsystemBase {
   public double getRightVelocity() { // Returns the right motor velocity
     return rightShooterEncoder.getVelocity();
   }
-
-  public double getPreVelocity() { // Returns the preshooter motor velocity
-    return preShooterEncoder.getVelocity();
-  }
   
   /**
    * @return Returns true when all motors are within tolerance of target RPM
@@ -98,8 +82,7 @@ public class ShooterSubsystem extends SubsystemBase {
     if (targetVelocity <= 1.0) return false;
     double tol = ShooterConstants.kShooterReadyToleranceRPM;
     return Math.abs(getLeftVelocity() - targetVelocity) <= tol
-        && Math.abs(getRightVelocity() - targetVelocity) <= tol
-        && Math.abs(getPreVelocity() - ShooterConstants.kPreShooterMotorRPM ) <= tol;
+        && Math.abs(getRightVelocity() - targetVelocity) <= tol;  
   }
 
   /*----------Control Methods----------*/
@@ -119,12 +102,6 @@ public class ShooterSubsystem extends SubsystemBase {
       ControlType.kVelocity,             
       ClosedLoopSlot.kSlot0
     );
-
-    // Sets the preshooter to its rpm defined in the constants
-    preShooterController.setSetpoint(
-      ShooterConstants.kPreShooterMotorRPM, 
-      ControlType.kVelocity
-    );
   }
   
   /**
@@ -139,7 +116,6 @@ public class ShooterSubsystem extends SubsystemBase {
    */
   public void stopShooter() { 
     rightShooterMotor.set(0.0);
-    preShooterMotor.set(0.0);
   }
   
   /*----------Commands----------*/
@@ -180,7 +156,6 @@ public class ShooterSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Shooter/Target Velocity", getTargetVelocity());
     SmartDashboard.putNumber("Shooter/Left Velocity", getLeftVelocity());
     SmartDashboard.putNumber("Shooter/Right Velocity", getRightVelocity());
-    SmartDashboard.putNumber("Shooter/Pre Velocity", getPreVelocity());
     SmartDashboard.putBoolean("Shooter/Shooter At Velocity", shooterAtVelocity());
 
     SmartDashboard.putNumber("Shooter/Right AppliedOutput", rightShooterMotor.getAppliedOutput());
