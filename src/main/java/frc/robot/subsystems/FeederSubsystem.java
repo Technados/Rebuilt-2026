@@ -6,6 +6,7 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,14 +23,21 @@ import frc.robot.Constants.FeederConstants;
 public class FeederSubsystem extends SubsystemBase {
 
   private final SparkFlex feederMotor;
+  private final SparkMax preShooterMotor;
   
   public FeederSubsystem() {
     // Initializes motors using constants and configs
     feederMotor = new SparkFlex(FeederConstants.kFeederMotorCanId, MotorType.kBrushless);
+    preShooterMotor = new SparkMax(FeederConstants.kPreShooterMotorCanId, MotorType.kBrushless);
 
     feederMotor.configure(
       Configs.FeederSubsystem.feederConfig,
       ResetMode.kResetSafeParameters,
+      PersistMode.kPersistParameters
+    );
+    preShooterMotor.configure(
+      Configs.FeederSubsystem.preShooterConfig,
+      ResetMode.kResetSafeParameters,                                                   
       PersistMode.kPersistParameters
     );
   }
@@ -37,10 +45,19 @@ public class FeederSubsystem extends SubsystemBase {
   /*----------Control Methods----------*/
 
   /**
-   * Stops the feeder motor.
+   * Runs the motors at their power defined in the constants.
+   */
+  public void setPower() {
+    feederMotor.set(FeederConstants.kFeederMotorPower);
+    preShooterMotor.set(FeederConstants.kPreShooterMotorPower);
+  }
+
+  /**
+   * Stops the motors.
    */
   public void stop() { 
     feederMotor.set(0);
+    preShooterMotor.set(0);
   }
 
   /*----------Commands----------*/
@@ -50,7 +67,7 @@ public class FeederSubsystem extends SubsystemBase {
    */
   public Command runFeederCommand() {
     return this.startEnd(
-      () -> feederMotor.set(FeederConstants.kFeederMotorPower),
+      () -> setPower(),
       this::stop
     );
   }
@@ -64,7 +81,7 @@ public class FeederSubsystem extends SubsystemBase {
   public Command feedWhen(BooleanSupplier enabledSupplier) {
     return this.run(() -> {
       if (enabledSupplier.getAsBoolean()) {
-        feederMotor.set(FeederConstants.kFeederMotorPower);
+        setPower();
       } else {
         stop();
       }
@@ -79,7 +96,7 @@ public class FeederSubsystem extends SubsystemBase {
   public Command feedWhen(boolean shooterAtSpeed) { // Feeds only when shooterAtSpeed is true
     return this.run(() -> {
       if (shooterAtSpeed) {
-        feederMotor.set(FeederConstants.kFeederMotorPower);
+        setPower();
       } else {
         stop();
       }
@@ -93,7 +110,7 @@ public class FeederSubsystem extends SubsystemBase {
    * @return Command to pulse the feeder.
    */
   public Command pulseFeed(double seconds) {
-    return this.runOnce(() -> feederMotor.set(FeederConstants.kFeederMotorPower))
+    return this.runOnce(() -> setPower())
       .andThen(this.waitSeconds(seconds))
       .andThen(this.runOnce(this::stop));
   }
