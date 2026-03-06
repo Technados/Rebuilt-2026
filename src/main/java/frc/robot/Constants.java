@@ -90,9 +90,12 @@ public final class Constants {
   }
 
   public static final class FeederConstants {
-    
+
     public static final int kFeederMotorCanId = 12;
-    public static final double kFeederMotorPower = 1;
+    public static final double kFeederMotorPower = .7;
+
+    public static final int kPreShooterMotorCanId = 13;
+    public static final double kPreShooterMotorPower = .7;
     
   }
   
@@ -100,9 +103,7 @@ public final class Constants {
     
     public static final int kLeftShooterMotorCanId = 14;
     public static final int kRightShooterMotorCanId = 15;
-    public static final int kPreShooterMotorCanId = 13;
 
-    public static final double kPreShooterMotorRPM = 5000.0;
     public static final double kShooterMaxRPM = 3000.0; 
     public static final double kShooterIdleRPM = 1500.0; 
     
@@ -130,8 +131,8 @@ public final class Constants {
 
   public static final class HoodConstants {
 
-    public static final int kLeftHoodServoPwm = 1;
-    public static final int kRightHoodServoPwm = 2;
+    public static final int kLeftHoodServoPwm = 0;
+    public static final int kRightHoodServoPwm = 1;
 
     // Clamp to protect mechanics (tune after first test)
     public static final double kMinPos = 0.05;
