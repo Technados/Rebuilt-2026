@@ -29,8 +29,8 @@ public class HoodSubsystem extends SubsystemBase {
     private final Servo leftServo;
     private final Servo rightServo;
 
-    private double targetPos = 0.50;
-    private double modeledPos = 0.50;
+    private double targetPos;
+    private double modeledPos;
 
     private double lastTime;
 
@@ -40,8 +40,8 @@ public class HoodSubsystem extends SubsystemBase {
         rightServo = new Servo(HoodConstants.kRightHoodServoPwm);
 
         // Sets target and modeled positions
-        targetPos = 0.50;
-        modeledPos = 0.50;
+        targetPos = 0.5;
+        modeledPos = 0.5;
 
         // Sets timestamp
         lastTime = Timer.getFPGATimestamp();
@@ -80,6 +80,18 @@ public class HoodSubsystem extends SubsystemBase {
     }
 
     /*----------Commands----------*/
+
+    /**
+     * Returns hood jog command. This command is only for testing.
+     * @param posIncrease The position increment that the servos will move at.
+     * @return Command to move the hood manually.
+     */
+    public Command hoodJogCommand(double posIncrease) {
+        return this.startEnd(
+            () -> setHoodPosition(modeledPos + posIncrease),
+            () -> holdPositionCommand(modeledPos)
+        );
+    }
 
     /**
      * Holds a hood position continuously 
