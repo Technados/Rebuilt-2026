@@ -42,7 +42,7 @@ public class RobotContainer {
   // The robot's subsystems
 
     // First create subsytems in container
-    private final LEDSubsystem m_ledSubsystem = new LEDSubsystem(2); // PWM port 0
+    private final LEDSubsystem m_ledSubsystem = new LEDSubsystem();
     
     private final DriveSubsystem m_robotDrive = new DriveSubsystem(m_ledSubsystem);
     

@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.LEDConstants;
 import edu.wpi.first.wpilibj.Timer;
 
 public class LEDSubsystem extends SubsystemBase {
@@ -15,8 +16,8 @@ public class LEDSubsystem extends SubsystemBase {
     private boolean hasFlashedAlgae = false;
     private boolean hasFlashedGyroAlert = false;
 
-    public LEDSubsystem(int pwmPort) {
-        blinkin = new Spark(pwmPort);
+    public LEDSubsystem() {
+        blinkin = new Spark(LEDConstants.kLEDPwmPort);
         blinkin.set(defaultPattern);
     }
 

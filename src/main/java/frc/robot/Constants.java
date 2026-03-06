@@ -165,6 +165,12 @@ public final class Constants {
 
   }
 
+  public static final class LEDConstants {
+
+    public static final int kLEDPwmPort = 2;
+
+  }
+
   public static final class LimelightPID {
     // 🎯 PID Gains for LL Targeting
 
