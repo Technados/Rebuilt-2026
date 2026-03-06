@@ -111,8 +111,8 @@ public final class Configs {
     
     static {
       // Configure basic settings of the feeder and preshooter motors
-      feederConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
-      preShooterConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+      feederConfig.inverted(true).idleMode(IdleMode.kCoast).smartCurrentLimit(40);
+      preShooterConfig.inverted(false).idleMode(IdleMode.kCoast).smartCurrentLimit(40);
     }
   }
   
