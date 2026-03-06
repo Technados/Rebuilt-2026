@@ -42,7 +42,7 @@ public class RobotContainer {
   // The robot's subsystems
 
     // First create subsytems in container
-    private final LEDSubsystem m_ledSubsystem = new LEDSubsystem(0); // PWM port 0
+    private final LEDSubsystem m_ledSubsystem = new LEDSubsystem(2); // PWM port 0
     
     private final DriveSubsystem m_robotDrive = new DriveSubsystem(m_ledSubsystem);
     
@@ -258,6 +258,10 @@ public class RobotContainer {
         m_feederSubsystem.runFeederCommand()
           .alongWith(m_intakeSubsystem.pivotAgitateCommand())
       );
+
+    m_operatorController.a().whileTrue(m_hoodSubsystem.hoodJogCommand(0.03));
+
+    m_operatorController.b().whileTrue(m_hoodSubsystem.hoodJogCommand(-0.03));
 
   }
 
