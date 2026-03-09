@@ -55,10 +55,11 @@ public final class Constants {
 
   public static final class IntakeConstants {
     public static final int kIntakeMotorCanId = 10;
-    public static final double kIntakeMotorPower = -0.75;
+    public static final double kIntakeMotorPower = 0.65;
 
     public static final int kPivotMotorCanId = 11;
-    public static final double kPivotMotorPower = 0.2;
+    public static final double kPivotIdleInPower = 0.03;
+    public static final double kPivotIdleOutPower = -0.03;
 
     public static final double kPivotMechAdv = 52.89; // motor rev per arm rev
 
@@ -92,10 +93,10 @@ public final class Constants {
   public static final class FeederConstants {
 
     public static final int kFeederMotorCanId = 12;
-    public static final double kFeederMotorPower = .75;
+    public static final double kFeederMotorPower = .90;
 
     public static final int kPreShooterMotorCanId = 13;
-    public static final double kPreShooterMotorPower = .8;
+    public static final double kPreShooterMotorPower = .90;
     
   }
   
@@ -108,12 +109,12 @@ public final class Constants {
     public static final double kShooterIdleRPM = 1500.0; 
     
     // Must be adjusted before testing!
-    public static final double kShooterP = 0.0002;
+    public static final double kShooterP = 0.0003;
     public static final double kShooterI = 0.0;
     public static final double kShooterD = 0.0;
     
     // “At speed” tolerance used to decide when we are allowed to feed.
-    public static final double kShooterReadyToleranceRPM = 100.0;
+    public static final double kShooterReadyToleranceRPM = 250.0;
 
     // Optional feedforward: volts = kS + kV * RPM
     // Start at 0 to prove closed-loop works, then add feedforward later for better recovery.
@@ -135,8 +136,8 @@ public final class Constants {
     public static final int kRightHoodServoPwm = 1;
 
     // Clamp to protect mechanics (tune after first test)
-    public static final double kMinPos = 0.05;
-    public static final double kMaxPos = 0.95;
+    public static final double kMinPos = 0.2;
+    public static final double kMaxPos = 0.68;
 
     public static final double kPosTolerance = 0.01;
 
@@ -174,7 +175,7 @@ public final class Constants {
   public static final class LimelightPID {
     // 🎯 PID Gains for LL Targeting
 
-    public static final double kP_turn = 0.15;   // Previously 0.1
+    public static final double kP_turn = 0.2;   // Previously 0.1
     public static final double kI_turn = 0.000;
     public static final double kD_turn = 0.0;   // New (small D gain)
 
@@ -207,7 +208,7 @@ public final class Constants {
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
-    public static final double kMaxSpeedMetersPerSecond = 2;
+    public static final double kMaxSpeedMetersPerSecond = 3;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
     public static final double kSlowSpeedFactor = 0.20; // Slow mode speed factor (40% of normal speed)
 
@@ -248,7 +249,7 @@ public final class Constants {
     // The MAXSwerve module can be configured with one of three pinion gears: 12T,
     // 13T, or 14T. This changes the drive speed of the module (a pinion gear with
     // more teeth will result in a robot that drives faster).
-    public static final int kDrivingMotorPinionTeeth = 12;
+    public static final int kDrivingMotorPinionTeeth = 14;
 
     // Calculations required for driving motor conversion factors and feed forward
     public static final double kDrivingMotorFreeSpeedRps = VortexConstants.kFreeSpeedRpm / 60;

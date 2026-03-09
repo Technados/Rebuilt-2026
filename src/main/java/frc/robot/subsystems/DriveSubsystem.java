@@ -196,6 +196,8 @@ public class DriveSubsystem extends SubsystemBase {
     double desired = Math.atan2(dy, dx);
 
     double errorRad = MathUtil.angleModulus(desired - pose.getRotation().getRadians());
+
+    SmartDashboard.putBoolean("Aim/Is Aimed At", Math.abs(Math.toDegrees(errorRad)) <= AimConstants.kAimToleranceDeg);
     return Math.abs(Math.toDegrees(errorRad)) <= AimConstants.kAimToleranceDeg;
   }
 

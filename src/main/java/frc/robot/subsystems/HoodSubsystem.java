@@ -29,8 +29,8 @@ public class HoodSubsystem extends SubsystemBase {
     private final Servo leftServo;
     private final Servo rightServo;
 
-    private double targetPos;
-    private double modeledPos;
+    private double targetPos = 0;
+    private double modeledPos = 0;
 
     private double lastTime;
 

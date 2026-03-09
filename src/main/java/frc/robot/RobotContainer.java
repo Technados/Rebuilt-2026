@@ -128,6 +128,8 @@ public class RobotContainer {
 
     m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.idleShooterCommand());
 
+    m_intakeSubsystem.setDefaultCommand(m_intakeSubsystem.pivotIdleCommand());
+
     // Adds button to dashboard that resets the robot's pose to the test pose
     SmartDashboard.putData(
       "Reset Buttons/Reset Pose: Test Start",
@@ -146,7 +148,7 @@ public class RobotContainer {
       new ParallelCommandGroup(
         m_shooterSubsystem.holdVelocityCommand(3000),
         m_hoodSubsystem.holdPositionCommand(0),
-        m_feederSubsystem.feedWhen(m_shooterSubsystem.shooterAtVelocity())
+        m_feederSubsystem.feedWhen(() -> m_shooterSubsystem.shooterAtVelocity())
       )
     ); // Test positions/velocity later
 
@@ -154,7 +156,7 @@ public class RobotContainer {
       new ParallelCommandGroup(
         m_shooterSubsystem.holdVelocityCommand(3500),
         m_hoodSubsystem.holdPositionCommand(0),
-        m_feederSubsystem.feedWhen(m_shooterSubsystem.shooterAtVelocity())
+        m_feederSubsystem.feedWhen(() -> m_shooterSubsystem.shooterAtVelocity())
       )
     ); // Test positions/velocity later
 
@@ -187,7 +189,7 @@ public class RobotContainer {
     m_driverController.start().onTrue(m_robotDrive.zeroHeadingCommand());
 
     // X Button -> Run intake while true
-    m_driverController.x().whileTrue(m_intakeSubsystem.runIntakeCommand());
+    m_driverController.rightTrigger().whileTrue(m_intakeSubsystem.runIntakeCommand());
     
     // Y Button -> Zero pivot on true
     m_driverController.y().onTrue(m_intakeSubsystem.tempZeroPivotAtInCommand());
@@ -227,12 +229,9 @@ public class RobotContainer {
     var hoodSupplier = (java.util.function.DoubleSupplier) () -> shotSupplier.get().hoodPos();
 
     var readySupplier = (java.util.function.BooleanSupplier) () ->
-      m_robotDrive.isAimedAt
-      (hubSupplier.get())
-      && m_shooterSubsystem.shooterAtVelocity();
+      //m_robotDrive.isAimedAt(hubSupplier.get()) &&
+      m_shooterSubsystem.shooterAtVelocity();
       //&& m_hoodSubsystem.atTarget();
-
-    System.out.println("ready supplier: " + readySupplier);
 
     m_operatorController.leftTrigger()
       .whileTrue(

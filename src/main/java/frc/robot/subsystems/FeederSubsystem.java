@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import java.util.function.BooleanSupplier;
 
+import javax.sound.sampled.SourceDataLine;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
@@ -9,6 +11,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
@@ -78,29 +81,25 @@ public class FeederSubsystem extends SubsystemBase {
    * @param enabledSupplier Boolean representing if the shooter is up to speed.
    * @return Command to conditionally run the feeder.
    */
+  
   public Command feedWhen(BooleanSupplier enabledSupplier) {
-    return this.run(() -> {
-      if (enabledSupplier.getAsBoolean()) {
-        setPower();
-      } else {
-        stop();
-      }
-    });
-  }
+    return this.runEnd(
+      () -> {
+        boolean ready = enabledSupplier.getAsBoolean();
 
-  /**
-   * Feeds only when shooterAtSpeed is true.
-   * @param shooterAtSpeed Boolean representing if the shooter is up to speed.
-   * @return Command to conditionally run the feeder.
-   */
-  public Command feedWhen(boolean shooterAtSpeed) { // Feeds only when shooterAtSpeed is true
-    return this.run(() -> {
-      if (shooterAtSpeed) {
-        setPower();
-      } else {
-        stop();
+        SmartDashboard.putBoolean("Shoot/Ready Supplier Live", ready);
+
+        if (ready) {
+          setPower();
+        } else {
+          stop();
+        }
+      },
+      () -> {
+        SmartDashboard.putBoolean("Shoot/Ready Supplier Live", false);
+        this.stop();
       }
-    });
+    );
   }
  
   /**
