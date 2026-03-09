@@ -14,6 +14,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.IntakeConstants;
@@ -49,6 +50,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private boolean pivotZeroed = false;
   private double pivotTargetDeg = 0.0;
+  private double pivotIdlePower = 0.0;
 
   public IntakeSubsystem() {
     // Initializes motors using constants and configs
@@ -76,6 +78,8 @@ public class IntakeSubsystem extends SubsystemBase {
     pivotEncoder.setPosition(0);
     pivotZeroed = true;
 
+    pivotIdlePower = IntakeConstants.kPivotIdleInPower;
+
   }
 
   /*----------Getters----------*/
@@ -87,8 +91,9 @@ public class IntakeSubsystem extends SubsystemBase {
   public boolean pivotAtTarget() { // Returns true if the pivot position is within the tolerance for the target
     double posErr = Math.abs(pivotTargetDeg - pivotEncoder.getPosition());
     double vel = Math.abs(pivotEncoder.getVelocity());
-    return posErr <= IntakeConstants.kPivotPosToleranceDeg
-    && vel <= IntakeConstants.kPivotVelToleranceDegPerSec;
+    return  
+      (posErr <= IntakeConstants.kPivotPosToleranceDeg
+      && vel <= IntakeConstants.kPivotVelToleranceDegPerSec);
   }
 
   /*----------Control Methods----------*/
@@ -126,7 +131,7 @@ public class IntakeSubsystem extends SubsystemBase {
    */
   public void pivotAgitate() {
     setPivotTargetDeg(0);
-    setPivotTargetDeg(70);
+    setPivotTargetDeg(50);
   }
 
   /*----------Commands----------*/
@@ -159,22 +164,25 @@ public class IntakeSubsystem extends SubsystemBase {
    */
   public Command pivotToDegCommand(double targetDeg) {
     return this.runOnce(() -> setPivotTargetDeg(targetDeg))
-      .andThen(run(() -> {}))
-      .until(this::pivotAtTarget);
-  }
-  
-  /**
-   * @return Command to move pivot to 100 degrees.
-   */
-  public Command pivotInCommand() {
-    return pivotToDegCommand(100.0);
+      .andThen(Commands.waitUntil(this::pivotAtTarget));
   }
   
   /**
    * @return Command to move pivot to 0 degrees.
    */
-  public Command pivotOutCommand() {
+  public Command pivotInCommand() {
+    pivotIdlePower = IntakeConstants.kPivotIdleInPower;
+
     return pivotToDegCommand(0.0);
+  }
+  
+  /**
+   * @return Command to move pivot to 100 degrees.
+   */
+  public Command pivotOutCommand() {
+    pivotIdlePower = IntakeConstants.kPivotIdleOutPower;
+
+    return pivotToDegCommand(100.0);
   }
 
   /**
@@ -185,6 +193,10 @@ public class IntakeSubsystem extends SubsystemBase {
       () -> pivotAgitate(),
       () -> setPivotTargetDeg(0)
     );
+  }
+
+  public Command pivotIdleCommand() {
+    return run(() -> pivotMotor.set(pivotIdlePower));
   }
   
   /**
