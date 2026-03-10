@@ -58,8 +58,8 @@ public final class Constants {
     public static final double kIntakeMotorPower = 0.65;
 
     public static final int kPivotMotorCanId = 11;
-    public static final double kPivotIdleInPower = 0.03;
-    public static final double kPivotIdleOutPower = -0.03;
+    public static final double kPivotIdleInPower = -0.03;
+    public static final double kPivotIdleOutPower = 0.03;
 
     public static final double kPivotMechAdv = 52.89; // motor rev per arm rev
 
@@ -74,12 +74,12 @@ public final class Constants {
 
     public static final double kPivotDegPerSecPerMotorRPM = kPivotDegPerMotorRev / 60;
 
-    public static final double kPivotPosToleranceDeg = 4;
+    public static final double kPivotPosToleranceDeg = 6;
     public static final double kPivotVelToleranceDegPerSec = 8.0;
 
     // MAXMotion limits (units follow velocityConversionFactor)
-    public static final double kPivotCruiseArmDegPerSec = 500;
-    public static final double kPivotAccelArmDegPerSec2 = 900;
+    public static final double kPivotCruiseArmDegPerSec = 2500;
+    public static final double kPivotAccelArmDegPerSec2 = 3000;
 
     // Convert to what MaxMotion appears to want (MOTOR units)
     public static final double kPivotCruiseVelocity =
@@ -178,7 +178,7 @@ public final class Constants {
     public static final double kP_turn = 0.2;   // Previously 0.1
     public static final double kI_turn = 0.000;
     public static final double kD_turn = 0.0;   // New (small D gain)
-
+ 
     public static final double kP_distance = 0.2; // Previously 0.15
     public static final double kI_distance = 0.0;
     public static final double kD_distance = 0.0; // New (small D gain)

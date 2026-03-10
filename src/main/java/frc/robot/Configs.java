@@ -85,7 +85,7 @@ public final class Configs {
 
     static {
       // Intake Configs
-      intakeConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+      intakeConfig.inverted(false).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
 
       // Pivot Configs
       pivotConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);

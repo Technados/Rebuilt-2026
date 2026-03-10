@@ -15,6 +15,8 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.IntakeConstants;
@@ -49,8 +51,8 @@ public class IntakeSubsystem extends SubsystemBase {
   private SparkClosedLoopController pivotController;
 
   private boolean pivotZeroed = false;
-  private double pivotTargetDeg = 0.0;
-  private double pivotIdlePower = 0.0;
+  private double pivotTargetDeg;
+  private double pivotIdlePower;
 
   public IntakeSubsystem() {
     // Initializes motors using constants and configs
@@ -78,6 +80,8 @@ public class IntakeSubsystem extends SubsystemBase {
     pivotEncoder.setPosition(0);
     pivotZeroed = true;
 
+    pivotTargetDeg = 0.0;
+
     pivotIdlePower = IntakeConstants.kPivotIdleInPower;
 
   }
@@ -92,8 +96,8 @@ public class IntakeSubsystem extends SubsystemBase {
     double posErr = Math.abs(pivotTargetDeg - pivotEncoder.getPosition());
     double vel = Math.abs(pivotEncoder.getVelocity());
     return  
-      (posErr <= IntakeConstants.kPivotPosToleranceDeg
-      && vel <= IntakeConstants.kPivotVelToleranceDegPerSec);
+      (posErr <= IntakeConstants.kPivotPosToleranceDeg);
+      //&& vel <= IntakeConstants.kPivotVelToleranceDegPerSec
   }
 
   /*----------Control Methods----------*/
@@ -125,15 +129,6 @@ public class IntakeSubsystem extends SubsystemBase {
     );
   }
 
-  /**
-   * Moves the pivot to 0 degrees, then 70. Can be used in a command to 
-   * move the pivot back and forth continuously.
-   */
-  public void pivotAgitate() {
-    setPivotTargetDeg(0);
-    setPivotTargetDeg(50);
-  }
-
   /*----------Commands----------*/
   
   /**
@@ -150,6 +145,12 @@ public class IntakeSubsystem extends SubsystemBase {
     );
   }
 
+  public Command runIntakeAgitateCommand() {
+    return runOnce(
+      () -> {intakeMotor.set(IntakeConstants.kIntakeMotorPower);}
+    );
+  }
+
   /**
    * Returns tempZeroPivotAtIn as a command.
    */
@@ -163,7 +164,14 @@ public class IntakeSubsystem extends SubsystemBase {
    * @return Command to move the pivot motor to the target position.
    */
   public Command pivotToDegCommand(double targetDeg) {
-    return this.runOnce(() -> setPivotTargetDeg(targetDeg))
+    return this.runOnce(() -> {
+      setPivotTargetDeg(targetDeg);
+      if (targetDeg == 0) {
+        pivotIdlePower = IntakeConstants.kPivotIdleInPower;
+      } else {
+        pivotIdlePower = IntakeConstants.kPivotIdleOutPower;
+      }
+      })
       .andThen(Commands.waitUntil(this::pivotAtTarget));
   }
   
@@ -171,8 +179,6 @@ public class IntakeSubsystem extends SubsystemBase {
    * @return Command to move pivot to 0 degrees.
    */
   public Command pivotInCommand() {
-    pivotIdlePower = IntakeConstants.kPivotIdleInPower;
-
     return pivotToDegCommand(0.0);
   }
   
@@ -180,23 +186,31 @@ public class IntakeSubsystem extends SubsystemBase {
    * @return Command to move pivot to 100 degrees.
    */
   public Command pivotOutCommand() {
-    pivotIdlePower = IntakeConstants.kPivotIdleOutPower;
-
     return pivotToDegCommand(100.0);
   }
+
 
   /**
    * @return Command to run pivotAgitate, moves pivot to 0 degrees when the command ends.
    */
   public Command pivotAgitateCommand() {
-    return runEnd(
-      () -> pivotAgitate(),
-      () -> setPivotTargetDeg(0)
-    );
+    return Commands.sequence(
+      runIntakeAgitateCommand(),
+      pivotToDegCommand(75.0),
+      pivotToDegCommand(100.0)
+    )
+      .repeatedly()
+      .finallyDo(() -> {
+        setPivotTargetDeg(100.0);
+        intakeMotor.set(0.0);
+      });
   }
 
   public Command pivotIdleCommand() {
-    return run(() -> pivotMotor.set(pivotIdlePower));
+    return runEnd(
+      () -> pivotMotor.set(pivotIdlePower),
+      () -> pivotMotor.set(0)
+    );
   }
   
   /**

@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
@@ -192,7 +193,12 @@ public class RobotContainer {
     m_driverController.rightTrigger().whileTrue(m_intakeSubsystem.runIntakeCommand());
     
     // Y Button -> Zero pivot on true
-    m_driverController.y().onTrue(m_intakeSubsystem.tempZeroPivotAtInCommand());
+    m_driverController.y().whileTrue(m_intakeSubsystem.tempZeroPivotAtInCommand());
+    
+    // X Button -> Agitate pivot while true
+    m_driverController.x().whileTrue(
+      m_intakeSubsystem.pivotAgitateCommand()
+    );
     
     // B Button -> Retract pivot on true
     m_driverController.b().onTrue(m_intakeSubsystem.pivotInCommand());
