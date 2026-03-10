@@ -201,7 +201,7 @@ public final class Constants {
   }
 
   public static class TestPoses {
-    public static final Pose2d kTestStartPose = new Pose2d(12.928, 4, Rotation2d.fromDegrees(180));
+    public static final Pose2d kTestStartPose = new Pose2d(12.928, 4, Rotation2d.fromDegrees(0));
     
   }
 

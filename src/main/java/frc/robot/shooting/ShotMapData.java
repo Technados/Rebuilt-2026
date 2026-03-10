@@ -14,9 +14,9 @@ public final class ShotMapData {
     // Sample placeholder values to prove the system works end-to-end.
     // Replace with real measured data.
     public static final List<ShotMap.ShotPoint> ALLIANCE_ZONE_POINTS = List.of(
-        new ShotMap.ShotPoint(1.4321, 3500, 0.20),
-        new ShotMap.ShotPoint(2.918, 4000, 0.38),
-        new ShotMap.ShotPoint(5.6358, 4250, 0.55)
+        new ShotMap.ShotPoint(1.3208, 3000, 0.19),
+        new ShotMap.ShotPoint(2.906, 3275, 0.40),
+        new ShotMap.ShotPoint(5.6358, 3650, 0.48)
     );
 
     public static ShotMap createAllianceZoneShotMap() {

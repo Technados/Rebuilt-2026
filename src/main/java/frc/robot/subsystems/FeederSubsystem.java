@@ -2,8 +2,6 @@ package frc.robot.subsystems;
 
 import java.util.function.BooleanSupplier;
 
-import javax.sound.sampled.SourceDataLine;
-
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
