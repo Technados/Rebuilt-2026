@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -32,10 +33,40 @@ public final class FieldConstants {
         FIELD_WIDTH_M  - BLUE_HUB.getY()
     );
 
+    public static final Translation2d BLUE_LEFT_FIELD_TARGET = new Translation2d(1.989, 1.849);
+    public static final Translation2d BLUE_RIGHT_FIELD_TARGET = new Translation2d(1.989, 6.220);
+
+    public static final Translation2d RED_LEFT_FIELD_TARGET = new Translation2d(
+        FIELD_LENGTH_M - BLUE_LEFT_FIELD_TARGET.getX(),
+        FIELD_WIDTH_M  - BLUE_LEFT_FIELD_TARGET.getY()
+    );
+    public static final Translation2d RED_RIGHT_FIELD_TARGET = new Translation2d(
+        FIELD_LENGTH_M - BLUE_RIGHT_FIELD_TARGET.getX(),
+        FIELD_WIDTH_M  - BLUE_RIGHT_FIELD_TARGET.getY()
+    );
+
     /** Returns the hub your alliance should score into, in WPILib field coordinates. */
     public static Translation2d getAllianceHub() {
         var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue);
         return (alliance == DriverStation.Alliance.Blue) ? BLUE_HUB : RED_HUB;
+    }
+
+    public static Translation2d getAllianceFieldTarget(Pose2d pose) {
+        var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue);
+
+        if (alliance == DriverStation.Alliance.Blue) {
+            if (FIELD_WIDTH_M / 2 > pose.getY()) {
+                return BLUE_LEFT_FIELD_TARGET;
+            } else {
+                return BLUE_RIGHT_FIELD_TARGET;
+            }
+        } else {
+            if (FIELD_WIDTH_M / 2 < pose.getY()) {
+                return BLUE_LEFT_FIELD_TARGET;
+            } else {
+                return BLUE_RIGHT_FIELD_TARGET;
+            }
+        }
     }
 
 }

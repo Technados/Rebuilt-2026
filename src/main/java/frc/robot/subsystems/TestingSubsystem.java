@@ -5,12 +5,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TestingSubsystem extends SubsystemBase {
 
-    public double shootingVelocity = 3000;
+    public double shootingVelocity = 4750;
 
     public TestingSubsystem() {}
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Testing/Shooting Velocity", shootingVelocity);
+        SmartDashboard.setDefaultNumber("Testing/Shooting Velocity", shootingVelocity);
     } 
 }

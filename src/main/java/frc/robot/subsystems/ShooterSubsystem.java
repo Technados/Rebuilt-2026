@@ -108,7 +108,15 @@ public class ShooterSubsystem extends SubsystemBase {
    * Sets the velocity of the left and right shooters to their idle velocity.
    */
   public void idleShooter() { // temporarily disabled
-    //setShooterVelocity(ShooterConstants.kShooterIdleRPM);
+    // Clamp to your known safe range
+    double idleVelocity = MathUtil.clamp(ShooterConstants.kShooterIdleRPM, 0.0, ShooterConstants.kShooterMaxRPM);
+    
+    // Only command the right shooter, left will follow (already set in configs)
+    rightShooterController.setSetpoint(
+      idleVelocity,
+      ControlType.kVelocity,             
+      ClosedLoopSlot.kSlot0
+    );
   }
   
   /**

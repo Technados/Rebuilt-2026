@@ -114,7 +114,7 @@ public final class Constants {
     public static final double kShooterD = 0.0;
     
     // “At speed” tolerance used to decide when we are allowed to feed.
-    public static final double kShooterReadyToleranceRPM = 250.0;
+    public static final double kShooterReadyToleranceRPM = 25.0;
 
     // Optional feedforward: volts = kS + kV * RPM
     // Start at 0 to prove closed-loop works, then add feedforward later for better recovery.

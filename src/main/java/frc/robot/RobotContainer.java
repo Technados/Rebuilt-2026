@@ -4,10 +4,15 @@
 
 package frc.robot;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -17,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
@@ -77,6 +81,13 @@ public class RobotContainer {
   CommandXboxController m_operatorController =
       new CommandXboxController(OIConstants.kOperatorControllerPort);
 
+  private boolean pass;
+
+  private DoubleSupplier rpmSupplier;
+  private DoubleSupplier hoodSupplier;
+
+  private BooleanSupplier readySupplier;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
@@ -127,7 +138,7 @@ public class RobotContainer {
       )
     );
 
-    m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.idleShooterCommand());
+    //m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.idleShooterCommand());
 
     m_intakeSubsystem.setDefaultCommand(m_intakeSubsystem.pivotIdleCommand());
 
@@ -165,6 +176,9 @@ public class RobotContainer {
     autoChooser.addOption("null", null);         
     autoChooser.addOption("RT-O", "RT-O");
     autoChooser.addOption("RB-C", "RB-C");
+    autoChooser.addOption("LT-D", "LT-D");
+    autoChooser.addOption("HC-O", "HC-O");
+    autoChooser.addOption("HC-D", "HC-D");
     autoChooser.addOption("1-Meter", "1-Meter");
 
     // Creating a new shuffleboard tab and adding the autoChooser
@@ -196,9 +210,9 @@ public class RobotContainer {
     m_driverController.y().whileTrue(m_intakeSubsystem.tempZeroPivotAtInCommand());
     
     // X Button -> Agitate pivot while true
-    m_driverController.x().whileTrue(
-      m_intakeSubsystem.pivotAgitateCommand()
-    );
+    // m_driverController.x().whileTrue(
+    //   m_intakeSubsystem.pivotAgitateCommand()
+    // );
     
     // B Button -> Retract pivot on true
     m_driverController.b().onTrue(m_intakeSubsystem.pivotInCommand());
@@ -222,24 +236,26 @@ public class RobotContainer {
     // Start Button -> Zero swerve heading
     m_operatorController.start().onTrue(m_robotDrive.zeroHeadingCommand());
 
-    // Operator LT = "Ready to Shoot" (aim + set shooter rpm + set hood)
-    var hubSupplier = (java.util.function.Supplier<edu.wpi.first.math.geometry.Translation2d>) FieldConstants::getAllianceHub;
+    pass = m_operatorController.a().getAsBoolean();
 
-    var distanceSupplier = (java.util.function.DoubleSupplier) () ->
+    // Operator LT = "Ready to Shoot" (aim + set shooter rpm + set hood)
+
+    var hubSupplier = (Supplier<Translation2d>) FieldConstants::getAllianceHub;
+
+    var distanceSupplier = (DoubleSupplier) () ->
       m_robotDrive.getPose().getTranslation().getDistance(hubSupplier.get());
 
-    var shotSupplier = (java.util.function.Supplier<ShotParameters>) () ->
-      m_shotMap.get(distanceSupplier.getAsDouble());
+    if (pass) {
+      var fieldTargetSupplier = 
+        (Supplier<Translation2d>) FieldConstants.getAllianceFieldTarget(m_robotDrive.getPose());
 
-    var rpmSupplier = (java.util.function.DoubleSupplier) () -> shotSupplier.get().rpm();
-    var hoodSupplier = (java.util.function.DoubleSupplier) () -> shotSupplier.get().hoodPos();
+      distanceSupplier = (DoubleSupplier) () ->
+      m_robotDrive.getPose().getTranslation().getDistance(fieldTargetSupplier.get());
+    }
 
-    var readySupplier = (java.util.function.BooleanSupplier) () ->
-      //m_robotDrive.isAimedAt(hubSupplier.get()) &&
-      m_shooterSubsystem.shooterAtVelocity();
-      //&& m_hoodSubsystem.atTarget();
+    this.setShotSuppliers(distanceSupplier);
 
-    m_operatorController.leftTrigger()
+    m_operatorController.leftTrigger().or(m_operatorController.a())
       .whileTrue(
           // Keep updating continuously while held
           m_robotDrive.aimAtCommand(hubSupplier)
@@ -251,6 +267,7 @@ public class RobotContainer {
     m_operatorController.rightTrigger()
       .whileTrue(
         m_feederSubsystem.feedWhen(readySupplier)
+          .alongWith(m_intakeSubsystem.pivotAgitateCommand(readySupplier))
       );
 
     m_operatorController.x()
@@ -261,13 +278,25 @@ public class RobotContainer {
     m_operatorController.y()
       .whileTrue(
         m_feederSubsystem.runFeederCommand()
-          .alongWith(m_intakeSubsystem.pivotAgitateCommand())
       );
 
-    m_operatorController.a().whileTrue(m_hoodSubsystem.hoodJogCommand(0.03));
+    m_operatorController.a().whileTrue(m_hoodSubsystem.hoodJogCommand(0.01));
 
-    m_operatorController.b().whileTrue(m_hoodSubsystem.hoodJogCommand(-0.03));
+    m_operatorController.b().whileTrue(m_hoodSubsystem.hoodJogCommand(-0.01));
 
+  }
+
+  public void setShotSuppliers(DoubleSupplier distance) {
+    var shotSupplier = (java.util.function.Supplier<ShotParameters>) () ->
+      m_shotMap.get(distance.getAsDouble());
+
+    rpmSupplier = (java.util.function.DoubleSupplier) () -> shotSupplier.get().rpm();
+    hoodSupplier = (java.util.function.DoubleSupplier) () -> shotSupplier.get().hoodPos();
+
+    readySupplier = (java.util.function.BooleanSupplier) () ->
+      //m_robotDrive.isAimedAt(hubSupplier.get()) &&
+      m_shooterSubsystem.shooterAtVelocity()
+      && m_hoodSubsystem.atTarget();
   }
 
   /**
