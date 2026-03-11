@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.8498071002553855,
-        "y": 3.7313570791607846
+        "x": 3.2756776034236803,
+        "y": 3.64037089871612
       },
       "isLocked": false,
       "linkedName": "Hub Center"
@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 0.73,
-        "y": 0.71623395149786
+        "y": 0.65
       },
       "prevControl": {
         "x": 0.5205843523366394,
-        "y": 0.5796869393967694
+        "y": 0.5134529878989095
       },
       "nextControl": null,
       "isLocked": false,
