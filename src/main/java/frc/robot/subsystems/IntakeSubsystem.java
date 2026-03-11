@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -15,8 +17,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.IntakeConstants;
@@ -94,10 +94,7 @@ public class IntakeSubsystem extends SubsystemBase {
    */
   public boolean pivotAtTarget() { // Returns true if the pivot position is within the tolerance for the target
     double posErr = Math.abs(pivotTargetDeg - pivotEncoder.getPosition());
-    double vel = Math.abs(pivotEncoder.getVelocity());
-    return  
-      (posErr <= IntakeConstants.kPivotPosToleranceDeg);
-      //&& vel <= IntakeConstants.kPivotVelToleranceDegPerSec
+    return (posErr <= IntakeConstants.kPivotPosToleranceDeg);
   }
 
   /*----------Control Methods----------*/
@@ -193,12 +190,13 @@ public class IntakeSubsystem extends SubsystemBase {
   /**
    * @return Command to run pivotAgitate, moves pivot to 0 degrees when the command ends.
    */
-  public Command pivotAgitateCommand() {
+  public Command pivotAgitateCommand(BooleanSupplier ready) {
     return Commands.sequence(
       runIntakeAgitateCommand(),
-      pivotToDegCommand(75.0),
+      pivotToDegCommand(80.0),
       pivotToDegCommand(100.0)
     )
+      .onlyIf(ready)
       .repeatedly()
       .finallyDo(() -> {
         setPivotTargetDeg(100.0);

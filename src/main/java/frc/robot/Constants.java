@@ -78,8 +78,8 @@ public final class Constants {
     public static final double kPivotVelToleranceDegPerSec = 8.0;
 
     // MAXMotion limits (units follow velocityConversionFactor)
-    public static final double kPivotCruiseArmDegPerSec = 2500;
-    public static final double kPivotAccelArmDegPerSec2 = 3000;
+    public static final double kPivotCruiseArmDegPerSec = 5000;
+    public static final double kPivotAccelArmDegPerSec2 = 4000;
 
     // Convert to what MaxMotion appears to want (MOTOR units)
     public static final double kPivotCruiseVelocity =
