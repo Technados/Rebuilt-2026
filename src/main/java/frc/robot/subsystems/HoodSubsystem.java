@@ -40,14 +40,15 @@ public class HoodSubsystem extends SubsystemBase {
         rightServo = new Servo(HoodConstants.kRightHoodServoPwm);
 
         // Sets target and modeled positions
-        targetPos = 0.5;
         modeledPos = 0.5;
 
         // Sets timestamp
         lastTime = Timer.getFPGATimestamp();
 
         // Sets hood position to the target position
-        setHoodPosition(targetPos);
+        setHoodPosition(0.5);
+
+        targetPos = 0.5;
     }
 
     /*----------Setters----------*/

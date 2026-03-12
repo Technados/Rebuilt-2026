@@ -119,6 +119,7 @@ public final class Configs {
   public static final class ShooterSubsystem {
     public static final SparkFlexConfig leftShooterConfig = new SparkFlexConfig();
     public static final SparkFlexConfig rightShooterConfig = new SparkFlexConfig();
+    public static final SparkFlexConfig centerShooterConfig = new SparkFlexConfig();
     
     static {
       // Right Shooter Configs
@@ -141,6 +142,10 @@ public final class Configs {
       // Left Shooter Configs
       leftShooterConfig.apply(rightShooterConfig)
       .follow(ShooterConstants.kRightShooterMotorCanId, true);
+      
+      // Center Shooter Configs
+      centerShooterConfig.apply(leftShooterConfig)
+      .follow(ShooterConstants.kLeftShooterMotorCanId, true);
       
     }
   }

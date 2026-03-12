@@ -4,7 +4,6 @@ import java.util.function.BooleanSupplier;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
-import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
@@ -22,12 +21,12 @@ import frc.robot.Constants.FeederConstants;
 
 public class FeederSubsystem extends SubsystemBase {
 
-  private final SparkFlex feederMotor;
+  private final SparkMax feederMotor;
   private final SparkMax preShooterMotor;
   
   public FeederSubsystem() {
     // Initializes motors using constants and configs
-    feederMotor = new SparkFlex(FeederConstants.kFeederMotorCanId, MotorType.kBrushless);
+    feederMotor = new SparkMax(FeederConstants.kFeederMotorCanId, MotorType.kBrushless);
     preShooterMotor = new SparkMax(FeederConstants.kPreShooterMotorCanId, MotorType.kBrushless);
 
     feederMotor.configure(

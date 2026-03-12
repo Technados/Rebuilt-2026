@@ -27,11 +27,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private final SparkFlex leftShooterMotor;
   private final SparkFlex rightShooterMotor;
+  private final SparkFlex centerShooterMotor;
   
   private final RelativeEncoder leftShooterEncoder;
   private final RelativeEncoder rightShooterEncoder;
+  private final RelativeEncoder centerShooterEncoder;
 
-  private SparkClosedLoopController rightShooterController;
+  private SparkClosedLoopController shooterController;
 
   private double targetVelocity;
 
@@ -39,6 +41,7 @@ public class ShooterSubsystem extends SubsystemBase {
     // Initializes motors using constants and configs
     leftShooterMotor = new SparkFlex(ShooterConstants.kLeftShooterMotorCanId, MotorType.kBrushless);
     rightShooterMotor = new SparkFlex(ShooterConstants.kRightShooterMotorCanId, MotorType.kBrushless);
+    centerShooterMotor = new SparkFlex(ShooterConstants.kCenterShooterMotorCanId, MotorType.kBrushless);
 
     leftShooterMotor.configure(
       Configs.ShooterSubsystem.leftShooterConfig,
@@ -50,13 +53,19 @@ public class ShooterSubsystem extends SubsystemBase {
       ResetMode.kResetSafeParameters,                                                   
       PersistMode.kPersistParameters
     );
+    centerShooterMotor.configure(
+      Configs.ShooterSubsystem.centerShooterConfig,
+      ResetMode.kResetSafeParameters,                                                   
+      PersistMode.kPersistParameters
+    );
       
     // Creates encoders for both motors
     leftShooterEncoder = leftShooterMotor.getEncoder();
     rightShooterEncoder = rightShooterMotor.getEncoder();
+    centerShooterEncoder = centerShooterMotor.getEncoder();
     
     // Creates a controller for right motor (left is a follower and will do what the right does)
-    rightShooterController = rightShooterMotor.getClosedLoopController();
+    shooterController = rightShooterMotor.getClosedLoopController();
     
     targetVelocity = 0.0;
   }
@@ -74,6 +83,10 @@ public class ShooterSubsystem extends SubsystemBase {
   public double getRightVelocity() { // Returns the right motor velocity
     return rightShooterEncoder.getVelocity();
   }
+
+  public double getCenterVelocity() { // Returns the center motor velocity
+    return centerShooterEncoder.getVelocity();
+  }
   
   /**
    * @return Returns true when all motors are within tolerance of target RPM
@@ -82,7 +95,8 @@ public class ShooterSubsystem extends SubsystemBase {
     if (targetVelocity <= 1.0) return false;
     double tol = ShooterConstants.kShooterReadyToleranceRPM;
     return Math.abs(getLeftVelocity() - targetVelocity) <= tol
-        && Math.abs(getRightVelocity() - targetVelocity) <= tol;  
+        && Math.abs(getRightVelocity() - targetVelocity) <= tol
+        && Math.abs(getCenterVelocity() - targetVelocity) <= tol;  
   }
 
   /*----------Control Methods----------*/
@@ -97,7 +111,7 @@ public class ShooterSubsystem extends SubsystemBase {
     targetVelocity = MathUtil.clamp(velocity, 0.0, ShooterConstants.kShooterMaxRPM);
     
     // Only command the right shooter, left will follow (already set in configs)
-    rightShooterController.setSetpoint(
+    shooterController.setSetpoint(
       targetVelocity,
       ControlType.kVelocity,             
       ClosedLoopSlot.kSlot0
@@ -105,14 +119,14 @@ public class ShooterSubsystem extends SubsystemBase {
   }
   
   /**
-   * Sets the velocity of the left and right shooters to their idle velocity.
+   * Sets the velocity of the shooters to their idle velocity.
    */
   public void idleShooter() { // temporarily disabled
     // Clamp to your known safe range
     double idleVelocity = MathUtil.clamp(ShooterConstants.kShooterIdleRPM, 0.0, ShooterConstants.kShooterMaxRPM);
     
     // Only command the right shooter, left will follow (already set in configs)
-    rightShooterController.setSetpoint(
+    shooterController.setSetpoint(
       idleVelocity,
       ControlType.kVelocity,             
       ClosedLoopSlot.kSlot0
@@ -162,8 +176,11 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Shooter/Target Velocity", getTargetVelocity());
+
     SmartDashboard.putNumber("Shooter/Left Velocity", getLeftVelocity());
     SmartDashboard.putNumber("Shooter/Right Velocity", getRightVelocity());
+    SmartDashboard.putNumber("Shooter/Center Velocity", getCenterVelocity());
+    
     SmartDashboard.putBoolean("Shooter/Shooter At Velocity", shooterAtVelocity());
 
     SmartDashboard.putNumber("Shooter/Right AppliedOutput", rightShooterMotor.getAppliedOutput());

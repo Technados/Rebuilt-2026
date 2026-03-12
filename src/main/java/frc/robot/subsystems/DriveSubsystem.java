@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import com.kauailabs.navx.frc.AHRS;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -18,6 +20,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -32,7 +35,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
-
+import frc.robot.FieldConstants;
 import frc.robot.Constants.AimConstants;
 
 
@@ -145,6 +148,11 @@ public class DriveSubsystem extends SubsystemBase {
     // Add gyro info to dashboard
     SmartDashboard.putNumber("Gyro", getHeading()); // returns the heading of the robot and sends to dashboard
     SmartDashboard.putBoolean("Gyro Online", m_gyro.isConnected());
+
+    var hubSupplier = (Supplier<Translation2d>) FieldConstants::getAllianceHub;
+
+    SmartDashboard.putNumber("Distance from Hub",
+      getPose().getTranslation().getDistance(hubSupplier.get()));
 
     // Flash LEDs red if gyro is offline
     if (!m_gyro.isConnected()) {
