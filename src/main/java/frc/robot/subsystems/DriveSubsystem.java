@@ -76,6 +76,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   private boolean slowMode = false; // Boolean flag to track slow mode
 
+  private boolean traversalMode = false;
+  private double traversalHeadingRad = Math.toRadians(45.0);
+
+
   private final Field2d field = new Field2d();
   private final SwerveDrivePoseEstimator m_poseEstimator;
 
@@ -259,11 +263,6 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public void setSlowMode(boolean enable) {
     slowMode = enable;
-    
-    var pose = getPose();
-    double rot = aimPid.calculate(pose.getRotation().getRadians(), 45);
-
-    drive(0.0, 0.0, rot, true);
   }
 
   /**
@@ -271,7 +270,20 @@ public class DriveSubsystem extends SubsystemBase {
    * @param manualSlowMode true if driver is holding right bumper
    */
   public void updateDriveSlowMode(boolean manualSlowMode) {
-    setSlowMode(manualSlowMode);
+    slowMode = manualSlowMode;
+  }
+
+  public void enableTraversalMode() {
+    traversalMode = true;
+    traversalHeadingRad = snapToNearestDiagonalRad(getPose().getRotation().getRadians());
+  }
+
+  public void disableTraversalMode() {
+    traversalMode = false;
+  }
+
+  public boolean isTraversalMode() {
+    return traversalMode;
   }
 
   /**
@@ -327,6 +339,36 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
     m_rearRight.setDesiredState(swerveModuleStates[3]);
   }
+
+  public void driveTraversalAssist(double xSpeed, double ySpeed, boolean fieldRelative) {
+    double rotCmdRadPerSec = aimPid.calculate(
+      getPose().getRotation().getRadians(),
+      traversalHeadingRad
+    );
+
+    rotCmdRadPerSec = MathUtil.clamp(
+      rotCmdRadPerSec,
+      -AimConstants.kAimMaxOmegaRadPerSec,
+      AimConstants.kAimMaxOmegaRadPerSec
+    );
+
+    double rotInput = rotCmdRadPerSec * DriveConstants.kMaxAngularSpeed;
+    rotInput = MathUtil.clamp(rotInput, -0.35, 0.35);
+
+    double speedFactor = DriveConstants.kTraverseSpeedFactor;
+
+    drive(
+      xSpeed * speedFactor,
+      ySpeed * speedFactor,
+      rotInput,
+      fieldRelative
+    );
+
+    SmartDashboard.putBoolean("Drive/Traversal Mode", traversalMode);
+    SmartDashboard.putNumber("Drive/Traversal Heading Deg", Math.toDegrees(traversalHeadingRad));
+
+  }
+
 
   public ChassisSpeeds getChassisSpeeds() { // Gets the speed of the chassis
     return DriveConstants.kDriveKinematics.toChassisSpeeds(new SwerveModuleState[] {
@@ -430,6 +472,28 @@ public class DriveSubsystem extends SubsystemBase {
     if (DriveConstants.kGyroReversed) rate = -rate;
       return rate;
 
+  }
+
+  private double snapToNearestDiagonalRad(double headingRad) {
+    double[] diagonals = {
+      Math.toRadians(45.0),
+      Math.toRadians(135.0),
+      Math.toRadians(225.0),
+      Math.toRadians(315.0)
+    };
+
+    double best = diagonals[0];
+    double bestErr = Math.abs(MathUtil.angleModulus(headingRad - best));
+
+    for (double d : diagonals) {
+      double err = Math.abs(MathUtil.angleModulus(headingRad - d));
+      if (err < bestErr) {
+        bestErr = err;
+        best = d;
+      }
+    }
+
+    return best;
   }
 
 }

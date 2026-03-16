@@ -98,16 +98,20 @@ public class RobotContainer {
     m_robotDrive.setDefaultCommand(
       new RunCommand(
         () -> {
+          double x = -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband);
+          double y = -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband);
+          double rot = -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband);
+
           boolean manualSlowMode = m_driverController.rightBumper().getAsBoolean();
           m_robotDrive.updateDriveSlowMode(manualSlowMode); // Auto/Manual slow mode
 
-          m_robotDrive.drive(
-            -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-            -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-            -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
-            true
-          );
-        }, m_robotDrive
+          if (m_robotDrive.isTraversalMode()) {
+            m_robotDrive.driveTraversalAssist(x, y, true);
+          } else {
+            m_robotDrive.drive(x, y, rot, true);
+          }
+        },
+        m_robotDrive
       )
     );
     
@@ -205,6 +209,10 @@ public class RobotContainer {
 
     // X Button -> Run intake while true
     m_driverController.rightTrigger().whileTrue(m_intakeSubsystem.runIntakeCommand());
+
+    m_driverController.leftTrigger()
+      .onTrue(new InstantCommand(() -> m_robotDrive.enableTraversalMode()))
+      .onFalse(new InstantCommand(() -> m_robotDrive.disableTraversalMode()));
     
     // Y Button -> Zero pivot on true
     m_driverController.y().whileTrue(m_intakeSubsystem.tempZeroPivotAtInCommand());
@@ -220,14 +228,9 @@ public class RobotContainer {
     // A Button -> Extend pivot on true
     m_driverController.a().onTrue(m_intakeSubsystem.pivotOutCommand());
 
-    // Left Trigger -> Enable Slow Mode While Held
-    m_driverController.leftTrigger()
-      .whileTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true)))
-      .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false)));
+    m_driverController.povLeft().whileTrue(m_intakeSubsystem.pivotJogCommand(0.1));
 
-    m_driverController.leftBumper().whileTrue(m_intakeSubsystem.pivotJogCommand(0.1));
-
-    m_driverController.rightBumper().whileTrue(m_intakeSubsystem.pivotJogCommand(-0.1));
+    m_driverController.povRight().whileTrue(m_intakeSubsystem.pivotJogCommand(-0.1));
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
     
@@ -280,9 +283,9 @@ public class RobotContainer {
         m_feederSubsystem.runFeederCommand()
       );
 
-    m_operatorController.a().whileTrue(m_hoodSubsystem.hoodJogCommand(0.01));
+    //m_operatorController.a().whileTrue(m_hoodSubsystem.hoodJogCommand(0.01));
 
-    m_operatorController.b().whileTrue(m_hoodSubsystem.hoodJogCommand(-0.01));
+    //m_operatorController.b().whileTrue(m_hoodSubsystem.hoodJogCommand(-0.01));
 
   }
 

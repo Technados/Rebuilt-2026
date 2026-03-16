@@ -104,7 +104,8 @@ public final class Constants {
     // the robot, rather the allowed maximum speeds
     public static final double kMaxSpeedMetersPerSecond = 3;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
-    public static final double kSlowSpeedFactor = 0.20; // Slow mode speed factor (40% of normal speed)
+    public static final double kSlowSpeedFactor = 0.20; // Slow mode speed factor (20% of normal speed)
+    public static final double kTraverseSpeedFactor = 0.55;
 
     // Chassis configuration
     public static final double kTrackWidth 
