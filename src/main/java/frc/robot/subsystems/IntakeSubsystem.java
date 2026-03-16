@@ -14,6 +14,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -46,6 +47,8 @@ public class IntakeSubsystem extends SubsystemBase {
   private final SparkFlex intakeMotor;
   private final SparkFlex pivotMotor;
 
+  private final Servo hopperServo;
+
   private RelativeEncoder pivotEncoder;
 
   private SparkClosedLoopController pivotController;
@@ -58,6 +61,8 @@ public class IntakeSubsystem extends SubsystemBase {
     // Initializes motors using constants and configs
     intakeMotor = new SparkFlex(IntakeConstants.kIntakeMotorCanId, MotorType.kBrushless);
     pivotMotor = new SparkFlex(IntakeConstants.kPivotMotorCanId, MotorType.kBrushless);
+    
+    hopperServo = new Servo(IntakeConstants.kHopperServoChannel);
 
     intakeMotor.configure(
       Configs.IntakeSubsystem.intakeConfig,
@@ -83,6 +88,8 @@ public class IntakeSubsystem extends SubsystemBase {
     pivotTargetDeg = 0.0;
 
     pivotIdlePower = IntakeConstants.kPivotIdleInPower;
+
+    hopperServo.set(0); // Change position
 
   }
 

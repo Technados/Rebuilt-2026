@@ -234,8 +234,13 @@ public class DriveSubsystem extends SubsystemBase {
 
     // rotate in place, field-relative
     drive(0.0, 0.0, omega, true);
-  }
 
+    if (isAimedAt(target)) {
+      setX();
+    }
+
+  }
+ 
   // Adds measurement from the VisionSubsystem to the pose estimator
   public void addVisionMeasurement(Pose2d visonPose, double timestampSeconds, Matrix<N3, N1> stdDevs) {
     m_poseEstimator.addVisionMeasurement(visonPose, timestampSeconds, stdDevs);
@@ -385,15 +390,16 @@ public class DriveSubsystem extends SubsystemBase {
     });
   }
 
+  public void setX() {
+    m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+    m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
+    m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
+    m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+  }
+
   /** Sets the wheels into an X formation to prevent movement. */
   public Command setXCommand() {
-    return this.run(
-        () -> {
-          m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
-          m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-          m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-          m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
-        });
+    return this.run(() -> setX());
   }
 
   public Command moveFixedDistanceCommand(double xMeters, double yMeters) { // Moves by a fixed x and y parameter

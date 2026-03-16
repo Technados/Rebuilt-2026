@@ -179,6 +179,8 @@ public final class Constants {
     public static final int kPivotMotorCanId = 11;
     public static final double kPivotIdleInPower = -0.03;
     public static final double kPivotIdleOutPower = 0.03;
+
+    public static final int kHopperServoChannel = 10;
     
     public static final double kPivotMechAdv = 52.89; // motor rev per arm rev
     
@@ -250,8 +252,8 @@ public final class Constants {
     public static final String kFrontLimelightName = "limelight-front";
     public static final String kBackLimelightName = "limelight-back";
 
-    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.8, 0.8, Math.toRadians(10));
-    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.3, 0.3, Math.toRadians(5));
+    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.8, 0.8, Math.toRadians(99999));
+    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.3, 0.3, Math.toRadians(99999));
 
     public static final double kMaxAcceptedPoseJumpMeters = 2.0;
 
