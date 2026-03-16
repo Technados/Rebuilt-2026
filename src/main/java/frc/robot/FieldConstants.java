@@ -1,6 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -51,22 +50,14 @@ public final class FieldConstants {
         return (alliance == DriverStation.Alliance.Blue) ? BLUE_HUB : RED_HUB;
     }
 
-    public static Translation2d getAllianceFieldTarget(Pose2d pose) {
+    public static Translation2d getLeftFieldTarget() {
         var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue);
+        return (alliance == DriverStation.Alliance.Blue) ? BLUE_LEFT_FIELD_TARGET : RED_LEFT_FIELD_TARGET;
+    }
 
-        if (alliance == DriverStation.Alliance.Blue) {
-            if (FIELD_WIDTH_M / 2 > pose.getY()) {
-                return BLUE_LEFT_FIELD_TARGET;
-            } else {
-                return BLUE_RIGHT_FIELD_TARGET;
-            }
-        } else {
-            if (FIELD_WIDTH_M / 2 < pose.getY()) {
-                return BLUE_LEFT_FIELD_TARGET;
-            } else {
-                return BLUE_RIGHT_FIELD_TARGET;
-            }
-        }
+    public static Translation2d getRightFieldTarget() {
+        var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue);
+        return (alliance == DriverStation.Alliance.Blue) ? BLUE_RIGHT_FIELD_TARGET : RED_RIGHT_FIELD_TARGET;
     }
 
 }

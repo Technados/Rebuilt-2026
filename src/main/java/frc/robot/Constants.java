@@ -55,7 +55,10 @@ public final class Constants {
   
   public static final class AimConstants {
     
-    public static final double kAimP = 0.4; // radians -> rad/s-ish output scaling (tune)
+    public static final double kAimP = 0.35; // radians -> rad/s-ish output scaling (tune)
+    public static final double kAimI = 0; // radians -> rad/s-ish output scaling (tune)
+    public static final double kAimD = 0; // radians -> rad/s-ish output scaling (tune)
+
     public static final double kAimMaxOmegaRadPerSec = 3.0;
     public static final double kAimToleranceDeg = 2.0;
     

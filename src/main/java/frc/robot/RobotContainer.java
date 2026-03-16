@@ -81,7 +81,8 @@ public class RobotContainer {
   CommandXboxController m_operatorController =
       new CommandXboxController(OIConstants.kOperatorControllerPort);
 
-  private boolean pass;
+  private boolean passLeft;
+  private boolean passRight;
 
   private DoubleSupplier rpmSupplier;
   private DoubleSupplier hoodSupplier;
@@ -239,29 +240,54 @@ public class RobotContainer {
     // Start Button -> Zero swerve heading
     m_operatorController.start().onTrue(m_robotDrive.zeroHeadingCommand());
 
-    pass = m_operatorController.a().getAsBoolean();
+    passLeft = m_operatorController.a().getAsBoolean();
+    passRight = m_operatorController.b().getAsBoolean();
 
     // Operator LT = "Ready to Shoot" (aim + set shooter rpm + set hood)
-
+    
     var hubSupplier = (Supplier<Translation2d>) FieldConstants::getAllianceHub;
 
     var distanceSupplier = (DoubleSupplier) () ->
       m_robotDrive.getPose().getTranslation().getDistance(hubSupplier.get());
 
-    if (pass) {
-      var fieldTargetSupplier = 
-        (Supplier<Translation2d>) FieldConstants.getAllianceFieldTarget(m_robotDrive.getPose());
+    var leftFieldTargetSupplier = 
+      (Supplier<Translation2d>) FieldConstants::getLeftFieldTarget;
 
+    var rightFieldTargetSupplier = 
+      (Supplier<Translation2d>) FieldConstants::getRightFieldTarget;
+
+    if (passLeft) {
       distanceSupplier = (DoubleSupplier) () ->
-      m_robotDrive.getPose().getTranslation().getDistance(fieldTargetSupplier.get());
+        m_robotDrive.getPose().getTranslation().getDistance(hubSupplier.get());
+
+    } else if (passRight) {
+      distanceSupplier = (DoubleSupplier) () ->
+        m_robotDrive.getPose().getTranslation().getDistance(hubSupplier.get());
+
     }
 
     this.setShotSuppliers(distanceSupplier);
 
-    m_operatorController.leftTrigger().or(m_operatorController.a())
+    m_operatorController.leftTrigger()
       .whileTrue(
           // Keep updating continuously while held
           m_robotDrive.aimAtCommand(hubSupplier)
+            .alongWith(m_shooterSubsystem.holdVelocityCommand(rpmSupplier))
+            .alongWith(m_hoodSubsystem.holdPositionCommand(hoodSupplier))
+      );
+
+    m_operatorController.povRight()
+      .whileTrue(
+          // Keep updating continuously while held
+          m_robotDrive.aimAtCommand(leftFieldTargetSupplier)
+            .alongWith(m_shooterSubsystem.holdVelocityCommand(rpmSupplier))
+            .alongWith(m_hoodSubsystem.holdPositionCommand(hoodSupplier))
+      );
+
+    m_operatorController.povLeft()
+      .whileTrue(
+          // Keep updating continuously while held
+          m_robotDrive.aimAtCommand(rightFieldTargetSupplier)
             .alongWith(m_shooterSubsystem.holdVelocityCommand(rpmSupplier))
             .alongWith(m_hoodSubsystem.holdPositionCommand(hoodSupplier))
       );

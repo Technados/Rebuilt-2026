@@ -83,7 +83,12 @@ public class DriveSubsystem extends SubsystemBase {
   private final Field2d field = new Field2d();
   private final SwerveDrivePoseEstimator m_poseEstimator;
 
-  private final PIDController aimPid = new PIDController(AimConstants.kAimP, 0.0, 0.0);
+  private final PIDController aimPid = 
+    new PIDController(
+      AimConstants.kAimP, 
+      AimConstants.kAimI, 
+      AimConstants.kAimD
+    );
 
   // PathPlanner RobotConfig
   private RobotConfig config;
@@ -224,6 +229,7 @@ public class DriveSubsystem extends SubsystemBase {
     double desired = Math.atan2(dy, dx);
 
     double omega = aimPid.calculate(pose.getRotation().getRadians(), desired);
+    omega = omega * DriveConstants.kMaxSpeedMetersPerSecond;
     omega = MathUtil.clamp(omega, -AimConstants.kAimMaxOmegaRadPerSec, AimConstants.kAimMaxOmegaRadPerSec);
 
     // rotate in place, field-relative
