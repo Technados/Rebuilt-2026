@@ -145,7 +145,7 @@ public class RobotContainer {
 
     m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.idleShooterCommand());
 
-    //m_intakeSubsystem.setDefaultCommand(m_intakeSubsystem.pivotIdleCommand());
+    m_intakeSubsystem.setDefaultCommand(m_intakeSubsystem.pivotIdleCommand());
 
     // Adds button to dashboard that resets the robot's pose to the test pose
     SmartDashboard.putData(
