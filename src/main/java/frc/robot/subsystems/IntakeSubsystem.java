@@ -149,6 +149,12 @@ public class IntakeSubsystem extends SubsystemBase {
     );
   }
 
+  public Command stopIntakeCommand() { 
+    return this.runOnce(
+      () -> {intakeMotor.set(0.0);}
+    );
+  }
+
   public Command runIntakeAgitateCommand() {
     return runOnce(
       () -> {intakeMotor.set(IntakeConstants.kIntakeMotorPower);}

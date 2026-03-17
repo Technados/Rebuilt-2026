@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
@@ -103,7 +104,7 @@ public class RobotContainer {
           double y = -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband);
           double rot = -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband);
 
-          boolean manualSlowMode = m_driverController.rightBumper().getAsBoolean();
+          boolean manualSlowMode = m_driverController.leftBumper().getAsBoolean();
           m_robotDrive.updateDriveSlowMode(manualSlowMode); // Auto/Manual slow mode
 
           if (m_robotDrive.isTraversalMode()) {
@@ -158,19 +159,25 @@ public class RobotContainer {
 
     // Pathplanner Commands
     NamedCommands.registerCommand("Intake", m_intakeSubsystem.runIntakeCommand());
+    NamedCommands.registerCommand("Intake-Stop", m_intakeSubsystem.stopIntakeCommand());
     NamedCommands.registerCommand("Pivot-In", m_intakeSubsystem.pivotInCommand());
     NamedCommands.registerCommand("Pivot-Out", m_intakeSubsystem.pivotOutCommand());
 
+    NamedCommands.registerCommand("Pivot-Out-Intake", 
+      new SequentialCommandGroup(
+        m_intakeSubsystem.pivotOutCommand(),
+        m_intakeSubsystem.runIntakeCommand()
+      )
+    );
     NamedCommands.registerCommand("Shoot", 
       new ParallelCommandGroup(
-        m_shooterSubsystem.holdVelocityCommand(3000),
-        m_hoodSubsystem.holdPositionCommand(0.3),
-        m_feederSubsystem.feedWhen(() -> m_shooterSubsystem.shooterAtVelocity())
+        m_shooterSubsystem.holdVelocityCommand(3300),
+        m_feederSubsystem.feedWhen(() -> m_shooterSubsystem.shooterAtVelocity()),
+        m_intakeSubsystem.pivotAgitateCommand(() -> m_shooterSubsystem.shooterAtVelocity())
       )
     ); // Test positions/velocity later
 
     // register auto options to the shuffleboard 
-    autoChooser.addOption("null", null);         
     autoChooser.addOption("RT-O", "RT-O");
     autoChooser.addOption("RB-C", "RB-C");
     autoChooser.addOption("LT-D", "LT-D");
@@ -210,11 +217,6 @@ public class RobotContainer {
     // Y Button -> Zero pivot on true
     m_driverController.y().whileTrue(m_intakeSubsystem.tempZeroPivotAtInCommand());
     
-    // X Button -> Agitate pivot while true
-    // m_driverController.x().whileTrue(
-    //   m_intakeSubsystem.pivotAgitateCommand()
-    // );
-    
     // B Button -> Retract pivot on true
     m_driverController.b().onTrue(m_intakeSubsystem.pivotInCommand());
     
@@ -231,6 +233,9 @@ public class RobotContainer {
 
     // Start Button -> Zero swerve heading
     m_operatorController.start().onTrue(m_robotDrive.zeroHeadingCommand());
+
+    //Change button
+    m_operatorController.a().onTrue(m_robotDrive.resetOdometryCommand(Constants.TestPoses.kTestStartPose));
 
     passLeft = m_operatorController.a().getAsBoolean();
     passRight = m_operatorController.b().getAsBoolean();

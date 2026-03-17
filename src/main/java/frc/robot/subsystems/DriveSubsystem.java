@@ -268,6 +268,14 @@ public class DriveSubsystem extends SubsystemBase {
         pose);
   }
 
+  public Command resetOdometryCommand(Pose2d pose) {
+    return runOnce(
+      () -> {
+        this.resetOdometry(pose);
+      }
+    );
+  }
+
   /**
    * Enables/disables slow mode, turns bot to 45 degrees.
    * @param enable true if slow mode is enabled
