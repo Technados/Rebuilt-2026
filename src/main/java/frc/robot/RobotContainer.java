@@ -164,15 +164,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Shoot", 
       new ParallelCommandGroup(
         m_shooterSubsystem.holdVelocityCommand(3000),
-        m_hoodSubsystem.holdPositionCommand(0),
-        m_feederSubsystem.feedWhen(() -> m_shooterSubsystem.shooterAtVelocity())
-      )
-    ); // Test positions/velocity later
-
-    NamedCommands.registerCommand("Shoot-Far", 
-      new ParallelCommandGroup(
-        m_shooterSubsystem.holdVelocityCommand(3500),
-        m_hoodSubsystem.holdPositionCommand(0),
+        m_hoodSubsystem.holdPositionCommand(0.3),
         m_feederSubsystem.feedWhen(() -> m_shooterSubsystem.shooterAtVelocity())
       )
     ); // Test positions/velocity later
