@@ -5,7 +5,7 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "race",
           "data": {
             "commands": [
               {
@@ -15,15 +15,16 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "Pivot-Out"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Intake"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Pivot-Out-Intake"
+                      }
+                    }
+                  ]
                 }
               }
             ]

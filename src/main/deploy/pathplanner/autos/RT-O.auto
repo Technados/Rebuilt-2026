@@ -13,6 +13,12 @@
                 "data": {
                   "pathName": "RT-O"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Pivot-Out"
+                }
               }
             ]
           }
@@ -36,9 +42,16 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "Shoot"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              }
+            ]
           }
         }
       ]
