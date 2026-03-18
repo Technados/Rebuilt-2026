@@ -158,7 +158,11 @@ public class RobotContainer {
     );
 
     // Pathplanner Commands
-    NamedCommands.registerCommand("Intake", m_intakeSubsystem.runIntakeCommand());
+    NamedCommands.registerCommand(
+      "Intake", 
+      m_intakeSubsystem.runIntakeCommand()
+        .withTimeout(2)
+    );
     NamedCommands.registerCommand("Intake-Stop", m_intakeSubsystem.stopIntakeCommand());
     NamedCommands.registerCommand("Pivot-In", m_intakeSubsystem.pivotInCommand());
     NamedCommands.registerCommand("Pivot-Out", m_intakeSubsystem.pivotOutCommand());
