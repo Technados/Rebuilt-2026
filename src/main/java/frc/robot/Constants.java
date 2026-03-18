@@ -206,17 +206,62 @@ public final class Constants {
 
     // Convert to what MaxMotion appears to want (MOTOR units)
     public static final double kPivotCruiseVelocity =
-      kPivotCruiseArmDegPerSec / kPivotDegPerSecPerMotorRPM;  // ≈ 3085 motor RPM
-
+    kPivotCruiseArmDegPerSec / kPivotDegPerSecPerMotorRPM;  // ≈ 3085 motor RPM
+    
     public static final double kPivotMaxAccel =
-      kPivotAccelArmDegPerSec2 / kPivotDegPerSecPerMotorRPM;  // ≈ 7938 motor RPM per sec (approx)
-
+    kPivotAccelArmDegPerSec2 / kPivotDegPerSecPerMotorRPM;  // ≈ 7938 motor RPM per sec (approx)
+    
+  }
+  
+  public static final class LEDConstants {
+    
+    public static final int kLEDPwmPort = 2;
+    
+  }
+  
+  public static final class LimelightPID {
+    
+    // 🎯 PID Gains for LL Targeting
+    public static final double kP_turn = 0.2;   // Previously 0.1
+    public static final double kI_turn = 0.000;
+    public static final double kD_turn = 0.0;   // New (small D gain)
+    
+    public static final double kP_distance = 0.2; // Previously 0.15
+    public static final double kI_distance = 0.0;
+    public static final double kD_distance = 0.0; // New (small D gain)
+    
+    public static final double kP_strafe = 0.15;  // Previously 0.15
+    public static final double kI_strafe = 0.0;
+    public static final double kD_strafe = 0.0005; // New (small D gain)
+    
   }
 
-  public static final class LEDConstants {
+  public static final class ModuleConstants {
 
-    public static final int kLEDPwmPort = 2;
+    // The MAXSwerve module can be configured with one of three pinion gears: 12T,
+    // 13T, or 14T. This changes the drive speed of the module (a pinion gear with
+    // more teeth will result in a robot that drives faster).
+    public static final int kDrivingMotorPinionTeeth = 14;
+    
+    // Calculations required for driving motor conversion factors and feed forward
+    public static final double kDrivingMotorFreeSpeedRps = VortexConstants.kFreeSpeedRpm / 60;
+    public static final double kWheelDiameterMeters = 0.0762;
+    public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
+    // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
+    // teeth on the bevel pinion
+    public static final double kDrivingMotorReduction =
+    (45.0 * 22) / (kDrivingMotorPinionTeeth * 15);
+    public static final double kDriveWheelFreeSpeedRps =
+    (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters) / kDrivingMotorReduction;
+  }
+  
+  public static final class OIConstants {
 
+    public static final int kDriverControllerPort = 0;
+    public static final int kOperatorControllerPort = 1;
+    public static final double kDriveDeadband = 0.1;
+    public static final double kTriggerButtonThreshold = 0.2;
+    
   }
   
   public static final class ShooterConstants {
@@ -245,7 +290,8 @@ public final class Constants {
 
   public static class TestPoses {
     
-    public static final Pose2d kTestStartPose = new Pose2d(12.928, 4, Rotation2d.fromDegrees(0));
+    public static final Pose2d kTestStartPose = 
+      new Pose2d(12.928, 4, Rotation2d.fromDegrees(0));
     
   }
   
@@ -254,58 +300,13 @@ public final class Constants {
     public static final String kFrontLimelightName = "limelight-front";
     public static final String kBackLimelightName = "limelight-back";
 
-    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.8, 0.8, Math.toRadians(99999));
-    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.3, 0.3, Math.toRadians(99999));
+    public static final Matrix<N3, N1> kSingleTagStdDevs = 
+      VecBuilder.fill(0.8, 0.8, Math.toRadians(99999));
+    public static final Matrix<N3, N1> kMultiTagStdDevs = 
+      VecBuilder.fill(0.3, 0.3, Math.toRadians(99999));
 
     public static final double kMaxAcceptedPoseJumpMeters = 2.0;
 
-  }
-
-  public static final class LimelightPID {
-    // 🎯 PID Gains for LL Targeting
-
-    public static final double kP_turn = 0.2;   // Previously 0.1
-    public static final double kI_turn = 0.000;
-    public static final double kD_turn = 0.0;   // New (small D gain)
- 
-    public static final double kP_distance = 0.2; // Previously 0.15
-    public static final double kI_distance = 0.0;
-    public static final double kD_distance = 0.0; // New (small D gain)
-
-    public static final double kP_strafe = 0.15;  // Previously 0.15
-    public static final double kI_strafe = 0.0;
-    public static final double kD_strafe = 0.0005; // New (small D gain)
-
-  }
-
-  
-    public static final class ModuleConstants {
-  
-      // The MAXSwerve module can be configured with one of three pinion gears: 12T,
-      // 13T, or 14T. This changes the drive speed of the module (a pinion gear with
-      // more teeth will result in a robot that drives faster).
-      public static final int kDrivingMotorPinionTeeth = 14;
-  
-      // Calculations required for driving motor conversion factors and feed forward
-      public static final double kDrivingMotorFreeSpeedRps = VortexConstants.kFreeSpeedRpm / 60;
-      public static final double kWheelDiameterMeters = 0.0762;
-      public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
-      // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
-      // teeth on the bevel pinion
-      public static final double kDrivingMotorReduction =
-          (45.0 * 22) / (kDrivingMotorPinionTeeth * 15);
-      public static final double kDriveWheelFreeSpeedRps =
-          (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters) / kDrivingMotorReduction;
-    }
-
-
-  public static final class OIConstants {
-
-    public static final int kDriverControllerPort = 0;
-    public static final int kOperatorControllerPort = 1;
-    public static final double kDriveDeadband = 0.1;
-    public static final double kTriggerButtonThreshold = 0.2;
-    
   }
 
   public static final class VortexConstants {
