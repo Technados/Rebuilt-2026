@@ -223,8 +223,10 @@ public class RobotContainer {
     // A Button -> Extend pivot on true
     m_driverController.a().onTrue(m_intakeSubsystem.pivotOutCommand());
 
+    // Left on D-Pad -> Jog pivot up
     m_driverController.povLeft().whileTrue(m_intakeSubsystem.pivotJogCommand(0.1));
-
+    
+    // Right on D-Pad -> Jog pivot down
     m_driverController.povRight().whileTrue(m_intakeSubsystem.pivotJogCommand(-0.1));
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -237,10 +239,8 @@ public class RobotContainer {
     //Change button
     m_operatorController.a().onTrue(m_robotDrive.resetOdometryCommand(Constants.TestPoses.kTestStartPose));
 
-    passLeft = m_operatorController.a().getAsBoolean();
-    passRight = m_operatorController.b().getAsBoolean();
-
-    // Operator LT = "Ready to Shoot" (aim + set shooter rpm + set hood)
+    passLeft = m_operatorController.povRight().getAsBoolean();
+    passRight = m_operatorController.povLeft().getAsBoolean();
     
     var hubSupplier = (Supplier<Translation2d>) FieldConstants::getAllianceHub;
 
@@ -255,16 +255,17 @@ public class RobotContainer {
 
     if (passLeft) {
       distanceSupplier = (DoubleSupplier) () ->
-        m_robotDrive.getPose().getTranslation().getDistance(hubSupplier.get());
+        m_robotDrive.getPose().getTranslation().getDistance(leftFieldTargetSupplier.get());
 
     } else if (passRight) {
       distanceSupplier = (DoubleSupplier) () ->
-        m_robotDrive.getPose().getTranslation().getDistance(hubSupplier.get());
+        m_robotDrive.getPose().getTranslation().getDistance(rightFieldTargetSupplier.get());
 
     }
 
     this.setShotSuppliers(distanceSupplier);
 
+    // Operator LT -> "Ready to Shoot" (aim + set shooter rpm + set hood)
     m_operatorController.leftTrigger()
       .whileTrue(
           // Keep updating continuously while held

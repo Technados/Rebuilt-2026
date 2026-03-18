@@ -159,9 +159,17 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Gyro Online", m_gyro.isConnected());
 
     var hubSupplier = (Supplier<Translation2d>) FieldConstants::getAllianceHub;
+    var leftFieldTargetSupplier = 
+      (Supplier<Translation2d>) FieldConstants::getLeftFieldTarget;
+    var rightFieldTargetSupplier = 
+      (Supplier<Translation2d>) FieldConstants::getRightFieldTarget;
 
     SmartDashboard.putNumber("Distance from Hub",
       getPose().getTranslation().getDistance(hubSupplier.get()));
+    SmartDashboard.putNumber("Left Point Distance",
+      getPose().getTranslation().getDistance(leftFieldTargetSupplier.get()));
+    SmartDashboard.putNumber("Right Point Distance",
+      getPose().getTranslation().getDistance(rightFieldTargetSupplier.get()));
 
     // Flash LEDs red if gyro is offline
     if (!m_gyro.isConnected()) {
