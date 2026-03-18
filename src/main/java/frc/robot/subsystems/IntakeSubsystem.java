@@ -14,11 +14,13 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Configs;
 import frc.robot.Constants.IntakeConstants;
 
@@ -49,6 +51,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private final Servo hopperServo;
 
+  private final DigitalInput zeroSwitch;
+
   private RelativeEncoder pivotEncoder;
 
   private SparkClosedLoopController pivotController;
@@ -63,6 +67,8 @@ public class IntakeSubsystem extends SubsystemBase {
     pivotMotor = new SparkFlex(IntakeConstants.kPivotMotorCanId, MotorType.kBrushless);
     
     hopperServo = new Servo(IntakeConstants.kHopperServoChannel);
+
+    zeroSwitch = new DigitalInput(IntakeConstants.kZeroSwtichChannel);
 
     intakeMotor.configure(
       Configs.IntakeSubsystem.intakeConfig,
@@ -131,6 +137,13 @@ public class IntakeSubsystem extends SubsystemBase {
       pivotTargetDeg,
       ControlType.kMAXMotionPositionControl
     );
+  }
+
+  public void zeroOnLimitPressed() {
+    if (!zeroSwitch.get()) {
+      tempZeroPivotAtIn();
+      pivotIdlePower = IntakeConstants.kPivotIdleInPower;
+    }
   }
 
   /*----------Commands----------*/
@@ -240,10 +253,15 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    zeroOnLimitPressed();
+
     SmartDashboard.putNumber("Intake/Pivot Angle Deg", pivotEncoder.getPosition());
     SmartDashboard.putNumber("Intake/Pivot Target Deg", pivotTargetDeg);
     SmartDashboard.putBoolean("Intake/Pivot Zeroed", pivotZeroed);
     SmartDashboard.putNumber("Intake/Pivot Encoder Vel (degPerSec?)", pivotEncoder.getVelocity());
     SmartDashboard.putBoolean("Intake/Pivot At Target", pivotAtTarget());
+
+    SmartDashboard.putBoolean("Intake/Limit Pressed", zeroSwitch.get());
   }
+
 }

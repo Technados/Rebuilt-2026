@@ -180,7 +180,9 @@ public final class Constants {
     public static final double kPivotIdleInPower = -0.03;
     public static final double kPivotIdleOutPower = 0.03;
 
-    public static final int kHopperServoChannel = 10;
+    public static final int kHopperServoChannel = 3;
+
+    public static final int kZeroSwtichChannel = 0;
     
     public static final double kPivotMechAdv = 52.89; // motor rev per arm rev
     
