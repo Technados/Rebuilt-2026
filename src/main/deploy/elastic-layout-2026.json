@@ -8,7 +8,7 @@
         "layouts": [],
         "containers": [
           {
-            "title": "Auto Paths",
+            "title": "Autos",
             "x": 896.0,
             "y": 0.0,
             "width": 256.0,
@@ -99,7 +99,7 @@
           },
           {
             "title": "Field Relative",
-            "x": 512.0,
+            "x": 640.0,
             "y": 384.0,
             "width": 128.0,
             "height": 128.0,
@@ -158,7 +158,7 @@
           },
           {
             "title": "Gyro Online",
-            "x": 640.0,
+            "x": 512.0,
             "y": 384.0,
             "width": 128.0,
             "height": 128.0,
@@ -176,7 +176,7 @@
           {
             "title": "Station",
             "x": 768.0,
-            "y": 0.0,
+            "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Large Text Display",
@@ -216,7 +216,7 @@
           {
             "title": "Alliance",
             "x": 768.0,
-            "y": 128.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
@@ -393,23 +393,6 @@
                 }
               },
               {
-                "title": "TV",
-                "x": 1024.0,
-                "y": 128.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/SmartDashboard/Vision/limelight-back/TV",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              },
-              {
                 "title": "MT2 HasTags",
                 "x": 1024.0,
                 "y": 128.0,
@@ -424,6 +407,62 @@
                   "false_color": 4294198070,
                   "true_icon": "None",
                   "false_icon": "None"
+                }
+              },
+              {
+                "title": "MT2 PoseX",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/Vision/limelight-back/MT2 PoseX",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "MT2 PoseY",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/Vision/limelight-back/MT2 PoseY",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "MT2 PoseDeg",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/Vision/limelight-back/MT2 PoseDeg",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "MT2 Timestamp",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/Vision/limelight-back/MT2 Timestamp",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
                 }
               }
             ]
@@ -454,34 +493,6 @@
                 }
               },
               {
-                "title": "Pivot Encoder Vel (degPerSec?)",
-                "x": 640.0,
-                "y": 512.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/Intake/Pivot Encoder Vel (degPerSec?)",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "Pivot Target Deg",
-                "x": 640.0,
-                "y": 512.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/Intake/Pivot Target Deg",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              },
-              {
                 "title": "Pivot Zeroed",
                 "x": 640.0,
                 "y": 512.0,
@@ -496,6 +507,20 @@
                   "false_color": 4294198070,
                   "true_icon": "None",
                   "false_icon": "None"
+                }
+              },
+              {
+                "title": "Pivot Target Deg",
+                "x": 640.0,
+                "y": 512.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/Intake/Pivot Target Deg",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
                 }
               },
               {
@@ -514,6 +539,37 @@
                   "true_icon": "None",
                   "false_icon": "None"
                 }
+              },
+              {
+                "title": "Pivot Encoder Vel (degPerSec?)",
+                "x": 640.0,
+                "y": 512.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/Intake/Pivot Encoder Vel (degPerSec?)",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Limit Pressed",
+                "x": 640.0,
+                "y": 512.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/SmartDashboard/Intake/Limit Pressed",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4294198070,
+                  "false_color": 4283215696,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
               }
             ]
           },
@@ -528,23 +584,6 @@
               "label_position": "TOP"
             },
             "children": [
-              {
-                "title": "AtTarget",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/SmartDashboard/Hood/AtTarget",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              },
               {
                 "title": "ModeledPos",
                 "x": 0.0,
@@ -571,6 +610,23 @@
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": false
+                }
+              },
+              {
+                "title": "AtTarget",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/SmartDashboard/Hood/AtTarget",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
                 }
               }
             ]
@@ -819,36 +875,6 @@
             }
           },
           {
-            "title": "Is Aimed At",
-            "x": 512.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/SmartDashboard/Aim/Is Aimed At",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "SendableChooser[0]",
-            "x": 512.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "ComboBox Chooser",
-            "properties": {
-              "topic": "/Shuffleboard/PathPlanner Autonomous/SendableChooser[0]",
-              "period": 0.06,
-              "sort_options": false
-            }
-          },
-          {
             "title": "Field Rebuilt",
             "x": 0.0,
             "y": 384.0,
@@ -870,14 +896,55 @@
             }
           },
           {
-            "title": "Distance from Hub",
-            "x": 1152.0,
+            "title": "Hub Distance",
+            "x": 512.0,
             "y": 384.0,
-            "width": 384.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
               "topic": "/SmartDashboard/Distance from Hub",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "limelight-back",
+            "x": 1152.0,
+            "y": 384.0,
+            "width": 384.0,
+            "height": 384.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight-back",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
+          },
+          {
+            "title": "Left Point Distance",
+            "x": 512.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Left Point Distance",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Right Point Distance",
+            "x": 512.0,
+            "y": 640.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Right Point Distance",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
