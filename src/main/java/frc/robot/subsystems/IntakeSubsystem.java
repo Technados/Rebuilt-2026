@@ -149,12 +149,26 @@ public class IntakeSubsystem extends SubsystemBase {
   /*----------Commands----------*/
   
   /**
-   * @return Command to run the intake mator.
+   * @return Command to run the intake motor.
    */
   public Command runIntakeCommand() { 
     return this.startEnd(
     () -> {
         intakeMotor.set(IntakeConstants.kIntakeMotorPower);
+      },
+      () -> {
+        intakeMotor.set(0.0);
+      }
+    );
+  }
+
+  /**
+   * @return Command to run the intake motor in reverse.
+   */
+  public Command runIntakeReverseCommand() { 
+    return this.startEnd(
+    () -> {
+        intakeMotor.set(-IntakeConstants.kIntakeMotorPower);
       },
       () -> {
         intakeMotor.set(0.0);

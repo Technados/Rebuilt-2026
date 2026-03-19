@@ -213,8 +213,14 @@ public class RobotContainer {
     // Start Button -> Zero swerve heading
     m_driverController.start().onTrue(m_robotDrive.zeroHeadingCommand());
 
-    // X Button -> Run intake while true
     m_driverController.rightTrigger().whileTrue(m_intakeSubsystem.runIntakeCommand());
+    
+    //reverse everything
+    m_driverController.rightBumper().whileTrue(
+      m_intakeSubsystem.runIntakeReverseCommand()
+        .alongWith(m_feederSubsystem.runFeederReverseCommand())
+        .alongWith(m_shooterSubsystem.holdVelocityCommand(-2000))
+    );
 
     m_driverController.leftTrigger()
       .onTrue(new InstantCommand(() -> m_robotDrive.enableTraversalMode()))

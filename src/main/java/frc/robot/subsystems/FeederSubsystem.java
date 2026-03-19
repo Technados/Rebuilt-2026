@@ -46,7 +46,7 @@ public class FeederSubsystem extends SubsystemBase {
   /**
    * Runs the motors at their power defined in the constants.
    */
-  public void setPower() {
+  public void setPower(double multiplier) {
     feederMotor.set(FeederConstants.kFeederMotorPower);
     preShooterMotor.set(FeederConstants.kPreShooterMotorPower);
   }
@@ -66,7 +66,17 @@ public class FeederSubsystem extends SubsystemBase {
    */
   public Command runFeederCommand() {
     return this.startEnd(
-      () -> setPower(),
+      () -> setPower(1),
+      this::stop
+    );
+  }
+  
+  /**
+   * @return Command to run the feeder motor in reverse.
+   */
+  public Command runFeederReverseCommand() {
+    return this.startEnd(
+      () -> setPower(-1),
       this::stop
     );
   }
@@ -84,7 +94,7 @@ public class FeederSubsystem extends SubsystemBase {
         boolean ready = enabledSupplier.getAsBoolean();
 
         if (ready) {
-          setPower();
+          setPower(1);
         }
       },
       () -> {
@@ -100,7 +110,7 @@ public class FeederSubsystem extends SubsystemBase {
    * @return Command to pulse the feeder.
    */
   public Command pulseFeed(double seconds) {
-    return this.runOnce(() -> setPower())
+    return this.runOnce(() -> setPower(1))
       .andThen(this.waitSeconds(seconds))
       .andThen(this.runOnce(this::stop));
   }
