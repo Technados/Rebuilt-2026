@@ -5,35 +5,46 @@
     "data": {
       "commands": [
         {
-          "type": "race",
+          "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LT-D"
+                  "pathName": "RT-O"
                 }
               },
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Pivot-Out-Intake"
-                      }
-                    }
-                  ]
+                  "name": "Pivot-Out"
                 }
               }
             ]
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "Intake"
+            "waitTime": 5.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Spin"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "O-HR"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "HR-D"
           }
         },
         {
@@ -58,6 +69,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Left",
+  "folder": "Right",
   "choreoAuto": false
 }

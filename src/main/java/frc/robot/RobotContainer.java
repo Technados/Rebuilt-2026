@@ -183,8 +183,10 @@ public class RobotContainer {
 
     // register auto options to the shuffleboard 
     autoChooser.addOption("RT-O", "RT-O");
+    autoChooser.addOption("RT-Everything", "RT-Everything");
     autoChooser.addOption("RB-C", "RB-C");
     autoChooser.addOption("LT-D", "LT-D");
+    autoChooser.addOption("LT-C", "LT-C");
     autoChooser.addOption("HC-O", "HC-O");
     autoChooser.addOption("HC-D", "HC-D");
     autoChooser.addOption("1-Meter", "1-Meter");
