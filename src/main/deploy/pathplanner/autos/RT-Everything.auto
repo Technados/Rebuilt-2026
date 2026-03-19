@@ -48,9 +48,35 @@
           }
         },
         {
-          "type": "path",
+          "type": "race",
           "data": {
-            "pathName": "Move Forward"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Move Forward"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Pivot-Out-Intake"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
           }
         },
         {

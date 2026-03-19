@@ -5,13 +5,19 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "LT-D"
+          }
+        },
+        {
           "type": "race",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LT-D"
+                  "pathName": "Move Forward"
                 }
               },
               {
@@ -34,12 +40,6 @@
           "type": "named",
           "data": {
             "name": "Intake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Move Forward"
           }
         },
         {
