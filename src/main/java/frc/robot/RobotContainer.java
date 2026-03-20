@@ -161,21 +161,21 @@ public class RobotContainer {
     NamedCommands.registerCommand(
       "Intake", 
       m_intakeSubsystem.runIntakeCommand()
-        .withTimeout(2)
+        .withTimeout(2.5)
     );
-    NamedCommands.registerCommand("Intake-Stop", m_intakeSubsystem.stopIntakeCommand());
+    // NamedCommands.registerCommand("Intake-Stop", m_intakeSubsystem.stopIntakeCommand());
     NamedCommands.registerCommand("Pivot-In", m_intakeSubsystem.pivotInCommand());
     NamedCommands.registerCommand("Pivot-Out", m_intakeSubsystem.pivotOutCommand());
 
-    NamedCommands.registerCommand("Pivot-Out-Intake", 
-      new SequentialCommandGroup(
-        m_intakeSubsystem.pivotOutCommand(),
-        m_intakeSubsystem.runIntakeCommand()
-      )
-    );
+  //  NamedCommands.registerCommand("Pivot-Out-Intake", 
+  //     new SequentialCommandGroup(
+  //       m_intakeSubsystem.pivotOutCommand(),
+  //       m_intakeSubsystem.runIntakeCommand()
+  //     )
+  //   );
     NamedCommands.registerCommand("Shoot", 
       new ParallelCommandGroup(
-        m_shooterSubsystem.holdVelocityCommand(3300),
+        m_shooterSubsystem.holdVelocityCommand(3000),
         m_feederSubsystem.feedWhen(() -> m_shooterSubsystem.shooterAtVelocity()),
         m_intakeSubsystem.pivotAgitateCommand(() -> m_shooterSubsystem.shooterAtVelocity())
       )

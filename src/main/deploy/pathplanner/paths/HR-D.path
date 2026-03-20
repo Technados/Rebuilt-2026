@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.874579172610556,
-        "y": 2.398259629101284
+        "x": 1.5289586305278173,
+        "y": 1.0526390870185458
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4993580599144076,
-        "y": 2.695848787446506
+        "x": 2.240625,
+        "y": 2.0252083333333326
       },
       "isLocked": false,
-      "linkedName": "Hub Right"
+      "linkedName": "Spin"
     },
     {
       "anchor": {
         "x": 1.758,
-        "y": 5.96
+        "y": 5.75
       },
       "prevControl": {
-        "x": 2.0076890156918683,
-        "y": 5.1800713266761775
+        "x": 2.615657894736842,
+        "y": 5.429353070175439
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 1.5,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,
@@ -48,7 +48,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 45.0
+    "rotation": 29.999999999999996
   },
   "useDefaultConstraints": true
 }

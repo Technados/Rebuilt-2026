@@ -5,13 +5,26 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "LT-D"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LT-D"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Pivot-Out"
+                }
+              }
+            ]
           }
         },
         {
-          "type": "race",
+          "type": "parallel",
           "data": {
             "commands": [
               {
@@ -21,25 +34,12 @@
                 }
               },
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Pivot-Out-Intake"
-                      }
-                    }
-                  ]
+                  "name": "Intake"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake"
           }
         },
         {
