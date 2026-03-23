@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Hopper-Deploy"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "HC-CL"

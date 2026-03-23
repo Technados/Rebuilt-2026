@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Hopper-Deploy"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -21,18 +27,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Spin"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "O-HR"
           }
         },
         {
