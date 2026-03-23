@@ -55,7 +55,7 @@ public final class Constants {
   
   public static final class AimConstants {
     
-    public static final double kAimP = 0.35; // radians -> rad/s-ish output scaling (tune)
+    public static final double kAimP = 0.30; // radians -> rad/s-ish output scaling (tune)
     public static final double kAimI = 0; // radians -> rad/s-ish output scaling (tune)
     public static final double kAimD = 0; // radians -> rad/s-ish output scaling (tune)
 
@@ -105,10 +105,10 @@ public final class Constants {
 
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
-    public static final double kMaxSpeedMetersPerSecond = 3;
-    public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
+    public static final double kMaxSpeedMetersPerSecond = 5;
+    public static final double kMaxAngularSpeed = 2.0 * Math.PI; // radians per second
     public static final double kSlowSpeedFactor = 0.20; // Slow mode speed factor (20% of normal speed)
-    public static final double kTraverseSpeedFactor = 0.55;
+    public static final double kTraverseSpeedFactor = 0.75;
 
     // Chassis configuration
     public static final double kTrackWidth 
@@ -280,6 +280,7 @@ public final class Constants {
     
     // “At speed” tolerance used to decide when we are allowed to feed.
     public static final double kShooterReadyToleranceRPM = 100.0;
+    public static final double kShooterFeedDropToleranceRPM = 1000.0;
 
     // Optional feedforward: volts = kS + kV * RPM
     // Start at 0 to prove closed-loop works, then add feedforward later for better recovery.
@@ -297,18 +298,26 @@ public final class Constants {
   
   public static final class VisionConstants {
 
-    public static final String kFrontLimelightName = "limelight-front";
-    public static final String kBackLimelightName = "limelight-back";
+  public static final String kFrontLimelightName = "limelight-front";
+  public static final String kBackLimelightName = "limelight-back";
 
-    public static final Matrix<N3, N1> kSingleTagStdDevs = 
-      VecBuilder.fill(0.8, 0.8, Math.toRadians(99999));
-    public static final Matrix<N3, N1> kMultiTagStdDevs = 
-      VecBuilder.fill(0.3, 0.3, Math.toRadians(99999));
+  // Normal always-on fusion: conservative and stable
+  public static final Matrix<N3, N1> kSingleTagStdDevs =
+    VecBuilder.fill(0.8, 0.8, Math.toRadians(99999));
+  public static final Matrix<N3, N1> kMultiTagStdDevs =
+    VecBuilder.fill(0.3, 0.3, Math.toRadians(99999));
 
-    public static final double kMaxAcceptedPoseJumpMeters = 2.0;
+  public static final double kMaxAcceptedPoseJumpMeters = 2.0;
+  public static final double kMaxVisionYawRateDegPerSec = 360.0;
 
-  }
+  // Driver-requested recovery mode right before scoring/passing
+  // Use only when mostly settled and looking at rich tags.
+  public static final Matrix<N3, N1> kRecoveryMultiTagStdDevs =
+    VecBuilder.fill(0.1, 0.1, Math.toRadians(99999));
 
+  public static final double kRecoveryMaxAcceptedPoseJumpMeters = 50.0;
+  public static final double kRecoveryMaxVisionYawRateDegPerSec = 360.0;
+}
   public static final class VortexConstants {
 
     public static final double kFreeSpeedRpm = 6784;

@@ -124,6 +124,44 @@ public class VisionSubsystem extends SubsystemBase {
 
     }
 
+    public Optional<VisionMeasurement> getVisionMeasurementMT2(
+    String name,
+    double robotYawDeg,
+    double robotYawRateDegPerSec,
+    boolean recoveryMode) {
+
+        // Set current robot orientation for MegaTag2
+        LimelightHelpers.SetRobotOrientation(name, robotYawDeg, robotYawRateDegPerSec, 0, 0, 0, 0);
+
+        LimelightHelpers.PoseEstimate mt2 =
+            LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
+
+        if (mt2 == null || mt2.tagCount <= 0) {
+            return Optional.empty();
+        }
+
+        // In recovery mode, only accept multitag solutions
+        if (recoveryMode && mt2.tagCount < 2) {
+            return Optional.empty();
+        }
+
+        Matrix<N3, N1> stdDevs;
+
+        if (recoveryMode) {
+            stdDevs = VisionConstants.kRecoveryMultiTagStdDevs;
+        } else {
+            stdDevs =
+                mt2.tagCount >= 2
+                    ? VisionConstants.kMultiTagStdDevs
+                    : VisionConstants.kSingleTagStdDevs;
+        }
+
+        VisionMeasurement measurement =
+            new VisionMeasurement(mt2.pose, mt2.timestampSeconds, stdDevs);
+
+        return Optional.of(measurement);
+    }
+
     /*----------Periodic----------*/
 
     @Override

@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
@@ -100,8 +100,8 @@ public class RobotContainer {
     m_robotDrive.setDefaultCommand(
       new RunCommand(
         () -> {
-          double x = -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband);
-          double y = -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband);
+          double x = MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband);
+          double y = MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband);
           double rot = -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband);
 
           boolean manualSlowMode = m_driverController.leftBumper().getAsBoolean();
@@ -117,45 +117,69 @@ public class RobotContainer {
       )
     );
     
-    m_visionSubsystem.setDefaultCommand(
-      new RunCommand( 
-        () -> {
-          double yawDeg = m_robotDrive.getPose().getRotation().getDegrees();
-          double yawRateDegPerSec = m_robotDrive.getTurnRate();
-          
-          String[] llnames = {Constants.VisionConstants.kFrontLimelightName, Constants.VisionConstants.kBackLimelightName};
+m_visionSubsystem.setDefaultCommand(
+  new RunCommand(
+    () -> {
+      double yawDeg = m_robotDrive.getGyroRotation().getDegrees();
+      double yawRateDegPerSec = m_robotDrive.getTurnRate();
 
-          for (String llname: llnames) {
-            m_visionSubsystem.getVisionMeasurementMT2(llname, yawDeg, yawRateDegPerSec).ifPresent(m -> {
-              if (Math.abs(yawRateDegPerSec) > 360.0) return;
+      // Hold DRIVER X to aggressively relocalize right before scoring/passing
+      boolean recoveryMode = m_driverController.x().getAsBoolean();
 
-              if (m.getPose().getTranslation().getDistance(m_robotDrive.getPose().getTranslation()) 
-                > Constants.VisionConstants.kMaxAcceptedPoseJumpMeters) return;
+      SmartDashboard.putBoolean("Vision/RecoveryMode", recoveryMode);
 
-              m_robotDrive.addVisionMeasurement(
-                m.getPose(),
-                m.getTimestampSeconds(),
-                m.getStdDevs()
-              );
-            });
-          }
-        }, 
+      double maxYawRate =
+        recoveryMode
+          ? Constants.VisionConstants.kRecoveryMaxVisionYawRateDegPerSec
+          : Constants.VisionConstants.kMaxVisionYawRateDegPerSec;
+
+      double maxPoseJump =
+        recoveryMode
+          ? Constants.VisionConstants.kRecoveryMaxAcceptedPoseJumpMeters
+          : Constants.VisionConstants.kMaxAcceptedPoseJumpMeters;
+
+      // In recovery mode, use FRONT limelight only.
+      // This is safer for tomorrow because scoring is front-facing and tag-rich.
+      String[] llnames =
+        recoveryMode
+          ? new String[] {Constants.VisionConstants.kFrontLimelightName}
+          : new String[] {
+              Constants.VisionConstants.kFrontLimelightName,
+              Constants.VisionConstants.kBackLimelightName
+            };
+
+      if (Math.abs(yawRateDegPerSec) > maxYawRate) {
+        return;
+      }
+
+      for (String llname : llnames) {
         m_visionSubsystem
-      )
-    );
+          .getVisionMeasurementMT2(llname, yawDeg, yawRateDegPerSec, recoveryMode)
+          .ifPresent(m -> {
+            double poseJump =
+              m.getPose().getTranslation().getDistance(
+                m_robotDrive.getPose().getTranslation()
+              );
+
+            SmartDashboard.putNumber("Vision/" + llname + "/PoseJump", poseJump);
+
+            if (poseJump > maxPoseJump) return;
+
+            m_robotDrive.addVisionMeasurement(
+              m.getPose(),
+              m.getTimestampSeconds(),
+              m.getStdDevs()
+            );
+          });
+      }
+    },
+    m_visionSubsystem
+  )
+);
 
     m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.idleShooterCommand());
 
     m_intakeSubsystem.setDefaultCommand(m_intakeSubsystem.pivotIdleCommand());
-
-    // Adds button to dashboard that resets the robot's pose to the test pose
-    SmartDashboard.putData(
-      "Reset Buttons/Reset Pose: Test Start",
-      new InstantCommand(
-        () -> m_robotDrive.resetOdometry(Constants.TestPoses.kTestStartPose),
-        m_robotDrive
-      )
-    );
 
     // Pathplanner Commands
     NamedCommands.registerCommand(
@@ -163,32 +187,39 @@ public class RobotContainer {
       m_intakeSubsystem.runIntakeCommand()
         .withTimeout(2.5)
     );
-    // NamedCommands.registerCommand("Intake-Stop", m_intakeSubsystem.stopIntakeCommand());
+
+    NamedCommands.registerCommand(
+      "Hopper-Deploy", 
+      m_shooterSubsystem.holdVelocityCommand(1000)
+        .withTimeout(.25) 
+    );
+
     NamedCommands.registerCommand("Pivot-In", m_intakeSubsystem.pivotInCommand());
     NamedCommands.registerCommand("Pivot-Out", m_intakeSubsystem.pivotOutCommand());
 
-  //  NamedCommands.registerCommand("Pivot-Out-Intake", 
-  //     new SequentialCommandGroup(
-  //       m_intakeSubsystem.pivotOutCommand(),
-  //       m_intakeSubsystem.runIntakeCommand()
-  //     )
-  //   );
+
     NamedCommands.registerCommand("Shoot", 
       new ParallelCommandGroup(
         m_shooterSubsystem.holdVelocityCommand(3000),
-        m_feederSubsystem.feedWhen(() -> m_shooterSubsystem.shooterAtVelocity()),
-        m_intakeSubsystem.pivotAgitateCommand(() -> m_shooterSubsystem.shooterAtVelocity())
+        m_feederSubsystem.feedWhen(() -> m_shooterSubsystem.shooterSafeToFeed()),
+        new WaitCommand(1)
+          .andThen(m_intakeSubsystem.pivotAgitateCommand(readySupplier))
       )
     ); // Test positions/velocity later
 
     // register auto options to the shuffleboard 
     autoChooser.addOption("RT-O", "RT-O");
+    autoChooser.addOption("L-SAFE", "L-SAFE");
+    autoChooser.addOption("C-SAFE", "C-SAFE");
+    autoChooser.addOption("R-SAFE", "R-SAFE");
     autoChooser.addOption("RT-Everything", "RT-Everything");
     autoChooser.addOption("RB-C", "RB-C");
     autoChooser.addOption("LT-D", "LT-D");
     autoChooser.addOption("LT-C", "LT-C");
     autoChooser.addOption("HC-O", "HC-O");
     autoChooser.addOption("HC-D", "HC-D");
+    autoChooser.addOption("B-Stay", "B-Stay");
+    autoChooser.addOption("Command-Test", "Command-Test");
     autoChooser.addOption("1-Meter", "1-Meter");
 
     // Creating a new shuffleboard tab and adding the autoChooser
@@ -248,9 +279,6 @@ public class RobotContainer {
     // Start Button -> Zero swerve heading
     m_operatorController.start().onTrue(m_robotDrive.zeroHeadingCommand());
 
-    //Change button
-    m_operatorController.a().onTrue(m_robotDrive.resetOdometryCommand(Constants.TestPoses.kTestStartPose));
-
     passLeft = m_operatorController.povRight().getAsBoolean();
     passRight = m_operatorController.povLeft().getAsBoolean();
     
@@ -302,26 +330,54 @@ public class RobotContainer {
             .alongWith(m_hoodSubsystem.holdPositionCommand(hoodSupplier))
       );
 
+    m_operatorController.povUp()
+      .whileTrue(
+        m_shooterSubsystem.holdVelocityCommand(6750)
+      );
+
+    m_operatorController.povDown()
+      .whileTrue(
+        m_shooterSubsystem.holdVelocityCommand(-6750)
+      );
+
     // Operator RT = Fire (feed only when ready)
     m_operatorController.rightTrigger()
       .whileTrue(
         m_feederSubsystem.feedWhen(readySupplier)
-          .alongWith(m_intakeSubsystem.pivotAgitateCommand(readySupplier))
+          .alongWith(
+            new WaitCommand(1)
+              .andThen(m_intakeSubsystem.pivotAgitateCommand(readySupplier))
+          )
       );
 
+    // Operator X -> Manual fallback shot prep (fixed RPM + fixed hood)
     m_operatorController.x()
       .whileTrue(
-        m_shooterSubsystem.holdVelocityCommand(m_testing.shootingVelocity)
+        m_shooterSubsystem.holdVelocityCommand(3000)
+          .alongWith(m_hoodSubsystem.holdPositionCommand(0.35))
       );
 
+    // Operator Y -> Manual fallback fire (feed + pivot agitate)
     m_operatorController.y()
       .whileTrue(
         m_feederSubsystem.runFeederCommand()
+          .alongWith(m_intakeSubsystem.pivotAgitateCommand(() -> true))
       );
 
-    //m_operatorController.a().whileTrue(m_hoodSubsystem.hoodJogCommand(0.01));
+    m_operatorController.b()
+      .whileTrue(
+        m_hoodSubsystem.holdPositionCommand(.2)
+      );
 
-    //m_operatorController.b().whileTrue(m_hoodSubsystem.hoodJogCommand(-0.01));
+    m_operatorController.leftBumper()
+      .whileTrue(
+        m_robotDrive.resetOdometryCommand(FieldConstants.BLUE_TEST_POSE)
+      );
+
+    m_operatorController.rightBumper()
+      .whileTrue(
+        m_robotDrive.resetOdometryCommand(FieldConstants.RED_TEST_POSE)
+      );
 
   }
 
@@ -333,8 +389,7 @@ public class RobotContainer {
     hoodSupplier = (java.util.function.DoubleSupplier) () -> shotSupplier.get().hoodPos();
 
     readySupplier = (java.util.function.BooleanSupplier) () ->
-      //m_robotDrive.isAimedAt(hubSupplier.get()) &&
-      m_shooterSubsystem.shooterAtVelocity()
+      m_shooterSubsystem.shooterSafeToFeed()
       && m_hoodSubsystem.atTarget();
   }
 

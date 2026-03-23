@@ -107,9 +107,6 @@ public class DriveSubsystem extends SubsystemBase {
         e.printStackTrace();
     }
 
-    // Configure AutoBuilder at the end
-    configureAutoBuilder();
-
     // Create robot poseEstimator that can take input from VisionSubsystem
     m_poseEstimator = // Currently has default StdDevs
       new SwerveDrivePoseEstimator(
@@ -128,6 +125,9 @@ public class DriveSubsystem extends SubsystemBase {
     aimPid.enableContinuousInput(-Math.PI, Math.PI);
 
     this.ledSubsystem = ledSubsystem;
+    
+    // Configure AutoBuilder at the end
+    configureAutoBuilder();
 
   }
   
@@ -488,6 +488,13 @@ public class DriveSubsystem extends SubsystemBase {
     return Rotation2d.fromDegrees(angleDeg);
   }
 
+  public Rotation2d getGyroRotation() {
+    return getGyroRotation2d();
+  }
+
+  public double getGyroDegrees() {
+    return getGyroRotation2d().getDegrees();
+  }
 
   /**
    * Returns the turn rate of the robot.

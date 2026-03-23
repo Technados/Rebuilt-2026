@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -44,6 +46,13 @@ public final class FieldConstants {
         FIELD_WIDTH_M  - BLUE_RIGHT_FIELD_TARGET.getY()
     );
 
+    public static final Pose2d RED_TEST_POSE = new Pose2d(
+        12.928, 4, Rotation2d.fromDegrees(0)
+    );
+    public static final Pose2d BLUE_TEST_POSE = new Pose2d(
+        (BLUE_HUB.getX() - .9236305), 4, Rotation2d.fromDegrees(180)
+    );
+
     /** Returns the hub your alliance should score into, in WPILib field coordinates. */
     public static Translation2d getAllianceHub() {
         var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue);
@@ -58,6 +67,14 @@ public final class FieldConstants {
     public static Translation2d getRightFieldTarget() {
         var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue);
         return (alliance == DriverStation.Alliance.Blue) ? BLUE_RIGHT_FIELD_TARGET : RED_RIGHT_FIELD_TARGET;
+    }
+
+    public static Pose2d getRedTestPose() {
+        return RED_TEST_POSE;
+    }
+
+    public static Pose2d getBlueTestPose() {
+        return BLUE_TEST_POSE;
     }
 
 }

@@ -36,6 +36,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private SparkClosedLoopController shooterController;
 
   private double targetVelocity;
+  private boolean shooterFeedLatched;
 
   public ShooterSubsystem() {
     // Initializes motors using constants and configs
@@ -68,6 +69,7 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterController = rightShooterMotor.getClosedLoopController();
     
     targetVelocity = 0.0;
+    shooterFeedLatched = false;
   }
     
   /*----------Getters----------*/
@@ -98,6 +100,38 @@ public class ShooterSubsystem extends SubsystemBase {
         && Math.abs(getRightVelocity() - targetVelocity) <= tol
         && Math.abs(getCenterVelocity() - targetVelocity) <= tol;  
   }
+
+  public boolean shooterSafeToFeed() {
+  if (targetVelocity <= 1.0) {
+    shooterFeedLatched = false;
+    return false;
+  }
+
+  double resumeThreshold = targetVelocity - ShooterConstants.kShooterReadyToleranceRPM;
+  double dropThreshold = targetVelocity - ShooterConstants.kShooterFeedDropToleranceRPM;
+
+  boolean allAtResume =
+      getLeftVelocity() >= resumeThreshold
+      && getRightVelocity() >= resumeThreshold
+      && getCenterVelocity() >= resumeThreshold;
+
+  boolean anyBelowDrop =
+      getLeftVelocity() < dropThreshold
+      || getRightVelocity() < dropThreshold
+      || getCenterVelocity() < dropThreshold;
+
+  if (!shooterFeedLatched) {
+    // Do not begin feeding until the shooter is genuinely up to speed
+    shooterFeedLatched = allAtResume;
+  } else {
+    // Once feeding has begun, allow some normal droop before cutting feed
+    if (anyBelowDrop) {
+      shooterFeedLatched = false;
+    }
+  }
+
+  return shooterFeedLatched;
+}
 
   /*----------Control Methods----------*/
   
@@ -136,9 +170,10 @@ public class ShooterSubsystem extends SubsystemBase {
   /**
    * Stops all of the motors.
    */
-  public void stopShooter() { 
-    rightShooterMotor.set(0.0);
-  }
+  public void stopShooter() {
+  shooterFeedLatched = false;
+  rightShooterMotor.set(0.0);
+}
   
   /*----------Commands----------*/
   
