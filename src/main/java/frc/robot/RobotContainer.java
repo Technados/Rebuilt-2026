@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.shooting.ShotMap;
 import frc.robot.shooting.ShotMapData;
 import frc.robot.shooting.ShotParameters;
@@ -121,17 +122,25 @@ public class RobotContainer {
           double yawRateDegPerSec = m_robotDrive.getTurnRate();
 
           // Hold DRIVER X to aggressively relocalize right before scoring/passing
-          boolean recoveryMode = m_driverController.x().getAsBoolean();
+          boolean recoveryMode = 
+            m_driverController.x().getAsBoolean() ||
+            m_driverController.leftTrigger().getAsBoolean();
+          
+          boolean bumpMode = 
+            Math.abs(m_robotDrive.getGyroPitch()) > VisionConstants.kPitchToleranceDeg;
 
           SmartDashboard.putBoolean("Vision/RecoveryMode", recoveryMode);
+          SmartDashboard.putBoolean("Vision/BumpMode", bumpMode);
+          
+          boolean preciseMode = recoveryMode || bumpMode;
 
           double maxYawRate =
-            recoveryMode
+            preciseMode
               ? Constants.VisionConstants.kRecoveryMaxVisionYawRateDegPerSec
               : Constants.VisionConstants.kMaxVisionYawRateDegPerSec;
 
           double maxPoseJump =
-            recoveryMode
+            preciseMode
               ? Constants.VisionConstants.kRecoveryMaxAcceptedPoseJumpMeters
               : Constants.VisionConstants.kMaxAcceptedPoseJumpMeters;
 
@@ -140,7 +149,9 @@ public class RobotContainer {
           String[] llnames =
             recoveryMode
               ? new String[] {Constants.VisionConstants.kFrontLimelightName}
-              : new String[] {
+              : bumpMode 
+                ? new String[] {m_visionSubsystem.getLimelightWithMostTags()}
+                : new String[] {
                   Constants.VisionConstants.kFrontLimelightName,
                   Constants.VisionConstants.kBackLimelightName
                 };
@@ -151,7 +162,7 @@ public class RobotContainer {
 
           for (String llname : llnames) {
             m_visionSubsystem
-              .getVisionMeasurementMT2(llname, yawDeg, yawRateDegPerSec, recoveryMode)
+              .getVisionMeasurementMT2(llname, yawDeg, yawRateDegPerSec, preciseMode)
               .ifPresent(m -> {
                 double poseJump =
                   m.getPose().getTranslation().getDistance(
@@ -352,6 +363,7 @@ public class RobotContainer {
       .whileTrue(
         m_shooterSubsystem.holdVelocityCommand(2770)
           .alongWith(m_hoodSubsystem.holdPositionCommand(0.23))
+          .alongWith(m_robotDrive.setXCommand())
       );
 
     // Operator Y -> Manual fallback fire (feed + pivot agitate)

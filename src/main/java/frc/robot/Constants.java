@@ -238,6 +238,8 @@ public final class Constants {
 
   public static final class ModuleConstants {
 
+    public static final double kBotCenterOffsetMeters = .4191;
+
     // The MAXSwerve module can be configured with one of three pinion gears: 12T,
     // 13T, or 14T. This changes the drive speed of the module (a pinion gear with
     // more teeth will result in a robot that drives faster).
@@ -259,7 +261,7 @@ public final class Constants {
 
     public static final int kDriverControllerPort = 0;
     public static final int kOperatorControllerPort = 1;
-    public static final double kDriveDeadband = 0.1;
+    public static final double kDriveDeadband = 0.02;
     public static final double kTriggerButtonThreshold = 0.2;
     
   }
@@ -317,6 +319,12 @@ public final class Constants {
 
   public static final double kRecoveryMaxAcceptedPoseJumpMeters = 50.0;
   public static final double kRecoveryMaxVisionYawRateDegPerSec = 360.0;
+  
+  public static final double kWithinFieldToleranceMeters = .05;
+  public static final double kOutsideHubToleranceMeters = 0;
+
+  public static final double kPitchToleranceDeg = 3;
+
 }
   public static final class VortexConstants {
 

@@ -28,12 +28,22 @@ public final class FieldConstants {
     // Hub centers (meters) derived from welded hub AprilTag ring centroid
     public static final Translation2d BLUE_HUB = new Translation2d(4.5366305, 4.0345995);
 
+    public static final double BLUE_HUB_X_MIN = 4.0287;
+    public static final double BLUE_HUB_X_MAX = 5.2225;
+    public static final double BLUE_HUB_Y_MIN = 3.4377;
+    public static final double BLUE_HUB_Y_MAX = 4.6316;
+    
     // Rotated 180° about field center
     public static final Translation2d RED_HUB = new Translation2d(
         FIELD_LENGTH_M - BLUE_HUB.getX(),
         FIELD_WIDTH_M  - BLUE_HUB.getY()
-    );
+        );
 
+    public static final double RED_HUB_X_MIN = 11.3185;
+    public static final double RED_HUB_X_MAX = 12.5123;
+    public static final double RED_HUB_Y_MIN = 3.4377;
+    public static final double RED_HUB_Y_MAX = 4.6316;
+        
     public static final Translation2d BLUE_LEFT_FIELD_TARGET = new Translation2d(1.989, 1.849);
     public static final Translation2d BLUE_RIGHT_FIELD_TARGET = new Translation2d(1.989, 6.220);
 
@@ -75,6 +85,26 @@ public final class FieldConstants {
 
     public static Pose2d getBlueTestPose() {
         return BLUE_TEST_POSE;
+    }
+
+    public static double getHubXMin() {
+        var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue);
+        return (alliance == DriverStation.Alliance.Blue) ? BLUE_HUB_X_MIN : RED_HUB_X_MIN;
+    }
+
+    public static double getHubXMax() {
+        var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue);
+        return (alliance == DriverStation.Alliance.Blue) ? BLUE_HUB_X_MAX : RED_HUB_X_MAX;
+    }
+
+    public static double getHubYMin() {
+        var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue);
+        return (alliance == DriverStation.Alliance.Blue) ? BLUE_HUB_Y_MIN : RED_HUB_Y_MIN;
+    }
+
+    public static double getHubYMax() {
+        var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue);
+        return (alliance == DriverStation.Alliance.Blue) ? BLUE_HUB_Y_MAX : RED_HUB_Y_MAX;
     }
 
 }

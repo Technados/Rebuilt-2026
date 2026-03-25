@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.FieldConstants;
+import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.LimelightHelpers;
 import frc.robot.vision.VisionMeasurement;
@@ -47,16 +49,32 @@ public class VisionSubsystem extends SubsystemBase {
         return LimelightHelpers.getLatency_Capture(name) + LimelightHelpers.getLatency_Pipeline(name);
     }
 
-    /**
-     * Gets the limelight's pose.
-     * @param name The name of the limelight.
-     * @return The limelight's pose as a list (x, y, rot)
-     */
-    public double[] getVisionPose(String name) {
-        Pose2d pose = LimelightHelpers.getBotPose2d(name);
-        double[] list = {pose.getX(), pose.getY(), pose.getRotation().getDegrees()};
+    public String getLimelightWithMostTags() {
+        String llnames = 
+            getTagCount(VisionConstants.kFrontLimelightName) > getTagCount(VisionConstants.kBackLimelightName)
+            ? VisionConstants.kFrontLimelightName
+            : VisionConstants.kBackLimelightName;
 
-        return list;
+        return llnames;
+    }
+
+    public boolean rejectVisionMeasurement(LimelightHelpers.PoseEstimate mt2) {
+        boolean rejectPose =
+            // Check if measurement is valid
+            mt2 == null ||
+            mt2.tagCount < 2 ||
+
+            // Check if measurement is outside the field
+            mt2.pose.getX() < (0 + ModuleConstants.kBotCenterOffsetMeters) - VisionConstants.kWithinFieldToleranceMeters ||
+            mt2.pose.getX() > (FieldConstants.FIELD_LENGTH_M - ModuleConstants.kBotCenterOffsetMeters) + VisionConstants.kWithinFieldToleranceMeters ||
+            mt2.pose.getY() < (0 + ModuleConstants.kBotCenterOffsetMeters) - VisionConstants.kWithinFieldToleranceMeters ||
+            mt2.pose.getY() > (FieldConstants.FIELD_WIDTH_M - ModuleConstants.kBotCenterOffsetMeters) + VisionConstants.kWithinFieldToleranceMeters ||
+
+            // Check if measurement is inside the hub
+            (mt2.pose.getX() > FieldConstants.getHubXMin() && mt2.pose.getY() > FieldConstants.getHubYMin() &&
+            mt2.pose.getX() < FieldConstants.getHubXMax() && mt2.pose.getY() < FieldConstants.getHubYMax());
+
+        return rejectPose;
     }
 
     /**
@@ -64,7 +82,7 @@ public class VisionSubsystem extends SubsystemBase {
      * @param name The name of the limelight.
      * @return A {@link VisionMeasurement} with the calculated pose, timestamp, and std devs.
      */
-    public Optional<VisionMeasurement> getVisionMeasurement(String name) { // Gets vision measurements from the limelight 
+    public Optional<VisionMeasurement> getVisionMeasurement(String name) {
 
         // Check if there is a valid target
         if (!LimelightHelpers.getTV(name)) {
@@ -90,40 +108,6 @@ public class VisionSubsystem extends SubsystemBase {
 
     }
 
-    /**
-     * Gets vision measurements using MegaTag2.
-     * @param name The name of the limelight.
-     * @param robotYawDeg The robot's yaw in degrees.
-     * @param robotYawRateDegPerSec The robot's yaw rate in degrees per second.
-     * @return A {@link VisionMeasurement} with the calculated pose, timestamp, and std devs.
-     */
-    public Optional<VisionMeasurement> getVisionMeasurementMT2(String name, double robotYawDeg, double robotYawRateDegPerSec) { // Gets vision measurements using MegaTag2
-
-        // Set current robot orientation
-        LimelightHelpers.SetRobotOrientation(name, robotYawDeg, robotYawRateDegPerSec, 0, 0, 0, 0);
-
-        // Get mt2 pose estimate
-        LimelightHelpers.PoseEstimate mt2 = 
-            LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
-
-        // Check if mt2 is valid
-        if (mt2 == null || mt2.tagCount <= 0) {
-            return Optional.empty();
-        }
-
-        // Choose std devs (confidence)
-        Matrix<N3, N1> stdDevs = 
-            mt2.tagCount >= 2
-                ?VisionConstants.kMultiTagStdDevs
-                :VisionConstants.kSingleTagStdDevs;
-
-        // Return new mt2 vision measurement
-        VisionMeasurement measurement = new VisionMeasurement(mt2.pose, mt2.timestampSeconds, stdDevs);
-
-        return Optional.of(measurement);
-
-    }
-
     public Optional<VisionMeasurement> getVisionMeasurementMT2(
     String name,
     double robotYawDeg,
@@ -136,12 +120,7 @@ public class VisionSubsystem extends SubsystemBase {
         LimelightHelpers.PoseEstimate mt2 =
             LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
 
-        if (mt2 == null || mt2.tagCount <= 0) {
-            return Optional.empty();
-        }
-
-        // In recovery mode, only accept multitag solutions
-        if (recoveryMode && mt2.tagCount < 2) {
+        if (rejectVisionMeasurement(mt2)) {
             return Optional.empty();
         }
 

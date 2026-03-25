@@ -171,6 +171,8 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Right Point Distance",
       getPose().getTranslation().getDistance(rightFieldTargetSupplier.get()));
 
+    SmartDashboard.putNumber("Gyro Pitch", getGyroPitch());
+
     // Flash LEDs red if gyro is offline
     if (!m_gyro.isConnected()) {
       ledSubsystem.flashOnceForGyroAlert(0.61, 2.0);
@@ -506,6 +508,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   public double getGyroDegrees() {
     return getGyroRotation2d().getDegrees();
+  }
+
+  public double getGyroPitch() {
+    return m_gyro.getPitch();
   }
 
   /**
