@@ -47,8 +47,8 @@ public class FeederSubsystem extends SubsystemBase {
    * Runs the motors at their power defined in the constants.
    */
   public void setPower(double multiplier) {
-    feederMotor.set(FeederConstants.kFeederMotorPower);
-    preShooterMotor.set(FeederConstants.kPreShooterMotorPower);
+    feederMotor.set(FeederConstants.kFeederMotorPower * multiplier);
+    preShooterMotor.set(FeederConstants.kPreShooterMotorPower * multiplier);
   }
 
   /**

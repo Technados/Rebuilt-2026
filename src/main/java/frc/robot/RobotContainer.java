@@ -35,7 +35,6 @@ import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.TestingSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
 /**
@@ -64,8 +63,6 @@ public class RobotContainer {
 
     // ShotMap is pure math/data; safe to live in RobotContainer.
     private final ShotMap m_shotMap = ShotMapData.createAllianceZoneShotMap();
-
-    private final TestingSubsystem m_testing = new TestingSubsystem(); 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -100,8 +97,8 @@ public class RobotContainer {
     m_robotDrive.setDefaultCommand(
       new RunCommand(
         () -> {
-          double x = MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband);
-          double y = MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband);
+          double x = -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband);
+          double y = -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband);
           double rot = -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband);
 
           boolean manualSlowMode = m_driverController.leftBumper().getAsBoolean();
@@ -117,65 +114,65 @@ public class RobotContainer {
       )
     );
     
-m_visionSubsystem.setDefaultCommand(
-  new RunCommand(
-    () -> {
-      double yawDeg = m_robotDrive.getGyroRotation().getDegrees();
-      double yawRateDegPerSec = m_robotDrive.getTurnRate();
+    m_visionSubsystem.setDefaultCommand(
+      new RunCommand(
+        () -> {
+          double yawDeg = m_robotDrive.getGyroRotation().getDegrees();
+          double yawRateDegPerSec = m_robotDrive.getTurnRate();
 
-      // Hold DRIVER X to aggressively relocalize right before scoring/passing
-      boolean recoveryMode = m_driverController.x().getAsBoolean();
+          // Hold DRIVER X to aggressively relocalize right before scoring/passing
+          boolean recoveryMode = m_driverController.x().getAsBoolean();
 
-      SmartDashboard.putBoolean("Vision/RecoveryMode", recoveryMode);
+          SmartDashboard.putBoolean("Vision/RecoveryMode", recoveryMode);
 
-      double maxYawRate =
-        recoveryMode
-          ? Constants.VisionConstants.kRecoveryMaxVisionYawRateDegPerSec
-          : Constants.VisionConstants.kMaxVisionYawRateDegPerSec;
+          double maxYawRate =
+            recoveryMode
+              ? Constants.VisionConstants.kRecoveryMaxVisionYawRateDegPerSec
+              : Constants.VisionConstants.kMaxVisionYawRateDegPerSec;
 
-      double maxPoseJump =
-        recoveryMode
-          ? Constants.VisionConstants.kRecoveryMaxAcceptedPoseJumpMeters
-          : Constants.VisionConstants.kMaxAcceptedPoseJumpMeters;
+          double maxPoseJump =
+            recoveryMode
+              ? Constants.VisionConstants.kRecoveryMaxAcceptedPoseJumpMeters
+              : Constants.VisionConstants.kMaxAcceptedPoseJumpMeters;
 
-      // In recovery mode, use FRONT limelight only.
-      // This is safer for tomorrow because scoring is front-facing and tag-rich.
-      String[] llnames =
-        recoveryMode
-          ? new String[] {Constants.VisionConstants.kFrontLimelightName}
-          : new String[] {
-              Constants.VisionConstants.kFrontLimelightName,
-              Constants.VisionConstants.kBackLimelightName
-            };
+          // In recovery mode, use FRONT limelight only.
+          // This is safer for tomorrow because scoring is front-facing and tag-rich.
+          String[] llnames =
+            recoveryMode
+              ? new String[] {Constants.VisionConstants.kFrontLimelightName}
+              : new String[] {
+                  Constants.VisionConstants.kFrontLimelightName,
+                  Constants.VisionConstants.kBackLimelightName
+                };
 
-      if (Math.abs(yawRateDegPerSec) > maxYawRate) {
-        return;
-      }
+          if (Math.abs(yawRateDegPerSec) > maxYawRate) {
+            return;
+          }
 
-      for (String llname : llnames) {
+          for (String llname : llnames) {
+            m_visionSubsystem
+              .getVisionMeasurementMT2(llname, yawDeg, yawRateDegPerSec, recoveryMode)
+              .ifPresent(m -> {
+                double poseJump =
+                  m.getPose().getTranslation().getDistance(
+                    m_robotDrive.getPose().getTranslation()
+                  );
+
+                SmartDashboard.putNumber("Vision/" + llname + "/PoseJump", poseJump);
+
+                if (poseJump > maxPoseJump) return;
+
+                m_robotDrive.addVisionMeasurement(
+                  m.getPose(),
+                  m.getTimestampSeconds(),
+                  m.getStdDevs()
+                );
+              });
+          }
+        },
         m_visionSubsystem
-          .getVisionMeasurementMT2(llname, yawDeg, yawRateDegPerSec, recoveryMode)
-          .ifPresent(m -> {
-            double poseJump =
-              m.getPose().getTranslation().getDistance(
-                m_robotDrive.getPose().getTranslation()
-              );
-
-            SmartDashboard.putNumber("Vision/" + llname + "/PoseJump", poseJump);
-
-            if (poseJump > maxPoseJump) return;
-
-            m_robotDrive.addVisionMeasurement(
-              m.getPose(),
-              m.getTimestampSeconds(),
-              m.getStdDevs()
-            );
-          });
-      }
-    },
-    m_visionSubsystem
-  )
-);
+      )
+    );
 
     m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.idleShooterCommand());
 
@@ -353,8 +350,8 @@ m_visionSubsystem.setDefaultCommand(
     // Operator X -> Manual fallback shot prep (fixed RPM + fixed hood)
     m_operatorController.x()
       .whileTrue(
-        m_shooterSubsystem.holdVelocityCommand(3000)
-          .alongWith(m_hoodSubsystem.holdPositionCommand(0.35))
+        m_shooterSubsystem.holdVelocityCommand(2770)
+          .alongWith(m_hoodSubsystem.holdPositionCommand(0.23))
       );
 
     // Operator Y -> Manual fallback fire (feed + pivot agitate)
@@ -383,7 +380,10 @@ m_visionSubsystem.setDefaultCommand(
 
   public void setShotSuppliers(DoubleSupplier distance) {
     var shotSupplier = (java.util.function.Supplier<ShotParameters>) () ->
-      m_shotMap.get(distance.getAsDouble());
+    m_shotMap.get(distance.getAsDouble());
+
+    SmartDashboard.putNumber("rpmSupplier", shotSupplier.get().rpm());
+    SmartDashboard.putNumber("hoodSupplier", shotSupplier.get().hoodPos());
 
     rpmSupplier = (java.util.function.DoubleSupplier) () -> shotSupplier.get().rpm();
     hoodSupplier = (java.util.function.DoubleSupplier) () -> shotSupplier.get().hoodPos();

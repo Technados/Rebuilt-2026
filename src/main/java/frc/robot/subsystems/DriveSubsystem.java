@@ -186,6 +186,13 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearRight.getPosition()
         });
 
+    SmartDashboard.putNumber(
+      "Pose Estimtor/X", m_poseEstimator.getEstimatedPosition().getX());
+    SmartDashboard.putNumber(
+      "Pose Estimtor/Y", m_poseEstimator.getEstimatedPosition().getY());
+    SmartDashboard.putNumber(
+      "Pose Estimtor/Rot", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
+
     // Set robot pose on field
     field.setRobotPose(getPose());
 
@@ -478,7 +485,12 @@ public class DriveSubsystem extends SubsystemBase {
   private Rotation2d getGyroRotation2d() {
     // NavX angle commonly increases clockwise; WPILib expects CCW+.
     // Inverting is standard for navX in FRC.
-    double angleDeg = -m_gyro.getAngle();
+    double angleDeg = m_gyro.getAngle();
+    var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue);
+
+    if (alliance == DriverStation.Alliance.Blue) {
+      angleDeg += 180;
+    }
 
     // If you ever need to flip (wiring/mounting), do it ONE time here.
     if (DriveConstants.kGyroReversed) {
@@ -503,7 +515,7 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public double getTurnRate() {
     // Keep turn rate consistent with getGyroRotation2d() (CCW+)
-    double rate = -m_gyro.getRate();
+    double rate = m_gyro.getRate();
     if (DriveConstants.kGyroReversed) rate = -rate;
       return rate;
 
