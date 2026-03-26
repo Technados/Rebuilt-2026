@@ -180,18 +180,31 @@ public final class Constants {
     public static final double kPivotIdleInPower = -0.03;
     public static final double kPivotIdleOutPower = 0.03;
 
+    public static final double kPivotAgitateHomeDeg = 100.0;
+    public static final double kPivotAgitateJabDeg = 90.0;
+
+    // wait values
+    public static final double kPivotAgitateDownTimeoutSec = 0.10;
+    public static final double kPivotAgitateUpTimeoutSec = 0.10;
+    public static final double kPivotAgitatePauseSec = 0.02;
+
+    // Dead-head / stall detection
+    // pivotEncoder velocity is in deg/sec 
+    public static final double kPivotDeadheadMinVelDegPerSec = 4.0;
+    public static final double kPivotDeadheadPosErrDeg = 5.0;
+    public static final double kPivotDeadheadCurrentAmps = 22.0;
+
     public static final int kHopperServoChannel = 3;
 
     public static final int kZeroSwtichChannel = 0;
     
     public static final double kPivotMechAdv = 52.89; // motor rev per arm rev
     
-    public static final double kPivotEncoderTicksToDegrees = 360 / kPivotMechAdv;
     
     // Pivot closed-loop gains (start conservative)
-    public static final double kPivotP = 0.0025;
+    public static final double kPivotP = 0.02;
     public static final double kPivotI = 0.0;
-    public static final double kPivotD = 0.003;
+    public static final double kPivotD = 0.0;
     
     public static final double kPivotDegPerMotorRev = 360.0 / kPivotMechAdv; // ~6.8066
     
@@ -201,17 +214,14 @@ public final class Constants {
     public static final double kPivotVelToleranceDegPerSec = 8.0;
     
     // MAXMotion limits (units follow velocityConversionFactor)
-    public static final double kPivotCruiseArmDegPerSec = 8000;
-    public static final double kPivotAccelArmDegPerSec2 = 6500;
+    public static final double kPivotCruiseArmDegPerSec = 150;
+    public static final double kPivotAccelArmDegPerSec2 = 600;
 
-    // Convert to what MaxMotion appears to want (MOTOR units)
-    public static final double kPivotCruiseVelocity =
-    kPivotCruiseArmDegPerSec / kPivotDegPerSecPerMotorRPM;  // ≈ 3085 motor RPM
-    
-    public static final double kPivotMaxAccel =
-    kPivotAccelArmDegPerSec2 / kPivotDegPerSecPerMotorRPM;  // ≈ 7938 motor RPM per sec (approx)
+    public static final double kPivotCruiseVelocity = kPivotCruiseArmDegPerSec / kPivotDegPerSecPerMotorRPM; 
+    public static final double kPivotMaxAccel = kPivotAccelArmDegPerSec2 / kPivotDegPerSecPerMotorRPM; 
     
   }
+
   
   public static final class LEDConstants {
     

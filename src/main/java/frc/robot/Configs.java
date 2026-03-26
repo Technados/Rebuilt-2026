@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.FeedbackSensor;
 //import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -88,15 +89,15 @@ public final class Configs {
       intakeConfig.inverted(false).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
 
       // Pivot Configs
-      pivotConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
+      pivotConfig.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(30);
 
       pivotConfig.encoder.positionConversionFactor(IntakeConstants.kPivotDegPerMotorRev);   // deg per motor rev;
       pivotConfig.encoder.velocityConversionFactor(IntakeConstants.kPivotDegPerSecPerMotorRPM); // deg/sec per motor RPM
 
       pivotConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pid(IntakeConstants.kPivotP, IntakeConstants.kPivotI, IntakeConstants.kPivotD)
-        .outputRange(-0.35, 0.35);
+        .pid(IntakeConstants.kPivotP, IntakeConstants.kPivotI, IntakeConstants.kPivotD, ClosedLoopSlot.kSlot0)
+        .outputRange(-0.35, 0.35, ClosedLoopSlot.kSlot0);
 
       pivotConfig.closedLoop.maxMotion
         .cruiseVelocity(IntakeConstants.kPivotCruiseVelocity)

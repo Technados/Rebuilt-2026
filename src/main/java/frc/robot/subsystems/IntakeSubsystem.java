@@ -101,6 +101,28 @@ public class IntakeSubsystem extends SubsystemBase {
 
   /*----------Getters----------*/
   
+  public double getPivotAngleDeg() {
+    return pivotEncoder.getPosition();
+  }
+
+  public double getPivotVelocityDegPerSec() {
+    return pivotEncoder.getVelocity();
+  }
+
+  public double getPivotCurrentAmps() {
+    return pivotMotor.getOutputCurrent();
+  }
+
+  public boolean pivotLikelyDeadheaded() {
+    double posErr = Math.abs(pivotTargetDeg - getPivotAngleDeg());
+    double vel = Math.abs(getPivotVelocityDegPerSec());
+    double current = getPivotCurrentAmps();
+
+    return posErr > IntakeConstants.kPivotDeadheadPosErrDeg
+        && vel < IntakeConstants.kPivotDeadheadMinVelDegPerSec
+        && current > IntakeConstants.kPivotDeadheadCurrentAmps;
+  }
+
   /**
    * Returns if the pivot is at the target postion.
    * @return Returns true if the pivot's position error and velocity are within the tolerance defined in the constants.
@@ -125,19 +147,22 @@ public class IntakeSubsystem extends SubsystemBase {
    * Sets the pivot's postion to the target position.
    * @param targetDeg The pivot's target position in degrees.
    */
-  public void setPivotTargetDeg(double targetDeg) { // Sets the pivot target
-    // Clamp to your known safe range
+  public void setPivotTargetDeg(double targetDeg) {
+    // Clamp to known safe range
     targetDeg = Math.max(0.0, Math.min(100.0, targetDeg));
-    
-    // Require zeroing first (until limit switch exists)
+
+    // Require zeroing first
     if (!pivotZeroed) return;
-    
+
     pivotTargetDeg = targetDeg;
+
+    // Plain position control, not MAXMotion
     pivotController.setSetpoint(
       pivotTargetDeg,
-      ControlType.kMAXMotionPositionControl
-    );
-  }
+      ControlType.kPosition,
+      com.revrobotics.spark.ClosedLoopSlot.kSlot0
+  );
+}
 
   public void zeroOnLimitPressed() {
     if (!zeroSwitch.get()) {
@@ -201,16 +226,24 @@ public class IntakeSubsystem extends SubsystemBase {
    * @return Command to move the pivot motor to the target position.
    */
   public Command pivotToDegCommand(double targetDeg) {
-    return this.runOnce(() -> {
-      setPivotTargetDeg(targetDeg);
-      if (targetDeg == 0) {
-        pivotIdlePower = IntakeConstants.kPivotIdleInPower;
-      } else {
-        pivotIdlePower = IntakeConstants.kPivotIdleOutPower;
-      }
-      })
-      .andThen(Commands.waitUntil(this::pivotAtTarget));
+    return Commands.sequence(
+      this.runOnce(() -> {
+        setPivotTargetDeg(targetDeg);
+        if (targetDeg == 0) {
+          pivotIdlePower = IntakeConstants.kPivotIdleInPower;
+        } else {
+          pivotIdlePower = IntakeConstants.kPivotIdleOutPower;
+        }
+      }),
+      Commands.waitUntil(this::pivotAtTarget)
+    );
   }
+
+  private Command waitForPivotOrDeadhead(double timeoutSec) {
+    return Commands.waitUntil(() -> pivotAtTarget() || pivotLikelyDeadheaded())
+        .withTimeout(timeoutSec);
+  }
+
   
   /**
    * @return Command to move pivot to 0 degrees.
@@ -231,15 +264,23 @@ public class IntakeSubsystem extends SubsystemBase {
    * @return Command to run pivotAgitate, moves pivot to 0 degrees when the command ends.
    */
   public Command pivotAgitateCommand(BooleanSupplier ready) {
-    return Commands.sequence(
+     return Commands.sequence(
       runIntakeAgitateCommand(),
-      pivotToDegCommand(80.0),
-      pivotToDegCommand(100.0)
+
+      Commands.runOnce(() -> setPivotTargetDeg(IntakeConstants.kPivotAgitateJabDeg)),
+      waitForPivotOrDeadhead(IntakeConstants.kPivotAgitateDownTimeoutSec),
+
+      Commands.waitSeconds(IntakeConstants.kPivotAgitatePauseSec),
+
+      Commands.runOnce(() -> setPivotTargetDeg(IntakeConstants.kPivotAgitateHomeDeg)),
+      waitForPivotOrDeadhead(IntakeConstants.kPivotAgitateUpTimeoutSec),
+
+      Commands.waitSeconds(IntakeConstants.kPivotAgitatePauseSec)
     )
       .onlyIf(ready)
       .repeatedly()
       .finallyDo(() -> {
-        setPivotTargetDeg(100.0);
+        setPivotTargetDeg(IntakeConstants.kPivotAgitateHomeDeg);
         intakeMotor.set(0.0);
       });
   }
@@ -274,6 +315,8 @@ public class IntakeSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Intake/Pivot Zeroed", pivotZeroed);
     SmartDashboard.putNumber("Intake/Pivot Encoder Vel (degPerSec?)", pivotEncoder.getVelocity());
     SmartDashboard.putBoolean("Intake/Pivot At Target", pivotAtTarget());
+
+    SmartDashboard.putNumber("Intake/Pivot Power", pivotMotor.getAppliedOutput());
 
     SmartDashboard.putBoolean("Intake/Limit Pressed", zeroSwitch.get());
   }

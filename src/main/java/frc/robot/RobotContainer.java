@@ -185,9 +185,9 @@ public class RobotContainer {
       )
     );
 
-    m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.idleShooterCommand());
+    //m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.idleShooterCommand());
 
-    m_intakeSubsystem.setDefaultCommand(m_intakeSubsystem.pivotIdleCommand());
+    //m_intakeSubsystem.setDefaultCommand(m_intakeSubsystem.pivotIdleCommand());
 
     // Pathplanner Commands
     NamedCommands.registerCommand(
@@ -275,10 +275,10 @@ public class RobotContainer {
     m_driverController.a().onTrue(m_intakeSubsystem.pivotOutCommand());
 
     // Left on D-Pad -> Jog pivot up
-    m_driverController.povLeft().whileTrue(m_intakeSubsystem.pivotJogCommand(0.1));
+    m_driverController.povLeft().whileTrue(m_intakeSubsystem.pivotJogCommand(0.35));
     
     // Right on D-Pad -> Jog pivot down
-    m_driverController.povRight().whileTrue(m_intakeSubsystem.pivotJogCommand(-0.1));
+    m_driverController.povRight().whileTrue(m_intakeSubsystem.pivotJogCommand(-0.35));
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
     
