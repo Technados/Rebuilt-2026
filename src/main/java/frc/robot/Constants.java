@@ -108,7 +108,7 @@ public final class Constants {
     public static final double kMaxSpeedMetersPerSecond = 5;
     public static final double kMaxAngularSpeed = 2.0 * Math.PI; // radians per second
     public static final double kSlowSpeedFactor = 0.20; // Slow mode speed factor (20% of normal speed)
-    public static final double kTraverseSpeedFactor = 0.75;
+    public static final double kTraverseSpeedFactor = 0.65;
 
     // Chassis configuration
     public static final double kTrackWidth 
@@ -181,7 +181,7 @@ public final class Constants {
     public static final double kPivotIdleOutPower = 0.03;
 
     public static final double kPivotAgitateHomeDeg = 100.0;
-    public static final double kPivotAgitateJabDeg = 90.0;
+    public static final double kPivotAgitateJabDeg = 85.0;
 
     // wait values
     public static final double kPivotAgitateDownTimeoutSec = 0.10;
