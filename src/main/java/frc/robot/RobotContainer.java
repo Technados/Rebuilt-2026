@@ -205,6 +205,15 @@ public class RobotContainer {
     NamedCommands.registerCommand("Pivot-In", m_intakeSubsystem.pivotInCommand());
     NamedCommands.registerCommand("Pivot-Out", m_intakeSubsystem.pivotOutCommand());
 
+    NamedCommands.registerCommand("Shoot-Close", 
+      new ParallelCommandGroup(
+        m_shooterSubsystem.holdVelocityCommand(2770),
+        m_hoodSubsystem.holdPositionCommand(.23),
+        m_feederSubsystem.feedWhen(() -> m_shooterSubsystem.shooterSafeToFeed()),
+        new WaitCommand(1)
+          .andThen(m_intakeSubsystem.pivotAgitateCommand(readySupplier))
+      )
+    ); // Test positions/velocity later
 
     NamedCommands.registerCommand("Shoot", 
       new ParallelCommandGroup(
