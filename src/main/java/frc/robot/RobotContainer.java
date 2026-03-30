@@ -226,6 +226,7 @@ public class RobotContainer {
 
     // register auto options to the shuffleboard 
     autoChooser.addOption("RT-O", "RT-O");
+    autoChooser.addOption("RT-HC", "RT-HC");
     autoChooser.addOption("L-SAFE", "L-SAFE");
     autoChooser.addOption("C-SAFE", "C-SAFE");
     autoChooser.addOption("R-SAFE", "R-SAFE");

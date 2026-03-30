@@ -13,6 +13,12 @@
         {
           "type": "path",
           "data": {
+            "pathName": "Spin"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
             "pathName": "RB-C"
           }
         },
