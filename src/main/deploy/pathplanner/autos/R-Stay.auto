@@ -17,7 +17,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Stay"
+                  "pathName": "R-Stay"
                 }
               },
               {
@@ -46,6 +46,6 @@
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Right-Trench",
   "choreoAuto": false
 }

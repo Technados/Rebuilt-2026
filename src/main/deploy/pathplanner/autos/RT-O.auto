@@ -51,6 +51,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Right",
+  "folder": "Right-Trench",
   "choreoAuto": false
 }

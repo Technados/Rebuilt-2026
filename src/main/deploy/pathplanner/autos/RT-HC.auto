@@ -17,47 +17,40 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RB-D"
+                  "pathName": "RT-O"
                 }
               },
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Pivot-Out"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Intake"
-                      }
-                    }
-                  ]
+                  "name": "Pivot-Out"
                 }
               }
             ]
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "D-HL"
+            "pathName": "O-S"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Shoot-Close"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Right",
+  "folder": "Right-Trench",
   "choreoAuto": false
 }
