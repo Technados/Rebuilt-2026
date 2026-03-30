@@ -112,10 +112,20 @@ public class VisionSubsystem extends SubsystemBase {
     String name,
     double robotYawDeg,
     double robotYawRateDegPerSec,
+    double robotPitchDeg,
+    double robotRollDeg,
     boolean recoveryMode) {
 
         // Set current robot orientation for MegaTag2
-        LimelightHelpers.SetRobotOrientation(name, robotYawDeg, robotYawRateDegPerSec, 0, 0, 0, 0);
+        LimelightHelpers.SetRobotOrientation(
+            name, 
+            robotYawDeg, 
+            robotYawRateDegPerSec, 
+            robotPitchDeg, 
+            0, 
+            robotRollDeg, 
+            0
+        );
 
         LimelightHelpers.PoseEstimate mt2 =
             LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);

@@ -514,6 +514,10 @@ public class DriveSubsystem extends SubsystemBase {
     return m_gyro.getPitch();
   }
 
+  public double getGyroRoll() {
+    return m_gyro.getRoll();
+  }
+
   /**
    * Returns the turn rate of the robot.
    *

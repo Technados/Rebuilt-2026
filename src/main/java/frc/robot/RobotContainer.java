@@ -120,6 +120,8 @@ public class RobotContainer {
         () -> {
           double yawDeg = m_robotDrive.getGyroRotation().getDegrees();
           double yawRateDegPerSec = m_robotDrive.getTurnRate();
+          double pitchDeg = m_robotDrive.getGyroPitch();
+          double rollDeg = m_robotDrive.getGyroRoll();
 
           // Hold DRIVER X to aggressively relocalize right before scoring/passing
           boolean recoveryMode = 
@@ -162,7 +164,13 @@ public class RobotContainer {
 
           for (String llname : llnames) {
             m_visionSubsystem
-              .getVisionMeasurementMT2(llname, yawDeg, yawRateDegPerSec, preciseMode)
+              .getVisionMeasurementMT2(
+                llname, 
+                yawDeg, 
+                yawRateDegPerSec, 
+                pitchDeg,
+                rollDeg,
+                preciseMode)
               .ifPresent(m -> {
                 double poseJump =
                   m.getPose().getTranslation().getDistance(
@@ -376,6 +384,12 @@ public class RobotContainer {
           .alongWith(m_robotDrive.setXCommand())
       );
 
+    m_operatorController.a()
+      .whileTrue(
+        m_shooterSubsystem.holdVelocityCommand(4000)
+          .alongWith(m_hoodSubsystem.holdPositionCommand(.68))
+        );
+
     // Operator Y -> Manual fallback fire (feed + pivot agitate)
     m_operatorController.y()
       .whileTrue(
@@ -390,12 +404,9 @@ public class RobotContainer {
 
     m_operatorController.leftBumper()
       .whileTrue(
-        m_robotDrive.resetOdometryCommand(FieldConstants.BLUE_TEST_POSE)
-      );
-
-    m_operatorController.rightBumper()
-      .whileTrue(
-        m_robotDrive.resetOdometryCommand(FieldConstants.RED_TEST_POSE)
+        m_robotDrive.resetOdometryCommand(
+          FieldConstants.getTestPose()
+        )
       );
 
   }

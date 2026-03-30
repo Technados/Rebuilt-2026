@@ -79,12 +79,9 @@ public final class FieldConstants {
         return (alliance == DriverStation.Alliance.Blue) ? BLUE_RIGHT_FIELD_TARGET : RED_RIGHT_FIELD_TARGET;
     }
 
-    public static Pose2d getRedTestPose() {
-        return RED_TEST_POSE;
-    }
-
-    public static Pose2d getBlueTestPose() {
-        return BLUE_TEST_POSE;
+    public static Pose2d getTestPose() {
+        var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue);
+        return (alliance == DriverStation.Alliance.Blue) ? BLUE_TEST_POSE : RED_TEST_POSE;
     }
 
     public static double getHubXMin() {
