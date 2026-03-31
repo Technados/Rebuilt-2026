@@ -126,7 +126,7 @@ public class RobotContainer {
           // Hold DRIVER X to aggressively relocalize right before scoring/passing
           boolean recoveryMode = 
             m_driverController.x().getAsBoolean() ||
-            m_driverController.leftTrigger().getAsBoolean();
+            m_operatorController.leftTrigger().getAsBoolean();
           
           boolean bumpMode = 
             Math.abs(m_robotDrive.getGyroPitch()) > VisionConstants.kPitchToleranceDeg;
@@ -149,11 +149,9 @@ public class RobotContainer {
           // In recovery mode, use FRONT limelight only.
           // This is safer for tomorrow because scoring is front-facing and tag-rich.
           String[] llnames =
-            recoveryMode
-              ? new String[] {Constants.VisionConstants.kFrontLimelightName}
-              : bumpMode 
-                ? new String[] {m_visionSubsystem.getLimelightWithMostTags()}
-                : new String[] {
+            preciseMode
+              ? new String[] {m_visionSubsystem.getLimelightWithMostTags()}
+              : new String[] {
                   Constants.VisionConstants.kFrontLimelightName,
                   Constants.VisionConstants.kBackLimelightName
                 };
@@ -371,7 +369,7 @@ public class RobotContainer {
       .whileTrue(
         m_feederSubsystem.feedWhen(readySupplier)
           .alongWith(
-            new WaitCommand(1)
+            new WaitCommand(.25)
               .andThen(m_intakeSubsystem.pivotAgitateCommand(readySupplier))
           )
       );

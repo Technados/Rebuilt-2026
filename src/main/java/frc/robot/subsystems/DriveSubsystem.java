@@ -155,8 +155,8 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
 
     // Add gyro info to dashboard
-    SmartDashboard.putNumber("Gyro", getHeading()); // returns the heading of the robot and sends to dashboard
-    SmartDashboard.putBoolean("Gyro Online", m_gyro.isConnected());
+    SmartDashboard.putNumber("Gyro/Gyro Rot", getHeading()); // returns the heading of the robot and sends to dashboard
+    SmartDashboard.putBoolean("Gyro/Gyro Online", m_gyro.isConnected());
 
     var hubSupplier = (Supplier<Translation2d>) FieldConstants::getAllianceHub;
     var leftFieldTargetSupplier = 
@@ -171,7 +171,8 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Right Point Distance",
       getPose().getTranslation().getDistance(rightFieldTargetSupplier.get()));
 
-    SmartDashboard.putNumber("Gyro Pitch", getGyroPitch());
+    SmartDashboard.putNumber("Gyro/Pitch", getGyroPitch());
+    SmartDashboard.putNumber("Gyro/Roll", getGyroRoll());
 
     // Flash LEDs red if gyro is offline
     if (!m_gyro.isConnected()) {

@@ -53,16 +53,23 @@ public class VisionSubsystem extends SubsystemBase {
         String llnames = 
             getTagCount(VisionConstants.kFrontLimelightName) > getTagCount(VisionConstants.kBackLimelightName)
             ? VisionConstants.kFrontLimelightName
-            : VisionConstants.kBackLimelightName;
+            : getTagCount(VisionConstants.kFrontLimelightName) > getTagCount(VisionConstants.kBackLimelightName)
+                ? VisionConstants.kFrontLimelightName
+                : VisionConstants.kBackLimelightName;
 
         return llnames;
     }
 
-    public boolean rejectVisionMeasurement(LimelightHelpers.PoseEstimate mt2) {
+    public boolean rejectVisionMeasurement(LimelightHelpers.PoseEstimate mt2, boolean preciseMode) {
+        boolean tagCountValid =
+            preciseMode
+                ? mt2.tagCount < 2
+                : mt2.tagCount <= 0;
+
         boolean rejectPose =
             // Check if measurement is valid
             mt2 == null ||
-            mt2.tagCount < 2 ||
+            tagCountValid ||
 
             // Check if measurement is outside the field
             mt2.pose.getX() < (0 + ModuleConstants.kBotCenterOffsetMeters) - VisionConstants.kWithinFieldToleranceMeters ||
@@ -130,7 +137,7 @@ public class VisionSubsystem extends SubsystemBase {
         LimelightHelpers.PoseEstimate mt2 =
             LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
 
-        if (rejectVisionMeasurement(mt2)) {
+        if (rejectVisionMeasurement(mt2, recoveryMode)) {
             return Optional.empty();
         }
 
