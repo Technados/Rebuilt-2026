@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.874579172610556,
-        "y": 2.398259629101284
+        "x": 3.565,
+        "y": 2.974
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.5862455420827386,
-        "y": 3.3708288754160707
+        "x": 4.276666369472183,
+        "y": 3.946569246314787
       },
       "isLocked": false,
       "linkedName": "Hub Right"
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.5,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,
