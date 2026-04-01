@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 3.560328102710413,
-        "y": 4.028530670470756
+        "y": 4.041
       },
       "prevControl": null,
       "nextControl": {
         "x": 3.042943224729848,
-        "y": 4.033126558375225
+        "y": 4.04559588790447
       },
       "isLocked": false,
       "linkedName": "Hub Center"

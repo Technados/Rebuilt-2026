@@ -17,9 +17,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "race",
           "data": {
-            "pathName": "RB-C"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RB-C"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Hood-To-Start"
+                }
+              }
+            ]
           }
         },
         {
@@ -41,7 +54,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake"
+                  "name": "Intake-2.5"
                 }
               }
             ]
@@ -63,6 +76,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Right-Trench",
+  "folder": "Right",
   "choreoAuto": false
 }

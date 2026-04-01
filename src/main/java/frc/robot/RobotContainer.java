@@ -191,15 +191,19 @@ public class RobotContainer {
       )
     );
 
-    //m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.idleShooterCommand());
-
-    //m_intakeSubsystem.setDefaultCommand(m_intakeSubsystem.pivotIdleCommand());
+    m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.idleShooterCommand());
 
     // Pathplanner Commands
     NamedCommands.registerCommand(
-      "Intake", 
+      "Intake-2.5", 
       m_intakeSubsystem.runIntakeCommand()
         .withTimeout(2.5)
+    );
+
+    NamedCommands.registerCommand(
+      "Intake-5", 
+      m_intakeSubsystem.runIntakeCommand()
+        .withTimeout(5)
     );
 
     NamedCommands.registerCommand(
@@ -208,22 +212,14 @@ public class RobotContainer {
         .withTimeout(.25) 
     );
 
+    NamedCommands.registerCommand("Hood-To-Start", m_hoodSubsystem.holdPositionCommand(.28));
+
     NamedCommands.registerCommand("Pivot-In", m_intakeSubsystem.pivotInCommand());
     NamedCommands.registerCommand("Pivot-Out", m_intakeSubsystem.pivotOutCommand());
 
-    NamedCommands.registerCommand("Shoot-Close", 
-      new ParallelCommandGroup(
-        m_shooterSubsystem.holdVelocityCommand(2770),
-        m_hoodSubsystem.holdPositionCommand(.23),
-        m_feederSubsystem.feedWhen(() -> m_shooterSubsystem.shooterSafeToFeed()),
-        new WaitCommand(1)
-          .andThen(m_intakeSubsystem.pivotAgitateCommand(readySupplier))
-      )
-    ); // Test positions/velocity later
-
     NamedCommands.registerCommand("Shoot", 
       new ParallelCommandGroup(
-        m_shooterSubsystem.holdVelocityCommand(3000),
+        m_shooterSubsystem.holdVelocityCommand(2920),
         m_feederSubsystem.feedWhen(() -> m_shooterSubsystem.shooterSafeToFeed()),
         new WaitCommand(1)
           .andThen(m_intakeSubsystem.pivotAgitateCommand(readySupplier))
@@ -231,20 +227,17 @@ public class RobotContainer {
     ); // Test positions/velocity later
 
     // register auto options to the shuffleboard 
-    autoChooser.addOption("RT-O", "RT-O");
-    autoChooser.addOption("RT-HC", "RT-HC");
-    autoChooser.addOption("L-SAFE", "L-SAFE");
-    autoChooser.addOption("C-SAFE", "C-SAFE");
-    autoChooser.addOption("R-SAFE", "R-SAFE");
-    autoChooser.addOption("RT-Everything", "RT-Everything");
-    autoChooser.addOption("RB-C", "RB-C");
-    autoChooser.addOption("LT-D", "LT-D");
-    autoChooser.addOption("LT-C", "LT-C");
-    autoChooser.addOption("HC-O", "HC-O");
-    autoChooser.addOption("HC-D", "HC-D");
-    autoChooser.addOption("B-Stay", "B-Stay");
-    autoChooser.addOption("Command-Test", "Command-Test");
-    autoChooser.addOption("1-Meter", "1-Meter");
+      autoChooser.addOption("R-SAFE", "R-SAFE");
+      autoChooser.addOption("RB-C", "RB-C");
+      autoChooser.addOption("Full-R", "Full-R");
+      autoChooser.addOption("C-SAFE", "C-SAFE");
+      autoChooser.addOption("HC-CL", "HC-CL");
+      autoChooser.addOption("HC-CR", "HC-CR");
+      autoChooser.addOption("Full-HR", "Full-HR");
+      autoChooser.addOption("Full-HL", "Full-HL");
+      autoChooser.addOption("L-SAFE", "L-SAFE");
+      autoChooser.addOption("LB-C", "LB-C");
+      autoChooser.addOption("Full-L", "Full-L");
 
     // Creating a new shuffleboard tab and adding the autoChooser
     Shuffleboard.getTab("PathPlanner Autonomous").add(autoChooser).withWidget(BuiltInWidgets.kComboBoxChooser);

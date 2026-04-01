@@ -11,19 +11,31 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "HC-CR"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Pivot-Out"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "HC-O"
+                  "pathName": "CR-CL"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Pivot-Out"
+                  "name": "Intake-2.5"
                 }
               }
             ]
@@ -32,7 +44,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "O-HR"
+            "pathName": "Full Intake-HL"
           }
         },
         {

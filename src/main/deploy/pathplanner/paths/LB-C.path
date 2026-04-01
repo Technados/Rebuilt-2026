@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.000242510699001,
-        "y": 5.82700427960057
+        "x": 3.25,
+        "y": 5.557
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.798716119828815,
-        "y": 5.852881597717547
+        "x": 5.048473609129815,
+        "y": 5.582877318116977
       },
       "isLocked": false,
       "linkedName": "Left Bump"
@@ -33,11 +33,11 @@
     {
       "anchor": {
         "x": 7.75,
-        "y": 7.198502139800285
+        "y": 7.5
       },
       "prevControl": {
         "x": 7.433702116081512,
-        "y": 6.924031146273122
+        "y": 7.225529006472837
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,7 +47,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 1,
-      "rotationDegrees": 0.0
+      "rotationDegrees": 135.0
     }
   ],
   "constraintZones": [],
@@ -66,10 +66,10 @@
     "rotation": -90.0
   },
   "reversed": false,
-  "folder": "Left-Trench",
+  "folder": "Left",
   "idealStartingState": {
     "velocity": 0.0,
-    "rotation": 0.0
+    "rotation": 135.0
   },
   "useDefaultConstraints": true
 }

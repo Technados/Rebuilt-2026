@@ -3,16 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.65,
-        "y": 0.65
+        "x": 7.75,
+        "y": 0.75
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.0733124876786748,
-        "y": 1.5858964328705882
+        "x": 6.921228448275863,
+        "y": 1.3765517241379317
       },
       "isLocked": false,
-      "linkedName": "Outpost"
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.876831325301204,
+        "y": 2.4176987951807236
+      },
+      "prevControl": {
+        "x": 6.126743900366533,
+        "y": 2.411087832753318
+      },
+      "nextControl": {
+        "x": 5.369564936317092,
+        "y": 2.4311175638736677
+      },
+      "isLocked": false,
+      "linkedName": null
     },
     {
       "anchor": {
@@ -20,15 +36,20 @@
         "y": 2.974
       },
       "prevControl": {
-        "x": 3.0121121326210347,
-        "y": 2.5408519681646196
+        "x": 3.7663221968053278,
+        "y": 2.8257793095634867
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Hub Right"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 45.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -45,10 +66,10 @@
     "rotation": 45.0
   },
   "reversed": false,
-  "folder": "Right-Trench",
+  "folder": "Right",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }

@@ -17,6 +17,18 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "Left Bump"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CL"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "Pivot-Out"
@@ -35,7 +47,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake"
+                  "name": "Intake-2.5"
                 }
               }
             ]

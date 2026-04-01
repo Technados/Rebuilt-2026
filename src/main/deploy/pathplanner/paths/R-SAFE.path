@@ -12,7 +12,7 @@
         "y": 0.3961424759168903
       },
       "isLocked": false,
-      "linkedName": "Right Trench"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -45,7 +45,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Right-Trench",
+  "folder": "Right",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0

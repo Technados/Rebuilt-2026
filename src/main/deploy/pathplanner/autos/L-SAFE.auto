@@ -33,6 +33,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Left-Trench",
+  "folder": "Left",
   "choreoAuto": false
 }

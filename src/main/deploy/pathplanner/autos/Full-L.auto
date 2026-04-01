@@ -11,22 +11,21 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "R-Stay"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Pivot-Out"
-                }
-              }
-            ]
+            "pathName": "Spin-Left"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LB-C"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Pivot-Out"
           }
         },
         {
@@ -34,18 +33,36 @@
           "data": {
             "commands": [
               {
+                "type": "path",
+                "data": {
+                  "pathName": "CL-CR"
+                }
+              },
+              {
                 "type": "named",
                 "data": {
-                  "name": "Shoot"
+                  "name": "Intake-2.5"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Full Intake-HR"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Right-Trench",
+  "folder": "Left",
   "choreoAuto": false
 }

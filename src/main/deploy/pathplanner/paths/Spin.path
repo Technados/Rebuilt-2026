@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.512078651685393,
-        "y": 2.5369213483146065
+        "x": 3.251136797257314,
+        "y": 2.4761860057812033
       },
       "isLocked": false,
       "linkedName": "Right Bump"
     },
     {
       "anchor": {
-        "x": 2.0,
+        "x": 3.25,
         "y": 2.5
       },
       "prevControl": {
-        "x": 2.248423883454373,
-        "y": 2.5280280953589096
+        "x": 3.4995918818315017,
+        "y": 2.485720906057819
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Spin"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -45,7 +45,7 @@
     "rotation": -135.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Right",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0
