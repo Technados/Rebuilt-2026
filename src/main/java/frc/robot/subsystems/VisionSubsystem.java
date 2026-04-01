@@ -51,7 +51,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     public String getLimelightWithMostTags() {
         String llnames = 
-            getTagCount(VisionConstants.kFrontLimelightName) > getTagCount(VisionConstants.kBackLimelightName)
+            getTagCount(VisionConstants.kFrontLimelightName) == getTagCount(VisionConstants.kBackLimelightName)
             ? VisionConstants.kFrontLimelightName
             : getTagCount(VisionConstants.kFrontLimelightName) > getTagCount(VisionConstants.kBackLimelightName)
                 ? VisionConstants.kFrontLimelightName
