@@ -49,6 +49,18 @@ public class VisionSubsystem extends SubsystemBase {
         return LimelightHelpers.getLatency_Capture(name) + LimelightHelpers.getLatency_Pipeline(name);
     }
 
+    public String[] getLimelightNames(boolean preciseMode) {
+        String[] llnames =
+            preciseMode
+              ? new String[] {getLimelightWithMostTags()}
+              : new String[] {
+                  Constants.VisionConstants.kFrontLimelightName,
+                  Constants.VisionConstants.kBackLimelightName
+                };
+
+        return llnames;
+    }
+
     public String getLimelightWithMostTags() {
         String llnames = 
             getTagCount(VisionConstants.kFrontLimelightName) == getTagCount(VisionConstants.kBackLimelightName)

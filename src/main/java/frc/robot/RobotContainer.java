@@ -13,6 +13,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -88,11 +90,17 @@ public class RobotContainer {
 
   private BooleanSupplier readySupplier;
 
+  private boolean llnamesLock = false;
+  private String[] llnames;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
     // Configure the button bindings
     configureButtonBindings();
+
+    llnames =
+      m_visionSubsystem.getLimelightNames(false);
 
     // Configure default commands
     m_robotDrive.setDefaultCommand(
@@ -102,8 +110,15 @@ public class RobotContainer {
           double y = -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband);
           double rot = -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband);
 
+          if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+            x = -x;
+            y = -y;
+          }
+
           boolean manualSlowMode = m_driverController.leftBumper().getAsBoolean();
           m_robotDrive.updateDriveSlowMode(manualSlowMode); // Auto/Manual slow mode
+
+
 
           if (m_robotDrive.isTraversalMode()) {
             m_robotDrive.driveTraversalAssist(x, y, true);
@@ -133,6 +148,7 @@ public class RobotContainer {
 
           SmartDashboard.putBoolean("Vision/RecoveryMode", recoveryMode);
           SmartDashboard.putBoolean("Vision/BumpMode", bumpMode);
+          SmartDashboard.putBoolean("Vision/LLNames Lock", llnamesLock);
           
           boolean preciseMode = recoveryMode || bumpMode;
 
@@ -148,13 +164,15 @@ public class RobotContainer {
 
           // In recovery mode, use FRONT limelight only.
           // This is safer for tomorrow because scoring is front-facing and tag-rich.
-          String[] llnames =
-            preciseMode
-              ? new String[] {m_visionSubsystem.getLimelightWithMostTags()}
-              : new String[] {
-                  Constants.VisionConstants.kFrontLimelightName,
-                  Constants.VisionConstants.kBackLimelightName
-                };
+          if (!llnamesLock) {
+            llnames = m_visionSubsystem.getLimelightNames(preciseMode);
+          }
+
+          if (preciseMode) {
+            llnamesLock = true;
+          } else {
+            llnamesLock = false;
+          }
 
           if (Math.abs(yawRateDegPerSec) > maxYawRate) {
             return;
@@ -336,7 +354,7 @@ public class RobotContainer {
           // Keep updating continuously while held
           m_robotDrive.aimAtCommand(leftFieldTargetSupplier)
             .alongWith(m_shooterSubsystem.holdVelocityCommand(rpmSupplier))
-            .alongWith(m_hoodSubsystem.holdPositionCommand(hoodSupplier))
+            .alongWith(m_hoodSubsystem.holdPositionCommand(.68))
       );
 
     m_operatorController.povLeft()
@@ -344,7 +362,7 @@ public class RobotContainer {
           // Keep updating continuously while held
           m_robotDrive.aimAtCommand(rightFieldTargetSupplier)
             .alongWith(m_shooterSubsystem.holdVelocityCommand(rpmSupplier))
-            .alongWith(m_hoodSubsystem.holdPositionCommand(hoodSupplier))
+            .alongWith(m_hoodSubsystem.holdPositionCommand(.68))
       );
 
     m_operatorController.povUp()
@@ -396,7 +414,14 @@ public class RobotContainer {
     m_operatorController.leftBumper()
       .whileTrue(
         m_robotDrive.resetOdometryCommand(
-          FieldConstants.getTestPose()
+          FieldConstants.BLUE_TEST_POSE
+        )
+      );
+
+    m_operatorController.rightBumper()
+      .whileTrue(
+        m_robotDrive.resetOdometryCommand(
+          FieldConstants.RED_TEST_POSE
         )
       );
 
