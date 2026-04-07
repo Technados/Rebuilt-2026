@@ -11,40 +11,22 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "HC-CR"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Pivot-Out"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "CR-CL"
+                  "pathName": "Copy of C-SAFE"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake-2.5"
+                  "name": "Pivot-Out"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Full Intake-HL"
           }
         },
         {
