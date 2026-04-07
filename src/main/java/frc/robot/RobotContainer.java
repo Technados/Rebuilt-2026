@@ -15,6 +15,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -27,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.shooting.ShotMap;
@@ -92,6 +94,9 @@ public class RobotContainer {
 
   private boolean llnamesLock = false;
   private String[] llnames;
+
+  // Timer
+  Timer autoTimer = new Timer();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -235,20 +240,31 @@ public class RobotContainer {
     NamedCommands.registerCommand("Pivot-In", m_intakeSubsystem.pivotInCommand());
     NamedCommands.registerCommand("Pivot-Out", m_intakeSubsystem.pivotOutCommand());
 
-    NamedCommands.registerCommand("Shoot", 
-      new ParallelCommandGroup(
-        m_shooterSubsystem.holdVelocityCommand(2920),
-        m_feederSubsystem.feedWhen(() -> m_shooterSubsystem.shooterSafeToFeed()),
-        new WaitCommand(1)
-          .andThen(m_intakeSubsystem.pivotAgitateCommand(readySupplier))
-      )
+    NamedCommands.registerCommand("Shoot",
+        m_shooterSubsystem.holdVelocityCommand(2920)
     ); // Test positions/velocity later
 
+    NamedCommands.registerCommand(
+      "Feed", 
+      new ParallelCommandGroup(
+        m_feederSubsystem.feedWhen(() -> m_shooterSubsystem.shooterSafeToFeed()),
+        new WaitCommand(.25)
+          .andThen(m_intakeSubsystem.pivotAgitateCommand(readySupplier))
+      ).until(() -> autoTimer.advanceIfElapsed(19.0))
+      .finallyDo(() ->
+        new InstantCommand( () ->
+        m_feederSubsystem.stop()
+      ))
+    );
+
+  
     // register auto options to the shuffleboard 
       autoChooser.addOption("R-SAFE", "R-SAFE");
+      autoChooser.addOption("RB-SAFE", "RB-SAFE");
       autoChooser.addOption("RB-C", "RB-C");
       autoChooser.addOption("Full-R", "Full-R");
       autoChooser.addOption("C-SAFE", "C-SAFE");
+      autoChooser.addOption("C-Shoot", "C-Shoot");
       autoChooser.addOption("HC-CL", "HC-CL");
       autoChooser.addOption("HC-CR", "HC-CR");
       autoChooser.addOption("Full-HR", "Full-HR");
@@ -354,7 +370,7 @@ public class RobotContainer {
           // Keep updating continuously while held
           m_robotDrive.aimAtCommand(leftFieldTargetSupplier)
             .alongWith(m_shooterSubsystem.holdVelocityCommand(rpmSupplier))
-            .alongWith(m_hoodSubsystem.holdPositionCommand(.68))
+            .alongWith(m_hoodSubsystem.holdPositionCommand(.3))
       );
 
     m_operatorController.povLeft()
@@ -362,7 +378,7 @@ public class RobotContainer {
           // Keep updating continuously while held
           m_robotDrive.aimAtCommand(rightFieldTargetSupplier)
             .alongWith(m_shooterSubsystem.holdVelocityCommand(rpmSupplier))
-            .alongWith(m_hoodSubsystem.holdPositionCommand(.68))
+            .alongWith(m_hoodSubsystem.holdPositionCommand(.3))
       );
 
     m_operatorController.povUp()
@@ -434,12 +450,16 @@ public class RobotContainer {
     SmartDashboard.putNumber("rpmSupplier", shotSupplier.get().rpm());
     SmartDashboard.putNumber("hoodSupplier", shotSupplier.get().hoodPos());
 
-    rpmSupplier = (java.util.function.DoubleSupplier) () -> shotSupplier.get().rpm();
-    hoodSupplier = (java.util.function.DoubleSupplier) () -> shotSupplier.get().hoodPos();
+    rpmSupplier = (DoubleSupplier) () -> shotSupplier.get().rpm();
+    hoodSupplier = (DoubleSupplier) () -> shotSupplier.get().hoodPos();
 
-    readySupplier = (java.util.function.BooleanSupplier) () ->
+    readySupplier = (BooleanSupplier) () ->
       m_shooterSubsystem.shooterSafeToFeed()
       && m_hoodSubsystem.atTarget();
+  }
+
+  public void stopFeederAutonmous() {
+    m_feederSubsystem.stop();
   }
 
   /**
