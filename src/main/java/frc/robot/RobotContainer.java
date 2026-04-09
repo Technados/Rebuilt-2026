@@ -153,9 +153,12 @@ public class RobotContainer {
 
           SmartDashboard.putBoolean("Vision/RecoveryMode", recoveryMode);
           SmartDashboard.putBoolean("Vision/BumpMode", bumpMode);
+          SmartDashboard.putBoolean("Vision/AutoAiming", autoAiming);
           SmartDashboard.putBoolean("Vision/LLNames Lock", llnamesLock);
           
           boolean preciseMode = recoveryMode || bumpMode || autoAiming;
+
+          SmartDashboard.putBoolean("Vision/PreciseMode", preciseMode);
 
           double maxYawRate =
             preciseMode
@@ -173,11 +176,7 @@ public class RobotContainer {
             llnames = m_visionSubsystem.getLimelightNames(preciseMode);
           }
 
-          if (preciseMode) {
-            llnamesLock = true;
-          } else {
-            llnamesLock = false;
-          }
+          llnamesLock = preciseMode;
 
           if (Math.abs(yawRateDegPerSec) > maxYawRate) {
             return;
