@@ -28,9 +28,9 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.distance.DistanceMeasurement;
 import frc.robot.shooting.ShotMap;
 import frc.robot.shooting.ShotMapData;
 import frc.robot.shooting.ShotParameters;
@@ -333,25 +333,15 @@ public class RobotContainer {
     passLeft = m_operatorController.povRight().getAsBoolean();
     passRight = m_operatorController.povLeft().getAsBoolean();
     
-    var hubSupplier = (Supplier<Translation2d>) FieldConstants::getAllianceHub;
+    DistanceMeasurement distanceMeasurement = this.getDistanceMeasurements();
 
-    var distanceSupplier = (DoubleSupplier) () ->
-      m_robotDrive.getPose().getTranslation().getDistance(hubSupplier.get());
-
-    var leftFieldTargetSupplier = 
-      (Supplier<Translation2d>) FieldConstants::getLeftFieldTarget;
-
-    var rightFieldTargetSupplier = 
-      (Supplier<Translation2d>) FieldConstants::getRightFieldTarget;
+    var distanceSupplier = distanceMeasurement.getHubDistanceSupplier();
 
     if (passLeft) {
-      distanceSupplier = (DoubleSupplier) () ->
-        m_robotDrive.getPose().getTranslation().getDistance(leftFieldTargetSupplier.get());
+      distanceSupplier = distanceMeasurement.getLeftFieldDistanceSupplier();
 
     } else if (passRight) {
-      distanceSupplier = (DoubleSupplier) () ->
-        m_robotDrive.getPose().getTranslation().getDistance(rightFieldTargetSupplier.get());
-
+      distanceSupplier = distanceMeasurement.getRightFieldDistanceSupplier();
     }
 
     this.setShotSuppliers(distanceSupplier);
@@ -360,7 +350,7 @@ public class RobotContainer {
     m_operatorController.leftTrigger()
       .whileTrue(
           // Keep updating continuously while held
-          m_robotDrive.aimAtCommand(hubSupplier)
+          m_robotDrive.aimAtCommand(distanceMeasurement.getHubSupplier())
             .alongWith(m_shooterSubsystem.holdVelocityCommand(rpmSupplier))
             .alongWith(m_hoodSubsystem.holdPositionCommand(hoodSupplier))
       );
@@ -368,7 +358,7 @@ public class RobotContainer {
     m_operatorController.povRight()
       .whileTrue(
           // Keep updating continuously while held
-          m_robotDrive.aimAtCommand(leftFieldTargetSupplier)
+          m_robotDrive.aimAtCommand(distanceMeasurement.getLeftFieldTargetSupplier())
             .alongWith(m_shooterSubsystem.holdVelocityCommand(rpmSupplier))
             .alongWith(m_hoodSubsystem.holdPositionCommand(.3))
       );
@@ -376,7 +366,7 @@ public class RobotContainer {
     m_operatorController.povLeft()
       .whileTrue(
           // Keep updating continuously while held
-          m_robotDrive.aimAtCommand(rightFieldTargetSupplier)
+          m_robotDrive.aimAtCommand(distanceMeasurement.getRightFieldTargetSupplier())
             .alongWith(m_shooterSubsystem.holdVelocityCommand(rpmSupplier))
             .alongWith(m_hoodSubsystem.holdPositionCommand(.3))
       );
@@ -441,6 +431,37 @@ public class RobotContainer {
         )
       );
 
+  }
+
+  public DistanceMeasurement getDistanceMeasurements() {
+    // Targets
+    var hubSupplier = (Supplier<Translation2d>) FieldConstants::getAllianceHub;
+
+    var leftFieldTargetSupplier = 
+      (Supplier<Translation2d>) FieldConstants::getLeftFieldTarget;
+
+    var rightFieldTargetSupplier = 
+      (Supplier<Translation2d>) FieldConstants::getRightFieldTarget;
+
+    // Distances
+    var hubDistanceSupplier = (DoubleSupplier) () ->
+      m_robotDrive.getPose().getTranslation().getDistance(hubSupplier.get());
+
+    var leftFieldDistanceSupplier = (DoubleSupplier) () ->
+      m_robotDrive.getPose().getTranslation().getDistance(leftFieldTargetSupplier.get());
+
+    var rightFieldDistanceSupplier = (DoubleSupplier) () ->
+      m_robotDrive.getPose().getTranslation().getDistance(rightFieldTargetSupplier.get());
+
+    return new DistanceMeasurement(
+      hubSupplier,
+      leftFieldTargetSupplier,
+      rightFieldTargetSupplier,
+
+      hubDistanceSupplier, 
+      leftFieldDistanceSupplier, 
+      rightFieldDistanceSupplier
+    );
   }
 
   public void setShotSuppliers(DoubleSupplier distance) {
