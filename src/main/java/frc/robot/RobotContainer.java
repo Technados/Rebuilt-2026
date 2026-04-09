@@ -95,6 +95,8 @@ public class RobotContainer {
   private boolean llnamesLock = false;
   private String[] llnames;
 
+  private boolean autoAiming = false;
+
   // Timer
   Timer autoTimer = new Timer();
 
@@ -122,8 +124,6 @@ public class RobotContainer {
 
           boolean manualSlowMode = m_driverController.leftBumper().getAsBoolean();
           m_robotDrive.updateDriveSlowMode(manualSlowMode); // Auto/Manual slow mode
-
-
 
           if (m_robotDrive.isTraversalMode()) {
             m_robotDrive.driveTraversalAssist(x, y, true);
@@ -155,7 +155,7 @@ public class RobotContainer {
           SmartDashboard.putBoolean("Vision/BumpMode", bumpMode);
           SmartDashboard.putBoolean("Vision/LLNames Lock", llnamesLock);
           
-          boolean preciseMode = recoveryMode || bumpMode;
+          boolean preciseMode = recoveryMode || bumpMode || autoAiming;
 
           double maxYawRate =
             preciseMode
@@ -240,6 +240,25 @@ public class RobotContainer {
     NamedCommands.registerCommand("Pivot-In", m_intakeSubsystem.pivotInCommand());
     NamedCommands.registerCommand("Pivot-Out", m_intakeSubsystem.pivotOutCommand());
 
+    NamedCommands.registerCommand("Aim", 
+      new ParallelCommandGroup(
+        new InstantCommand(() ->
+          {autoAiming = true;}
+        ),
+        m_robotDrive.aimAtCommand(getDistanceMeasurements().getHubSupplier()),
+        new InstantCommand(() ->
+          this.setShotSuppliers(getDistanceMeasurements().getHubDistanceSupplier())
+        )
+      ).until(readySupplier)
+        .andThen(
+          new ParallelCommandGroup(
+            m_hoodSubsystem.holdPositionCommand(hoodSupplier),
+            m_robotDrive.setXCommand(),
+            m_shooterSubsystem.holdVelocityCommand(rpmSupplier)
+          )
+        )
+    );
+
     NamedCommands.registerCommand("Shoot",
         m_shooterSubsystem.holdVelocityCommand(2920)
     ); // Test positions/velocity later
@@ -257,7 +276,6 @@ public class RobotContainer {
       ))
     );
 
-  
     // register auto options to the shuffleboard 
       autoChooser.addOption("R-SAFE", "R-SAFE");
       autoChooser.addOption("RB-SAFE", "RB-SAFE");
