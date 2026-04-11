@@ -28,7 +28,6 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.shooting.ShotMap;
@@ -363,7 +362,10 @@ public class RobotContainer {
           m_robotDrive.aimAtCommand(hubSupplier)
             .alongWith(m_shooterSubsystem.holdVelocityCommand(rpmSupplier))
             .alongWith(m_hoodSubsystem.holdPositionCommand(hoodSupplier))
-      );
+            )
+            .onFalse(m_shooterSubsystem.holdLastVelocityForCommand(0.4)
+            );
+
 
     m_operatorController.povRight()
       .whileTrue(
@@ -406,13 +408,15 @@ public class RobotContainer {
       .whileTrue(
         m_shooterSubsystem.holdVelocityCommand(2770)
           .alongWith(m_hoodSubsystem.holdPositionCommand(0.23))
-          .alongWith(m_robotDrive.setXCommand())
+          .alongWith(m_robotDrive.setXCommand()))
+          .onFalse(m_shooterSubsystem.holdLastVelocityForCommand(0.4)
       );
 
     m_operatorController.a()
       .whileTrue(
         m_shooterSubsystem.holdVelocityCommand(4000)
-          .alongWith(m_hoodSubsystem.holdPositionCommand(.68))
+          .alongWith(m_hoodSubsystem.holdPositionCommand(.30)))
+          .onFalse(m_shooterSubsystem.holdLastVelocityForCommand(0.4)
         );
 
     // Operator Y -> Manual fallback fire (feed + pivot agitate)
