@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.Set;
 import java.util.function.DoubleSupplier;
 
 import com.revrobotics.PersistMode;
@@ -18,6 +19,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.ShooterConstants;
@@ -172,6 +174,7 @@ public class ShooterSubsystem extends SubsystemBase {
    */
   public void stopShooter() {
   shooterFeedLatched = false;
+  targetVelocity = 0.0;
   rightShooterMotor.set(0.0);
 }
   
@@ -205,6 +208,29 @@ public class ShooterSubsystem extends SubsystemBase {
       () -> stopShooter()
     );
   }
+
+  // grace period for shooter to keep running for 'time' if stopped unexpectedly (jam protect)
+  public Command holdLastVelocityForCommand(double seconds) {
+  return Commands.defer(
+    () -> {
+      double heldVelocity = targetVelocity;
+
+      return this.runEnd(
+        () -> {
+          if (heldVelocity > 1.0) {
+            shooterController.setSetpoint(
+              heldVelocity,
+              ControlType.kVelocity,
+              ClosedLoopSlot.kSlot0
+            );
+          }
+        },
+        this::stopShooter
+      ).withTimeout(seconds);
+    },
+    Set.of(this)
+  );
+}
 
   /*----------Periodic----------*/
 
