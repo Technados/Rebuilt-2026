@@ -95,12 +95,12 @@ public class FeederSubsystem extends SubsystemBase {
 
         if (ready) {
           setPower(1);
-        }
-      },
-      () -> {
-        this.stop();
+        } else {
+        stop();
       }
-    );
+    },
+    this::stop
+  );
   }
  
   /**
