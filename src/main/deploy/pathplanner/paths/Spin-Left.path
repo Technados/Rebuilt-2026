@@ -24,7 +24,7 @@
         "y": 5.544442146459212
       },
       "nextControl": null,
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": "Left Bump"
     }
   ],
