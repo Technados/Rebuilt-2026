@@ -127,9 +127,9 @@ public final class Configs {
       rightShooterConfig
       .inverted(true)
       .idleMode(IdleMode.kCoast)
-      .closedLoopRampRate(1.0)
-      .openLoopRampRate(1.0)
-      .smartCurrentLimit(40)
+      .closedLoopRampRate(0)
+      .openLoopRampRate(0)
+      .smartCurrentLimit(80)
       .voltageCompensation(12.0);
       
       rightShooterConfig.closedLoop
@@ -140,13 +140,23 @@ public final class Configs {
       rightShooterConfig.closedLoop.feedForward
       .kV(1.0 / VortexConstants.kFreeSpeedRpm);
       
-      // Left Shooter Configs
-      leftShooterConfig.apply(rightShooterConfig)
+      // Left Shooter Configs (mounted opposite, so invert relative to leader)
+      leftShooterConfig
+      .idleMode(IdleMode.kCoast)
+      .closedLoopRampRate(0)
+      .openLoopRampRate(0)
+      .smartCurrentLimit(80)
+      .voltageCompensation(12.0)
       .follow(ShooterConstants.kRightShooterMotorCanId, true);
-      
-      // Center Shooter Configs
-      centerShooterConfig.apply(leftShooterConfig)
-      .follow(ShooterConstants.kLeftShooterMotorCanId, true);
+
+      // Center Shooter Configs (mounted same direction as leader, so no relative invert)
+      centerShooterConfig
+      .idleMode(IdleMode.kCoast)
+      .closedLoopRampRate(0)
+      .openLoopRampRate(0)
+      .smartCurrentLimit(80)
+      .voltageCompensation(12.0)
+      .follow(ShooterConstants.kRightShooterMotorCanId, false);
       
     }
   }
