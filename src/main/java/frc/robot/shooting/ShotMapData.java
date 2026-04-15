@@ -15,11 +15,12 @@ public final class ShotMapData {
     // Replace with real measured data.
     public static final List<ShotMap.ShotPoint> ALLIANCE_ZONE_POINTS = List.of(
         new ShotMap.ShotPoint(1.17, 2300, 0.2),
-        new ShotMap.ShotPoint(1.5, 2500, 0.3),
-        new ShotMap.ShotPoint(2.05, 2750, 0.35),
-        new ShotMap.ShotPoint(2.5, 2900, 0.36),
-        new ShotMap.ShotPoint(3.5, 3050, 0.43),
-        new ShotMap.ShotPoint(4, 3300, 0.48)
+        new ShotMap.ShotPoint(1.5, 2500, 0.28),
+        new ShotMap.ShotPoint(2.05, 2750, 0.33),
+        new ShotMap.ShotPoint(2.5, 2900, 0.34),
+        new ShotMap.ShotPoint(3.5, 3050, 0.41),
+        new ShotMap.ShotPoint(4, 3300, 0.47),
+        new ShotMap.ShotPoint(5, 3600, 0.52)
     );
 
     public static ShotMap createAllianceZoneShotMap() {

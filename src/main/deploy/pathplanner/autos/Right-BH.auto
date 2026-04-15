@@ -1,0 +1,56 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Hopper-Deploy"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Hood-To-Start"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Pivot-Out"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right-BH"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Feed"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "New Autos",
+  "choreoAuto": false
+}

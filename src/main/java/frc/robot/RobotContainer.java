@@ -264,21 +264,25 @@ public class RobotContainer {
 
   
     // register auto options to the shuffleboard 
-      autoChooser.addOption("R-SAFE", "R-SAFE");
+      // autoChooser.addOption("R-SAFE", "R-SAFE");
       autoChooser.addOption("RB-SAFE", "RB-SAFE");
-      autoChooser.addOption("RB-C", "RB-C");
-      autoChooser.addOption("Full-R", "Full-R");
+      // autoChooser.addOption("RB-C", "RB-C");
+      // autoChooser.addOption("Full-R", "Full-R");
       autoChooser.addOption("C-SAFE", "C-SAFE");
       autoChooser.addOption("C-Shoot", "C-Shoot");
-      autoChooser.addOption("HC-CL", "HC-CL");
-      autoChooser.addOption("HC-CR", "HC-CR");
-      autoChooser.addOption("Full-HR", "Full-HR");
-      autoChooser.addOption("Full-HL", "Full-HL");
+      // autoChooser.addOption("HC-CL", "HC-CL");
+      // autoChooser.addOption("HC-CR", "HC-CR");
+      // autoChooser.addOption("Full-HR", "Full-HR");
+      // autoChooser.addOption("Full-HL", "Full-HL");
       autoChooser.addOption("L-SAFE", "L-SAFE");
-      autoChooser.addOption("LB-C", "LB-C");
-      autoChooser.addOption("Full-L", "Full-L");
-      autoChooser.addOption("Left Bump 2", "Left Bump 2");
-      autoChooser.addOption("Right Bump 2", "Right Bump 2");
+      // autoChooser.addOption("LB-C", "LB-C");
+      // autoChooser.addOption("Full-L", "Full-L");
+      autoChooser.addOption("Left-BH", "Left-BH");
+      autoChooser.addOption("Right-BH", "Right-BH");
+      autoChooser.addOption("Right-BF", "Right-BF");
+      autoChooser.addOption("Left-BF", "Left-BF");
+
+
 
     // Creating a new shuffleboard tab and adding the autoChooser
     Shuffleboard.getTab("PathPlanner Autonomous").add(autoChooser).withWidget(BuiltInWidgets.kComboBoxChooser);
