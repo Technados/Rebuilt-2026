@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Copy of C-SAFE"
+            "pathName": "Right Bump 2"
           }
         },
         {
@@ -26,6 +26,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Center",
+  "folder": "New Autos",
   "choreoAuto": false
 }

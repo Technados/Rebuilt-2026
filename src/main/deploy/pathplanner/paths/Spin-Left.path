@@ -12,20 +12,20 @@
         "y": 5.514015073679014
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Left Bump"
     },
     {
       "anchor": {
         "x": 3.25,
-        "y": 5.557
+        "y": 5.5
       },
       "prevControl": {
         "x": 3.499684401423974,
-        "y": 5.544442146459212
+        "y": 5.487442146459212
       },
       "nextControl": null,
       "isLocked": true,
-      "linkedName": "Left Bump"
+      "linkedName": "Spin Left"
     }
   ],
   "rotationTargets": [],

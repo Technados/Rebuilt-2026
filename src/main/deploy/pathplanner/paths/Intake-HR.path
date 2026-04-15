@@ -12,7 +12,7 @@
         "y": 2.3535604906369767
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Feul Right"
     },
     {
       "anchor": {
@@ -36,12 +36,12 @@
         "y": 2.974
       },
       "prevControl": {
-        "x": 1.7618544935805989,
-        "y": 1.8936519258202575
+        "x": 1.7618586427855918,
+        "y": 1.8936450006561092
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Hub Right"
     }
   ],
   "rotationTargets": [
@@ -67,7 +67,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 35.0
+    "rotation": 45.0
   },
   "reversed": false,
   "folder": "Right",

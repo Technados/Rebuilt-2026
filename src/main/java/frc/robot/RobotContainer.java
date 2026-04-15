@@ -91,6 +91,9 @@ public class RobotContainer {
 
   private BooleanSupplier readySupplier;
 
+  private double manualTuneRpm = 2500.0;
+  private double manualTuneHood = 0.25;
+
   private boolean llnamesLock = false;
   private String[] llnames;
 
@@ -99,6 +102,9 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    SmartDashboard.putNumber("Shooter/Manual Tune RPM", manualTuneRpm);
+    SmartDashboard.putNumber("Shooter/Manual Tune Hood", manualTuneHood);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -234,13 +240,13 @@ public class RobotContainer {
         .withTimeout(.25) 
     );
 
-    NamedCommands.registerCommand("Hood-To-Start", m_hoodSubsystem.holdPositionCommand(.28));
-
+    NamedCommands.registerCommand("Hood-To-Start", m_hoodSubsystem.positionCommand(.3));
+    NamedCommands.registerCommand("Intake", m_intakeSubsystem.runIntakeCommand());
     NamedCommands.registerCommand("Pivot-In", m_intakeSubsystem.pivotInCommand());
     NamedCommands.registerCommand("Pivot-Out", m_intakeSubsystem.pivotOutCommand());
 
     NamedCommands.registerCommand("Shoot",
-        m_shooterSubsystem.holdVelocityCommand(2920)
+        m_shooterSubsystem.holdVelocityCommand(2500)
     ); // Test positions/velocity later
 
     NamedCommands.registerCommand(
@@ -271,6 +277,8 @@ public class RobotContainer {
       autoChooser.addOption("L-SAFE", "L-SAFE");
       autoChooser.addOption("LB-C", "LB-C");
       autoChooser.addOption("Full-L", "Full-L");
+      autoChooser.addOption("Left Bump 2", "Left Bump 2");
+      autoChooser.addOption("Right Bump 2", "Right Bump 2");
 
     // Creating a new shuffleboard tab and adding the autoChooser
     Shuffleboard.getTab("PathPlanner Autonomous").add(autoChooser).withWidget(BuiltInWidgets.kComboBoxChooser);
@@ -284,6 +292,28 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  private void updateManualTuneRpm(double delta) {
+      manualTuneRpm = MathUtil.clamp(
+          SmartDashboard.getNumber("Shooter/Manual Tune RPM", manualTuneRpm) + delta,
+          0.0,
+          Constants.ShooterConstants.kShooterMaxRPM
+      );
+
+      SmartDashboard.putNumber("Shooter/Manual Tune RPM", manualTuneRpm);
+    }
+
+    private void updateManualTuneHood(double delta) {
+      manualTuneHood = MathUtil.clamp(
+          SmartDashboard.getNumber("Shooter/Manual Tune Hood", manualTuneHood) + delta,
+          Constants.HoodConstants.kMinPos,
+          Constants.HoodConstants.kMaxPos
+      );
+
+      SmartDashboard.putNumber("Shooter/Manual Tune Hood", manualTuneHood);
+    }
+
+/////////////////////////////////////////////////////////////////////////////////////////////
   private void configureButtonBindings() {
 
     // Driver Controller
@@ -326,8 +356,6 @@ public class RobotContainer {
     
     // Operator Controller
 
-    // Start Button -> Zero swerve heading
-    m_operatorController.start().onTrue(m_robotDrive.zeroHeadingCommand());
 
     passLeft = m_operatorController.povRight().getAsBoolean();
     passRight = m_operatorController.povLeft().getAsBoolean();
@@ -367,38 +395,29 @@ public class RobotContainer {
             );
 
 
-    m_operatorController.povRight()
-      .whileTrue(
-          // Keep updating continuously while held
-          m_robotDrive.aimAtCommand(leftFieldTargetSupplier)
-            .alongWith(m_shooterSubsystem.holdVelocityCommand(rpmSupplier))
-            .alongWith(m_hoodSubsystem.holdPositionCommand(.3))
-      );
+    // m_operatorController.povRight()
+    //   .whileTrue(
+    //       // Keep updating continuously while held
+    //       m_robotDrive.aimAtCommand(leftFieldTargetSupplier)
+    //         .alongWith(m_shooterSubsystem.holdVelocityCommand(rpmSupplier))
+    //         .alongWith(m_hoodSubsystem.positionCommand(.3))
+    //   );
 
-    m_operatorController.povLeft()
-      .whileTrue(
-          // Keep updating continuously while held
-          m_robotDrive.aimAtCommand(rightFieldTargetSupplier)
-            .alongWith(m_shooterSubsystem.holdVelocityCommand(rpmSupplier))
-            .alongWith(m_hoodSubsystem.holdPositionCommand(.3))
-      );
-
-    m_operatorController.povUp()
-      .whileTrue(
-        m_shooterSubsystem.holdVelocityCommand(6750)
-      );
-
-    m_operatorController.povDown()
-      .whileTrue(
-        m_shooterSubsystem.holdVelocityCommand(-6750)
-      );
+    // m_operatorController.povLeft()
+    //   .whileTrue(
+    //       // Keep updating continuously while held
+    //       m_robotDrive.aimAtCommand(rightFieldTargetSupplier)
+    //         .alongWith(m_shooterSubsystem.holdVelocityCommand(rpmSupplier))
+    //         .alongWith(m_hoodSubsystem.positionCommand(.3))
+    //   );
+      
 
     // Operator RT = Fire (feed only when ready)
     m_operatorController.rightTrigger()
       .whileTrue(
         m_feederSubsystem.feedWhen(readySupplier)
           .alongWith(
-            new WaitCommand(.25)
+            new WaitCommand(0)
               .andThen(m_intakeSubsystem.pivotAgitateCommand(readySupplier))
           )
       );
@@ -406,16 +425,40 @@ public class RobotContainer {
     // Operator X -> Manual fallback shot prep (fixed RPM + fixed hood)
     m_operatorController.x()
       .whileTrue(
-        m_shooterSubsystem.holdVelocityCommand(2770)
-          .alongWith(m_hoodSubsystem.holdPositionCommand(0.23))
-          .alongWith(m_robotDrive.setXCommand()))
-          .onFalse(m_shooterSubsystem.holdLastVelocityForCommand(0.4)
+        m_shooterSubsystem.holdVelocityCommand(
+            () -> SmartDashboard.getNumber("Shooter/Manual Tune RPM", manualTuneRpm)
+        )
+          .alongWith(
+            m_hoodSubsystem.holdPositionCommand(
+              () -> SmartDashboard.getNumber("Shooter/Manual Tune Hood", manualTuneHood)
+            )
+          )
+          .alongWith(m_robotDrive.setXCommand())
+      )
+      .onFalse(
+        m_shooterSubsystem.holdLastVelocityForCommand(0.4)
+      );
+
+    m_operatorController.start().onTrue(
+        new InstantCommand(() -> updateManualTuneRpm(50))
+      );
+
+      m_operatorController.back().onTrue(
+        new InstantCommand(() -> updateManualTuneRpm(-50))
+      );
+
+      m_operatorController.povUp().onTrue(
+        new InstantCommand(() -> updateManualTuneHood(0.01))
+      );
+
+      m_operatorController.povDown().onTrue(
+        new InstantCommand(() -> updateManualTuneHood(-0.01))
       );
 
     m_operatorController.a()
       .whileTrue(
         m_shooterSubsystem.holdVelocityCommand(4000)
-          .alongWith(m_hoodSubsystem.holdPositionCommand(.30)))
+          .alongWith(m_hoodSubsystem.positionCommand(.30)))
           .onFalse(m_shooterSubsystem.holdLastVelocityForCommand(0.4)
         );
 
@@ -428,7 +471,7 @@ public class RobotContainer {
 
     m_operatorController.b()
       .whileTrue(
-        m_hoodSubsystem.holdPositionCommand(.2)
+        m_hoodSubsystem.positionCommand(.2)
       );
 
     m_operatorController.leftBumper()

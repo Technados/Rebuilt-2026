@@ -155,21 +155,21 @@ public final class Constants {
   }
   
   public static final class HoodConstants {
-
     public static final int kLeftHoodServoPwm = 0;
     public static final int kRightHoodServoPwm = 1;
 
-    // Clamp to protect mechanics (tune after first test)
-    public static final double kMinPos = 0.2;
-    public static final double kMaxPos = 0.68;
+    public static final double kMinPos = 0.20;
+    public static final double kMaxPos = 0.55;
+
+    public static final double kStartingPosition = 0.28;
 
     public static final double kPosTolerance = 0.01;
 
-    // Modeled servo speed (pos units per second). This is not physics-accurate;
-    // it's a practical way to have a stable "hood is ready" signal.
-    public static final double kMaxPosUnitsPerSec = 0.80;
-
-  }
+    // 150:1, 100 mm actuator theoretical max is about 0.08 units/sec.
+    // This lighter-load estimate is still conservative enough to avoid
+    // claiming "ready" way too early.
+    public static final double kModeledPosUnitsPerSec = 0.070;
+}
   
   public static final class IntakeConstants {
     
@@ -181,7 +181,7 @@ public final class Constants {
     public static final double kPivotIdleOutPower = 0.03;
 
     public static final double kPivotAgitateHomeDeg = 100.0;
-    public static final double kPivotAgitateJabDeg = 85.0;
+    public static final double kPivotAgitateJabDeg = 80.0;
 
     // wait values
     public static final double kPivotAgitateDownTimeoutSec = 0.10;
@@ -320,7 +320,9 @@ public final class Constants {
     VecBuilder.fill(0.3, 0.3, Math.toRadians(99999));
 
   public static final double kMaxAcceptedPoseJumpMeters = 2.0;
+
   public static final double kMaxVisionYawRateDegPerSec = 360.0;
+  public static final double kRecoveryMaxVisionYawRateDegPerSec = 360.0;
 
   // Driver-requested recovery mode right before scoring/passing
   // Use only when mostly settled and looking at rich tags.
@@ -328,8 +330,7 @@ public final class Constants {
     VecBuilder.fill(0.1, 0.1, Math.toRadians(99999));
 
   public static final double kRecoveryMaxAcceptedPoseJumpMeters = 50.0;
-  public static final double kRecoveryMaxVisionYawRateDegPerSec = 360.0;
-  
+
   public static final double kWithinFieldToleranceMeters = .05;
   public static final double kOutsideHubToleranceMeters = 0;
 

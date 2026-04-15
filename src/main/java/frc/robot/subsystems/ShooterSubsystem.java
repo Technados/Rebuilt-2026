@@ -243,6 +243,7 @@ public class ShooterSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Shooter/Center Velocity", getCenterVelocity());
     
     SmartDashboard.putBoolean("Shooter/Shooter At Velocity", shooterAtVelocity());
+    SmartDashboard.putBoolean("Shooter/Safe to Feed", shooterSafeToFeed());
 
     SmartDashboard.putNumber("Shooter/Right AppliedOutput", rightShooterMotor.getAppliedOutput());
     SmartDashboard.putNumber("Shooter/Right BusVoltage", rightShooterMotor.getBusVoltage());

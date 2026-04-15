@@ -1,137 +1,198 @@
 package frc.robot.subsystems;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HoodConstants;
 
 /**
-* HoodSubsystem (PWM Servos)
-*
-* PWM servos generally do NOT provide position feedback to the roboRIO.
-* That means we cannot truly "measure" when the hood arrives.
-*
-* For sequencing ("don't shoot until hood is set"), we use a simple modeled position
-* that moves toward the target at a limited speed. It's not perfect physics, but it
-* creates a stable, teachable definition of "at target".
-*
-* Later upgrade option:
-* - Add a real sensor (pot/encoder) for true closed-loop hood angle control.
-*/
-
+ * HoodSubsystem (PWM linear servos with modeled position)
+ *
+ * IMPORTANT:
+ * These PWM linear actuators do NOT report true position back through the roboRIO
+ * PWM ports. The servo object only knows what command value was sent, not where
+ * the actuator physically ended up.
+ *
+ * Because of that, we use a simple time-based position model:
+ * - targetPosition = commanded servo position
+ * - currentPosition = estimated position that moves toward target over time
+ *
+ * Why do this?
+ * - gives a stable "hood ready" signal for shooter sequencing
+ * - matches the real behavior of a slow actuator better than assuming instant motion
+ * - keeps command logic simple and understandable
+ *
+ * This is still NOT true closed-loop feedback.
+ * If the mechanism binds, slips, gets bumped, or starts in the wrong place,
+ * this model can still be wrong.
+ *
+ * Best future upgrade:
+ * - read the actuator feedback potentiometer, or
+ * - add a real hood angle sensor
+ */
 public class HoodSubsystem extends SubsystemBase {
 
     private final Servo leftServo;
     private final Servo rightServo;
 
-    private double targetPos = 0;
-    private double modeledPos = 0;
+    /**
+     * Estimated hood position in normalized servo units.
+     * This is a model, not a sensor reading.
+     */
+    private double currentPosition = HoodConstants.kStartingPosition;
 
-    private double lastTime;
+    /**
+     * Commanded hood target in normalized servo units.
+     */
+    private double targetPosition = HoodConstants.kStartingPosition;
+
+    /**
+     * Timestamp used for motion modeling.
+     */
+    private double lastUpdateTime;
 
     public HoodSubsystem() {
-        // Initializes servos
         leftServo = new Servo(HoodConstants.kLeftHoodServoPwm);
         rightServo = new Servo(HoodConstants.kRightHoodServoPwm);
 
-        // Sets target and modeled positions
-        modeledPos = 0.3;
+        /**
+         * Common PWM bounds used with these linear servos.
+         * Better than relying only on generic servo defaults.
+         */
+        leftServo.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
+        rightServo.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
 
-        // Sets timestamp
-        lastTime = Timer.getFPGATimestamp();
+        lastUpdateTime = Timer.getFPGATimestamp();
 
-        // Sets hood position to the target position
-        setHoodPosition(0.3);
-
-        targetPos = 0.3;
+        /**
+         * Start at the hood's normal "home" position.
+         * This is the software's startup assumption.
+         */
+        setPosition(HoodConstants.kStartingPosition);
+        currentPosition = HoodConstants.kStartingPosition;
     }
 
-    /*----------Setters----------*/
-
     /**
-     * Sets the hood position.
-     * @param pos The target position
+     * Command a hood position in normalized servo units.
+     * The value is clamped to a reduced safe/useful range for match play.
      */
-    public void setHoodPosition(double pos) {
-        targetPos = MathUtil.clamp(pos, HoodConstants.kMinPos, HoodConstants.kMaxPos);
-        leftServo.set(targetPos);
-        rightServo.set(targetPos);
+    public void setPosition(double position) {
+        double clampedPosition = MathUtil.clamp(
+            position,
+            HoodConstants.kMinPos,
+            HoodConstants.kMaxPos
+        );
+
+        leftServo.set(clampedPosition);
+        rightServo.set(clampedPosition);
+        targetPosition = clampedPosition;
     }
 
-    /*----------Getters----------*/
-
     /**
-     * @return The current target position
+     * Sends the hood back to its default "home" position.
+     * This is the close-shot / auto-start / normal-rest position.
      */
-    public double getTargetPos() {
-        return targetPos;
+    public void home() {
+        setPosition(HoodConstants.kStartingPosition);
+    }
+
+    public double getTargetPosition() {
+        return targetPosition;
+    }
+
+    public double getCurrentPosition() {
+        return currentPosition;
     }
 
     /**
-     * Returns true if postion is within target tolerance.
-     * @return Boolean representing if position is at target
+     * Returns true when the modeled position is within tolerance of target.
+     * This is what the ready-to-feed logic should use for hood readiness.
      */
     public boolean atTarget() {
-        return Math.abs(modeledPos - targetPos) <= HoodConstants.kPosTolerance;
-    }
-
-    /*----------Commands----------*/
-
-    /**
-     * Returns hood jog command. This command is only for testing.
-     * @param posIncrease The position increment that the servos will move at.
-     * @return Command to move the hood manually.
-     */
-    public Command hoodJogCommand(double posIncrease) {
-        return this.startEnd(
-            () -> setHoodPosition(modeledPos + posIncrease),
-            () -> holdPositionCommand(modeledPos)
+        return MathUtil.isNear(
+            targetPosition,
+            currentPosition,
+            HoodConstants.kPosTolerance
         );
     }
 
     /**
-     * Holds a hood position continuously 
-     * (useful for ReadyToShoot)
-     * @param posSupplier Target position for hood
-     * @return Command to set and hold hood position
+     * One-shot move command:
+     * - command hood to a position once
+     * - wait until the modeled position reaches tolerance
+     *
+     * Useful for autonomous or fixed-position sequencing.
      */
-    public Command holdPositionCommand(DoubleSupplier posSupplier) {
-        return run(() -> setHoodPosition(posSupplier.getAsDouble()));
+    public Command positionCommand(double position) {
+        return runOnce(() -> setPosition(position))
+            .andThen(Commands.waitUntil(this::atTarget));
     }
 
     /**
-     * Hold a hood position continuously 
-     * (useful for ReadyToShoot)
-     * @param position Target position for hood
-     * @return Command to set and hold hood position
+     * Continuously command a fixed hood position while the command is active.
+     * Useful for live shot prep commands that stay scheduled while a trigger is held.
      */
-    public Command holdPositionCommand(double position) {
-        return run(() -> setHoodPosition(position));
+    public Command holdPositionCommand(java.util.function.DoubleSupplier positionSupplier) {
+        return run(() -> setPosition(positionSupplier.getAsDouble()));
     }
 
-    /*----------Periodic----------*/
+    /**
+     * Continuously command the home position while active.
+     */
+    public Command holdHomeCommand() {
+        return run(this::home);
+    }
+
+    /**
+     * One-shot command to move back to home and wait until the modeled hood gets there.
+     */
+    public Command homeCommand() {
+        return positionCommand(HoodConstants.kStartingPosition);
+    }
+
+    /**
+     * Jog command for testing.
+     * Uses targetPosition so repeated taps behave consistently.
+     */
+    public Command jogCommand(double delta) {
+        return runOnce(() -> setPosition(targetPosition + delta));
+    }
+
+    /**
+     * Move the modeled position toward the target based on actuator speed.
+     *
+     * 150:1 / 100 mm actuator:
+     * - theoretical max no-load speed is about 8 mm/sec
+     * - normalized theoretical max is about 8/100 = 0.08 units/sec
+     *
+     * We use a slightly reduced modeled speed so "ready" does not become true
+     * too early under real robot conditions.
+     */
+    private void updateModeledPosition() {
+        double now = Timer.getFPGATimestamp();
+        double dt = now - lastUpdateTime;
+        lastUpdateTime = now;
+
+        double maxStep = HoodConstants.kModeledPosUnitsPerSec * dt;
+        double error = targetPosition - currentPosition;
+
+        if (Math.abs(error) <= maxStep) {
+            currentPosition = targetPosition;
+        } else {
+            currentPosition += Math.copySign(maxStep, error);
+        }
+    }
 
     @Override
     public void periodic() {
-        double now = Timer.getFPGATimestamp();
-        double dt = now - lastTime;
-        lastTime = now;
+        updateModeledPosition();
 
-        // model movement for a reliable "atTarget" signal
-        double maxStep = HoodConstants.kMaxPosUnitsPerSec * dt;
-        double error = targetPos - modeledPos;
-
-        if (Math.abs(error) <= maxStep) modeledPos = targetPos;
-        else modeledPos += Math.copySign(maxStep, error);
-
-        SmartDashboard.putNumber("Hood/TargetPos", targetPos);
-        SmartDashboard.putNumber("Hood/ModeledPos", modeledPos);
+        SmartDashboard.putNumber("Hood/TargetPosition", targetPosition);
+        SmartDashboard.putNumber("Hood/CurrentPositionModeled", currentPosition);
         SmartDashboard.putBoolean("Hood/AtTarget", atTarget());
     }
-
 }
