@@ -25,7 +25,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Copy of C-SAFE"
+            "pathName": "Left-BH"
           }
         },
         {
@@ -35,22 +35,28 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Shoot"
+                  "name": "Shoot-5"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Feed"
+                  "name": "Feed-4.5"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Out-Left"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Center",
+  "folder": "New Autos",
   "choreoAuto": false
 }

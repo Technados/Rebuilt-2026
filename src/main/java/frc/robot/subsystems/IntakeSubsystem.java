@@ -15,8 +15,6 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -50,10 +48,6 @@ public class IntakeSubsystem extends SubsystemBase {
   private final SparkFlex intakeMotor;
   private final SparkFlex pivotMotor;
 
-  private final Servo hopperServo;
-
-  private final DigitalInput zeroSwitch;
-
   private RelativeEncoder pivotEncoder;
 
   private SparkClosedLoopController pivotController;
@@ -67,10 +61,6 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeMotor = new SparkFlex(IntakeConstants.kIntakeMotorCanId, MotorType.kBrushless);
     pivotMotor = new SparkFlex(IntakeConstants.kPivotMotorCanId, MotorType.kBrushless);
     
-    hopperServo = new Servo(IntakeConstants.kHopperServoChannel);
-
-    zeroSwitch = new DigitalInput(IntakeConstants.kZeroSwtichChannel);
-
     intakeMotor.configure(
       Configs.IntakeSubsystem.intakeConfig,
       ResetMode.kResetSafeParameters,
@@ -95,8 +85,6 @@ public class IntakeSubsystem extends SubsystemBase {
     pivotTargetDeg = 0.0;
 
     pivotIdlePower = IntakeConstants.kPivotIdleInPower;
-
-    hopperServo.set(0); // Change position
 
   }
 
@@ -164,13 +152,6 @@ public class IntakeSubsystem extends SubsystemBase {
       ClosedLoopSlot.kSlot0
   );
 }
-
-  public void zeroOnLimitPressed() {
-    if (!zeroSwitch.get()) {
-      tempZeroPivotAtIn();
-      pivotIdlePower = IntakeConstants.kPivotIdleInPower;
-    }
-  }
 
   /*----------Commands----------*/
   
@@ -309,8 +290,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    zeroOnLimitPressed();
-
     SmartDashboard.putNumber("Intake/Pivot Angle Deg", pivotEncoder.getPosition());
     SmartDashboard.putNumber("Intake/Pivot Target Deg", pivotTargetDeg);
     SmartDashboard.putBoolean("Intake/Pivot Zeroed", pivotZeroed);
@@ -318,8 +297,6 @@ public class IntakeSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Intake/Pivot At Target", pivotAtTarget());
 
     SmartDashboard.putNumber("Intake/Pivot Power", pivotMotor.getAppliedOutput());
-
-    SmartDashboard.putBoolean("Intake/Limit Pressed", zeroSwitch.get());
   }
 
 }

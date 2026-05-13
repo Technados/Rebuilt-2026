@@ -219,7 +219,7 @@ public class RobotContainer {
       )
     );
 
-    m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.idleShooterCommand());
+    //m_shooterSubsystem.setDefaultCommand(m_shooterSubsystem.idleShooterCommand());
 
     // Pathplanner Commands
     NamedCommands.registerCommand(
@@ -250,6 +250,12 @@ public class RobotContainer {
     ); // Test positions/velocity later
 
     NamedCommands.registerCommand(
+      "Shoot-5", 
+      m_shooterSubsystem.holdVelocityCommand(2500)
+        .withTimeout(5)
+    );
+
+    NamedCommands.registerCommand(
       "Feed", 
       new ParallelCommandGroup(
         m_feederSubsystem.feedWhen(() -> m_shooterSubsystem.shooterSafeToFeed()),
@@ -261,7 +267,16 @@ public class RobotContainer {
         m_feederSubsystem.stop()
       ))
     );
-
+    
+    NamedCommands.registerCommand(
+      "Feed-4.5", 
+      new ParallelCommandGroup(
+        m_feederSubsystem.feedWhen(() -> m_shooterSubsystem.shooterSafeToFeed()),
+        new WaitCommand(.25)
+          .andThen(m_intakeSubsystem.pivotAgitateCommand(readySupplier))
+      ).withTimeout(4.5)
+    );
+    
   
     // register auto options to the shuffleboard 
       // autoChooser.addOption("R-SAFE", "R-SAFE");
@@ -278,9 +293,12 @@ public class RobotContainer {
       // autoChooser.addOption("LB-C", "LB-C");
       // autoChooser.addOption("Full-L", "Full-L");
       autoChooser.addOption("Left-BH", "Left-BH");
-      autoChooser.addOption("Right-BH", "Right-BH");
-      autoChooser.addOption("Right-BF", "Right-BF");
       autoChooser.addOption("Left-BF", "Left-BF");
+      autoChooser.addOption("Left-BHO", "Left-BHO");
+      autoChooser.addOption("Right-BH", "Right-BH");
+      autoChooser.addOption("Right-BHO", "Right-BHO");
+      autoChooser.addOption("Right-BF", "Right-BF");
+      
 
 
 
@@ -398,6 +416,16 @@ public class RobotContainer {
             .onFalse(m_shooterSubsystem.holdLastVelocityForCommand(0.4)
             );
 
+      m_operatorController.povLeft()
+        .whileTrue(
+          m_hoodSubsystem.jogCommand(1)
+        );
+
+      m_operatorController.povLeft()
+        .whileTrue(
+          m_hoodSubsystem.jogCommand(-1)
+        );
+
 
     // m_operatorController.povRight()
     //   .whileTrue(
@@ -437,7 +465,7 @@ public class RobotContainer {
               () -> SmartDashboard.getNumber("Shooter/Manual Tune Hood", manualTuneHood)
             )
           )
-          .alongWith(m_robotDrive.setXCommand())
+          //.alongWith(m_robotDrive.setXCommand())
       )
       .onFalse(
         m_shooterSubsystem.holdLastVelocityForCommand(0.4)

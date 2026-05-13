@@ -155,11 +155,11 @@ public final class Constants {
   }
   
   public static final class HoodConstants {
-    public static final int kLeftHoodServoPwm = 0;
-    public static final int kRightHoodServoPwm = 1;
+    public static final int kLeftHoodServoPwm = 2;
+    public static final int kRightHoodServoPwm = 3;
 
-    public static final double kMinPos = 0.20;
-    public static final double kMaxPos = 0.55;
+    public static final double kMinPos = 0.28;
+    public static final double kMaxPos = 0.80;
 
     public static final double kStartingPosition = 0.28;
 
@@ -225,7 +225,7 @@ public final class Constants {
   
   public static final class LEDConstants {
     
-    public static final int kLEDPwmPort = 2;
+    public static final int kLEDPwmPort = 0;
     
   }
   
@@ -282,7 +282,7 @@ public final class Constants {
     public static final int kRightShooterMotorCanId = 15;
     public static final int kCenterShooterMotorCanId = 16;
 
-    public static final double kShooterMaxRPM = 5000.0; 
+    public static final double kShooterMaxRPM = 6000.0; 
     public static final double kShooterIdleRPM = 1500.0; 
     
     // Must be adjusted before testing!
